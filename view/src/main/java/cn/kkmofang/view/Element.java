@@ -298,6 +298,21 @@ public class Element {
         changedKeys(attrs.keySet());
     }
 
+    public void setAttrs(String key, String value, String ... keyValues) {
+        Set<String> keys = new TreeSet<>();
+        if(key != null && value != null) {
+            keys.add(key);
+            _attributes.put(key,value);
+        }
+        if(keyValues != null) {
+            for(int i=0;i+1<keyValues.length;i+=2) {
+                keys.add(keyValues[i]);
+                _attributes.put(keyValues[i],keyValues[i+1]);
+            }
+        }
+        changedKeys(keys);
+    }
+
     public void setStyle(Map<String,String> attrs ,String status) {
 
         if(status == null) {

@@ -43,7 +43,7 @@ public class RelativeLayout implements ViewElement.Layout {
                 float h = e.height.floatValue(inHeight,Pixel.Auto);
 
                 e.setWidth((int) Math.ceil(w));
-                e.setHeight((int) Math.ceil(w));
+                e.setHeight((int) Math.ceil(h));
 
                 e.layoutChildren();
 
@@ -94,9 +94,9 @@ public class RelativeLayout implements ViewElement.Layout {
                     if(height == Pixel.Auto) {
                         top = paddingTop + mtop;
                     } else if(bottom == Pixel.Auto) {
-                        top = paddingTop + mtop + (inHeight - height - mtop - mbottom) * 0.5f;
+                        top = paddingTop + mtop + (inHeight - h - mtop - mbottom) * 0.5f;
                     } else {
-                        top = paddingTop + (inHeight - height - mbottom -bottom);
+                        top = paddingTop + (inHeight - h - mbottom -bottom);
                     }
                 } else {
                     top = paddingTop + top + mtop;

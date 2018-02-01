@@ -37,7 +37,7 @@ public class ViewElement extends Element {
     private int _contentOffsetY;
     private int _translateX;
     private int _translateY;
-    private Layout _layout;
+    private Layout _layout = RelativeLayout;
 
     public final ViewContext viewContext;
 
@@ -257,7 +257,7 @@ public class ViewElement extends Element {
     public Class<?> viewClass() {
         String v = get("#view");
         if(v == null) {
-            return KKView.class;
+            return ElementView.class;
         }
         try {
             return Class.forName(v);
@@ -265,7 +265,7 @@ public class ViewElement extends Element {
         catch(Throwable e) {
             Log.d(Tag.Tag,Log.getStackTraceString(e));
         }
-        return KKView.class;
+        return ElementView.class;
     }
 
     public void obtainView(View view) {
@@ -307,7 +307,7 @@ public class ViewElement extends Element {
         }
 
         if(vv == null) {
-            vv = new KKView(viewContext.context);
+            vv = new ElementView(viewContext.context);
         }
 
         Element p = parent();

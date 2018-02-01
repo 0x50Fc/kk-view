@@ -1,6 +1,7 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -10,10 +11,15 @@ import java.lang.ref.WeakReference;
  * Created by hailong11 on 2018/1/18.
  */
 
-public class KKView extends ViewGroup {
+public class ElementView extends ViewGroup {
 
-    public KKView(Context context) {
+
+    public ElementView(Context context) {
         super(context);
+    }
+
+    public ElementView(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
     @Override

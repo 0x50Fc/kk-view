@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <id name="kk_view_element"></id>
-    <id name="kk_view_dequeue"></id>
+    <item type="id" name="kk_view_element"></item>
+    <item type="id" name="kk_view_dequeue"></item>
 </resources>
