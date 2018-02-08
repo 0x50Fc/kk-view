@@ -17,6 +17,8 @@ public final class Pixel implements IValue<Pixel> {
     public Type type;
     public float value;
 
+
+
     public float floatValue(float baseOf,float defaultValue) {
         if(type == Type.Percent) {
             return value * baseOf * 0.01f;
@@ -54,7 +56,7 @@ public final class Pixel implements IValue<Pixel> {
                 type = Type.PX;
 
                 try {
-                    value = Float.valueOf(v.substring(0, v.length() - 3));
+                    value = Float.valueOf(v.substring(0, v.length() - 2));
                 }
                 catch (Throwable e) {
                     value = 0;
@@ -67,7 +69,7 @@ public final class Pixel implements IValue<Pixel> {
                 type = Type.Percent;
 
                 try {
-                    value = Float.valueOf(v.substring(0, v.length() - 3));
+                    value = Float.valueOf(v.substring(0, v.length() - 1));
                 }
                 catch (Throwable e) {
                     value = 0;

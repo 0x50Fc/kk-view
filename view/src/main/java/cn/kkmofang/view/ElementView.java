@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 import java.lang.ref.WeakReference;
 
+import com.kk.view.R;
+
 /**
  * Created by hailong11 on 2018/1/18.
  */
@@ -22,9 +24,9 @@ public class ElementView extends ViewGroup {
         super(context, attrs);
     }
 
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
         int count = getChildCount();
 
         for(int i=0;i<count;i++) {
@@ -49,5 +51,6 @@ public class ElementView extends ViewGroup {
 
         }
     }
+
 
 }

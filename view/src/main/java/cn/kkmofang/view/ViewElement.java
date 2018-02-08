@@ -1,6 +1,7 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,9 @@ import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.Position;
 import cn.kkmofang.view.value.V;
 import cn.kkmofang.view.value.VerticalAlign;
+
+import com.kk.view.R;
+
 
 /**
  * Created by hailong11 on 2018/1/17.
