@@ -1,6 +1,7 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,7 @@ public class ViewElement extends Element {
 
 
     private View _view;
+    public  BorderElement borderElement;
 
     public ViewElement() {
         viewContext = ViewContext.current();
@@ -477,12 +479,15 @@ public class ViewElement extends Element {
         onLayout();
     }
 
-    protected void onSetProperty(View view, String key, String value) {
+    protected void onSetProperty(View view, String key, String value)
+    {
 
         if("background-color".equals(key)) {
             view.setBackgroundColor(Color.valueOf(value,0));
         } else if("border-color".equals(key)) {
-
+            GradientDrawable drawable=new GradientDrawable();
+            drawable.setColor(Color.valueOf(value,0));
+            view.setBackgroundDrawable(drawable);
         } else if("border-width".equals(key)) {
 
         } else if("border-radius".equals(key)) {
@@ -503,7 +508,6 @@ public class ViewElement extends Element {
             ((IElementView) view).setProperty(view,this,key,value);
         }
     }
-
     protected void onLayout(View view) {
         view.requestLayout();
         if(view instanceof  IElementView) {
