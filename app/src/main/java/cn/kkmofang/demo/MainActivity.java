@@ -3,7 +3,6 @@ package cn.kkmofang.demo;
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.view.WindowManager;
 
 import cn.kkmofang.view.DocumentView;
 import cn.kkmofang.view.ViewContext;

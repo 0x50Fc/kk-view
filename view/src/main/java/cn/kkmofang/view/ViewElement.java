@@ -39,7 +39,7 @@ public class ViewElement extends Element {
     private int _translateY;
     private Layout _layout = RelativeLayout;
 
-    public final ViewContext viewContext;
+    public ViewContext viewContext;
 
     public final Edge padding = new Edge();
     public final Edge margin = new Edge();
@@ -546,6 +546,4 @@ public class ViewElement extends Element {
      * 水平布局 "horizontal" 左到右
      */
     public static Layout HorizontalLayout = new HorizontalLayout();
-
-
 }
