@@ -2,7 +2,6 @@ package cn.kkmofang.view;
 
 import android.graphics.Typeface;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.TextView;
 
 import cn.kkmofang.view.value.Color;
@@ -15,7 +14,6 @@ import cn.kkmofang.view.value.V;
  */
 
 public class TextElement extends ViewElement {
-    private TextView textView;
     public final Edge padding = new Edge();
     public final Edge margin = new Edge();
     public TextElement() {
@@ -24,9 +22,8 @@ public class TextElement extends ViewElement {
 
     }
 
-    @Override
-    protected void onSetProperty(View view, String key, String value) {
-        super.onSetProperty(view, key, value);
+    protected void onSetPropertys(TextView textView, String key, String value) {
+        super.onSetProperty(textView, key, value);
         if ("color".equals(key)){
             textView.setTextColor(Color.valueOf(value,0));
         }else if ("font".equals(key)) {
