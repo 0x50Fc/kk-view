@@ -33,7 +33,7 @@ public class ElementView extends ViewGroup {
 
             View v = getChildAt(i);
 
-            if(v.getVisibility() == View.VISIBLE) {
+            if(v != null && v.getVisibility() == View.VISIBLE) {
 
                 WeakReference<ViewElement> e = (WeakReference<ViewElement>) v.getTag(R.id.kk_view_element);
 

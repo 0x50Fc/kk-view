@@ -5,17 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="cn.kkmofang.demo.MainActivity"
-    android:id="@+id/documentView">
+    android:id="@+id/rlContainer"
+    tools:context="cn.kkmofang.demo.MainActivity">
 
-    <cn.kkmofang.view.FRecyclerView
-        android:id="@+id/myRecyclerView"
+    <cn.kkmofang.view.DocumentView
+        android:id="@+id/documentView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-    <Button
-        android:id="@+id/btnChangeProperty"
-        android:text="change property"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 </RelativeLayout>

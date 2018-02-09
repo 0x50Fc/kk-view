@@ -501,6 +501,13 @@ public class ViewElement extends Element {
             }
         } else if("background-image".equals(key)) {
             //Drawable image = viewContext.getImage(value);
+        }else if ("padding".equals(key)){
+            padding.set(value);
+            // TODO: 2018/2/8 这个地方有一个问题，百分比基于父view的大小，当父view没有渲染在屏幕上时，获得的父view的大小为0
+            view.setPadding((int)padding.left.floatValue(width(), 0),
+                    (int)padding.top.floatValue(height(), 0),
+                    (int)padding.right.floatValue(width(), 0),
+                    (int)padding.bottom.floatValue(height(), 0));
         }
 
         if(view instanceof  IElementView) {

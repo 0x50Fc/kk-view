@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -26,11 +27,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
 
     public MyAdapter(ViewElement element, Context context) {
         this.mContext = context;
-        Element p = element.firstChild();
         viewType = 0;
-        while(p != null) {
-            if(p instanceof ViewElement) {
-                ViewElement e = (ViewElement) p;
+        if (element instanceof ScrollElement){
+
+            for (ViewElement e : ((ScrollElement) element)._elements) {
                 String reuse = e.reuse();
                 if(! _reuseIds.containsKey(reuse)) {
                     _reuseIds.put(reuse,viewType);
@@ -38,20 +38,34 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
                 }
                 _elements.add(e);
             }
-            p = p.nextSibling();
         }
+//        while(p != null) {
+//            if(p instanceof ViewElement) {
+//                ViewElement e = (ViewElement) p;
+//                String reuse = e.reuse();
+//                if(! _reuseIds.containsKey(reuse)) {
+//                    _reuseIds.put(reuse,viewType);
+//                    viewType ++;
+//                }
+//                _elements.add(e);
+//            }
+//            p = p.nextSibling();
+//        }
     }
 
     @Override
     public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MyHolder(new DocumentView(mContext));
+
+        return new MyHolder(new ElementView(mContext));
     }
 
     @Override
     public void onBindViewHolder(MyHolder holder, final int position) {
-        if (holder.itemView instanceof DocumentView){
-            DocumentView itemView = (DocumentView) holder.itemView;
-            itemView.setElement(_elements.get(position));
+        if (_elements.size() > position){
+            if (holder.itemView != null && holder.itemView instanceof ElementView){
+                ElementView itemView = (ElementView) holder.itemView;
+                _elements.get(position).obtainView(itemView);
+            }
         }
 
     }

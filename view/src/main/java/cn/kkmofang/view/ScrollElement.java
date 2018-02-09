@@ -9,9 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import cn.kkmofang.view.value.Edge;
 import cn.kkmofang.view.value.Orientation;
 
 /**
@@ -23,25 +25,29 @@ public class ScrollElement extends ViewElement{
     public Orientation mOrientation = Orientation.VERTICAL;
     private MyAdapter adapter;
     private LayoutManager manager;
+    public List<ViewElement> _elements = new ArrayList<>();
 
     public ScrollElement() {
         super();
-        set("#view",FRecyclerView.class.getName());
+        set("#view",RecyclerView.class.getName());
     }
 
-    private FRecyclerView recyclerView() {
-        return (FRecyclerView) view();
+    private RecyclerView recyclerView() {
+        return (RecyclerView) view();
     }
 
     @Override
     public void obtainView(View view) {
-        setView(view);
+        super.obtainView(view);
     }
 
+    @Override
     public void setView(View view) {
-        if(view == null || view instanceof FRecyclerView) {
-            FRecyclerView v = recyclerView();
+        if(view == null || view instanceof RecyclerView) {
+            RecyclerView v = recyclerView();
             if (v != null){
+                manager = null;
+                adapter = null;
                 v.setLayoutManager(null);
                 v.setAdapter(null);
             }
@@ -56,50 +62,28 @@ public class ScrollElement extends ViewElement{
         }
     }
 
-    public void setmOrientation(Orientation orientation) {
-        if (this.mOrientation == orientation)return;
-        this.mOrientation = orientation;
-        if (manager != null){
-            manager.setOrientation(this.mOrientation);
-        }
-    }
 
-    public void appendList(List<Element> elements){
-        for (Element element : elements) {
-            append(element);
+    @Override
+    public void append(Element element) {
+        if (element instanceof ViewElement){
+            _elements.add((ViewElement) element);
+            if (adapter != null){
+                adapter.fNotifyItemInserted(element);
+            }
         }
     }
 
     @Override
-    public void append(Element element) {
-        super.append(element);
-        if (adapter != null){
-            adapter.fNotifyItemInserted(element);
-        }
-    }
-
-    public void removeItem(int position){
-        Element p = firstChild();
-        int pos = 0;
-        while (p != null){
-            if (pos == position){
-                p.remove();
-                if (adapter != null){
-                    adapter.fNotifyItemRemoved(pos);
-                }
-                return;
-            }
-            p = p.nextSibling();
-            pos ++;
+    public void recycleView() {
+        super.recycleView();
+        if (view() != null){
+            _elements.clear();
         }
     }
 
     @Override
     public void remove() {
         super.remove();
-        if (adapter != null){
-            adapter.notifyDataSetChanged();
-        }
     }
 
     public static class LayoutManager extends RecyclerView.LayoutManager {
@@ -167,30 +151,36 @@ public class ScrollElement extends ViewElement{
 
             int offsetY = 0;
             int offsetX = 0;
-            ViewElement p = (ViewElement) mElement.firstChild();
-            for (int i = 0; i < getItemCount() && p != null; i++) {
+            ViewElement p;
+
+            for (int i = 0; i < getItemCount() && i < mElement._elements.size(); i++) {
+                p = mElement._elements.get(i);
+                if (p == null)continue;
                 View scrap = recycler.getViewForPosition(i);
                 if (dy >= 0){
                     addView(scrap);
                 }else {
                     addView(scrap, 0);
                 }
-                int width = (int) p.width.floatValue(getWidth(), 0);
-                int height = (int) p.height.floatValue(getHeight(), 0);
+                measureChildWithMargins(scrap, 0, 0);
                 int marginLeft = (int) p.left.floatValue(getWidth(), 0);
                 int marginRight = (int) p.right.floatValue(getWidth(), 0);
                 int marginTop = (int) p.top.floatValue(getHeight(), 0);
                 int marginBottom = (int) p.bottom.floatValue(getHeight(), 0);
-                measureChildWithMargins(scrap, 0, 0);
+                int width = (int) p.width.floatValue(getWidth() - marginLeft - marginRight, 0);
+                int height = (int) p.height.floatValue(getHeight() - marginTop - marginBottom, 0);
+                p.layout(width, height);
                 if (mOrientation == Orientation.VERTICAL){
-                    layoutDecorated(scrap, marginLeft, offsetY + marginTop - offset, marginLeft + width, offsetY + height + marginTop - offset);
+                    layoutDecorated(scrap,
+                            marginLeft,
+                            offsetY + marginTop - offset,
+                            marginLeft + width,
+                            offsetY + height + marginTop - offset);
                     offsetY += height + marginTop + marginBottom;
                 }else {//水平方向
                     layoutDecorated(scrap, offsetX + marginLeft - offset, marginTop, offsetX + marginLeft + width - offset, height + marginTop);
                     offsetX += width + marginLeft + marginRight;
                 }
-
-                p = (ViewElement) p.nextSibling();
             }
             totalWidth = Math.max(offsetX, getHorizontalSpace());
             totalHeight = Math.max(offsetY, getVerticalSpace());

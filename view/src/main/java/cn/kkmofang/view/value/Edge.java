@@ -58,6 +58,4 @@ public final class Edge implements IValue<Edge> {
         bottom.set(v.bottom);
         left.set(v.left);
     }
-
-
 }
