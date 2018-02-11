@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
 
         {
             ScrollElement scrollElement = new ScrollElement();
-            scrollElement.setAttrs("width","80%","height","80%","background-color","#f00");
+            scrollElement.setAttrs("width","100%","height","100%","background-color","#f00", "scroll", "overflow-x");
             {
                 ViewElement element = new ViewElement();
                 element.setAttrs("width","100%","height","50%","background-color","#1f0","left","50px", "right", "100px");
@@ -63,6 +63,52 @@ public class MainActivity extends Activity {
                     element.append(element1);
                 }
                 scrollElement.append(element);
+            }
+
+            {
+                ScrollElement hScrollElement = new ScrollElement();
+                hScrollElement.setAttrs("width", "100%", "height", "30%", "background-color", "#fff", "scroll", "overflow-x");
+                {
+                    ViewElement element = new ViewElement();
+                    element.setAttrs("width", "50%", "height", "100%", "background-color", "#444");
+                    hScrollElement.append(element);
+                }
+
+                {
+                    ViewElement element = new ViewElement();
+                    element.setAttrs("width", "50%", "height", "100%", "background-color", "#888");
+                    hScrollElement.append(element);
+                }
+                {
+                    ViewElement element = new ViewElement();
+                    element.setAttrs("width", "50%", "height", "100%", "background-color", "#666");
+                    hScrollElement.append(element);
+                }
+
+                scrollElement.append(hScrollElement);
+            }
+
+            {
+                ScrollElement vScrollElement = new ScrollElement();
+                vScrollElement.setAttrs("width", "100%", "height", "50%", "background-color", "#ff0", "scroll", "overflow-y");
+                {
+                    ViewElement element = new ViewElement();
+                    element.setAttrs("width", "50%", "height", "50%", "background-color", "#763");
+                    vScrollElement.append(element);
+                }
+
+                {
+                    ViewElement element = new ViewElement();
+                    element.setAttrs("width", "50%", "height", "50%", "background-color", "#888");
+                    vScrollElement.append(element);
+                }
+                {
+                    ViewElement element = new ViewElement();
+                    element.setAttrs("width", "50%", "height", "50%", "background-color", "#666");
+                    vScrollElement.append(element);
+                }
+
+                scrollElement.append(vScrollElement);
             }
 
             {
@@ -76,12 +122,6 @@ public class MainActivity extends Activity {
                 element.setAttrs("width","100%","height","50%","background-color","#1f0","left","50px", "right", "100px");
                 scrollElement.append(element);
             }
-//
-//            {
-//                ViewElement element = new ViewElement();
-//                element.setAttrs("width","100%","height","50%","background-color","#4f0","left","50px", "right", "100px");
-//                scrollElement.append(element);
-//            }
             root.append(scrollElement);
         }
 

@@ -15,6 +15,7 @@ import java.util.Set;
 
 import cn.kkmofang.view.value.Edge;
 import cn.kkmofang.view.value.Orientation;
+import cn.kkmofang.view.view.FRecyclerView;
 
 /**
  * Created by hailong11 on 2018/1/20.
@@ -29,22 +30,17 @@ public class ScrollElement extends ViewElement{
 
     public ScrollElement() {
         super();
-        set("#view",RecyclerView.class.getName());
+        set("#view",FRecyclerView.class.getName());
     }
 
-    private RecyclerView recyclerView() {
-        return (RecyclerView) view();
-    }
-
-    @Override
-    public void obtainView(View view) {
-        super.obtainView(view);
+    private FRecyclerView recyclerView() {
+        return (FRecyclerView) view();
     }
 
     @Override
     public void setView(View view) {
-        if(view == null || view instanceof RecyclerView) {
-            RecyclerView v = recyclerView();
+        if(view == null || view instanceof FRecyclerView) {
+            FRecyclerView v = recyclerView();
             if (v != null){
                 manager = null;
                 adapter = null;
@@ -62,11 +58,22 @@ public class ScrollElement extends ViewElement{
         }
     }
 
+    @Override
+    public void changedKey(String key) {
+        super.changedKey(key);
+        if ("scroll".equals(key)){
+            mOrientation = Orientation.fValueOf(get(key));
+            if (manager != null){
+                manager.setOrientation(mOrientation);
+            }
+        }
+    }
 
     @Override
     public void append(Element element) {
         if (element instanceof ViewElement){
             _elements.add((ViewElement) element);
+            element.setParent(this);
             if (adapter != null){
                 adapter.fNotifyItemInserted(element);
             }
@@ -112,6 +119,32 @@ public class ScrollElement extends ViewElement{
         @Override
         public RecyclerView.LayoutParams generateDefaultLayoutParams() {
             return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        public boolean shouldIntercept(){
+            if (mElement == null)return false;
+            Element p = mElement.parent();
+            while (p != null){
+                if (p instanceof ScrollElement){
+                    if (((ScrollElement) p).manager != null &&
+                            ((ScrollElement) p).manager.getOrientation() == this.mOrientation)
+                    return true;
+                }
+                p = p.parent();
+            }
+            return false;
+        }
+
+        public FRecyclerView getParentScrollView(){
+            if (mElement == null)return null;
+            Element p = mElement.parent();
+            while (p != null){
+                if (p instanceof ScrollElement){
+                    return ((ScrollElement) p).recyclerView();
+                }
+                p.parent();
+            }
+            return null;
         }
 
         @Override
@@ -186,11 +219,11 @@ public class ScrollElement extends ViewElement{
             totalHeight = Math.max(offsetY, getVerticalSpace());
         }
 
-        private int getVerticalSpace() {
+        public int getVerticalSpace() {
             return getHeight() - getPaddingBottom() - getPaddingTop();
         }
 
-        private int getHorizontalSpace(){
+        public int getHorizontalSpace(){
             return getWidth() - getPaddingLeft() - getPaddingRight();
         }
 
@@ -206,13 +239,17 @@ public class ScrollElement extends ViewElement{
 
         @Override
         public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
-            if (mOrientation == Orientation.HORIZONTAL)return 0;
+            if (mOrientation == Orientation.HORIZONTAL){
+                return 0;
+            }
             return scrollBy(dy, recycler, state);
         }
 
         @Override
         public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler, RecyclerView.State state) {
-            if (mOrientation == Orientation.VERTICAL)return 0;
+            if (mOrientation == Orientation.VERTICAL){
+                return 0;
+            }
             return scrollBy(dx, recycler, state);
         }
 
@@ -237,6 +274,18 @@ public class ScrollElement extends ViewElement{
 
             layoutItems(dy, recycler, state);
             return dy;
+        }
+
+        public int getOffset() {
+            return offset;
+        }
+
+        public int getTotalHeight() {
+            return totalHeight;
+        }
+
+        public int getTotalWidth() {
+            return totalWidth;
         }
     }
 }

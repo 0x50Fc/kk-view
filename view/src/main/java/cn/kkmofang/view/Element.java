@@ -64,7 +64,7 @@ public class Element {
         return _parent == null ? null : _parent.get();
     }
 
-    private void setParent(Element element) {
+    protected void setParent(Element element) {
         _parent = element == null ? null : new WeakReference<Element>(element);
     }
 
