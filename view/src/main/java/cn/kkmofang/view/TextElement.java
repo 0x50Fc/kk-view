@@ -36,8 +36,9 @@ public class TextElement extends ViewElement {
             }else if("line-spacing".equals(key)){
                  textView.setLineSpacing(V.floatValue(value,2.0f),V.floatValue(value,1.0f));
             }else if ("paragraph-spacing".equals(key)){
+                  textView.setTop(2);
             }else if ("letter-spacing".equals(key)){
-               textView.setTextScaleX(V.floatValue(value,3.0f));
+               textView.setLetterSpacing(0.2f);
             }else if ("text-align".equals(key)){
                 if (TextAlign.Left.equals("left")){
                     textView.setGravity(Gravity.LEFT);
