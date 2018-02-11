@@ -1,6 +1,11 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.graphics.RectF;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +25,8 @@ import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.Position;
 import cn.kkmofang.view.value.V;
 import cn.kkmofang.view.value.VerticalAlign;
+
+import static android.R.attr.radius;
 
 /**
  * Created by hailong11 on 2018/1/17.
@@ -482,11 +489,29 @@ public class ViewElement extends Element {
         if("background-color".equals(key)) {
             view.setBackgroundColor(Color.valueOf(value,0));
         } else if("border-color".equals(key)) {
-
+            GradientDrawable background = (GradientDrawable)view.getBackground();
+            background.setColor(Color.valueOf(value,0));
         } else if("border-width".equals(key)) {
-
+             view.setBackgroundResource(R.drawable.shape_textview_cart);
         } else if("border-radius".equals(key)) {
-
+            int borderWidth = 0;
+            float[] outerRadius = new float[8];
+            float[] innerRadius = new float[8];
+            for (int i = 0; i < 8; i++) {
+                outerRadius[i] = radius + borderWidth;
+                innerRadius[i] = radius;
+            }
+            ShapeDrawable shapeDrawable = // 创建图形drawable
+                    new ShapeDrawable(// 创建圆角矩形
+                            new RoundRectShape(outerRadius,
+                                    new RectF(borderWidth, borderWidth, borderWidth, borderWidth),
+                                    innerRadius));
+            shapeDrawable.getPaint().setColor(Color.valueOf(value,0));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                view.setBackground(shapeDrawable);
+            } else {
+                view.setBackgroundDrawable(shapeDrawable);
+            }
         } else if("opacity".equals(key)) {
             view.setAlpha(V.floatValue(value,1.0f));
         } else if("hidden".equals(key)) {
