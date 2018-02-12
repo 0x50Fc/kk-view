@@ -1,31 +1,32 @@
-package cn.kkmofang.view;
+package cn.kkmofang.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
+
+import cn.kkmofang.view.Element;
+import cn.kkmofang.view.ElementView;
+import cn.kkmofang.view.ScrollElement;
+import cn.kkmofang.view.ViewElement;
 
 /**
  * Created by wangchao15 on 2018/2/6.
  */
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
+public class FRecyclerAdapter extends RecyclerView.Adapter<FRecyclerAdapter.MyHolder> {
 
     private List<ViewElement> _elements = new ArrayList<>();
     private Map<String,Integer> _reuseIds = new TreeMap<>();
     private Context mContext;
     private int viewType;
 
-    public MyAdapter(ViewElement element, Context context) {
+    public FRecyclerAdapter(ViewElement element, Context context) {
         this.mContext = context;
         viewType = 0;
         if (element instanceof ScrollElement){
@@ -39,18 +40,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
                 _elements.add(e);
             }
         }
-//        while(p != null) {
-//            if(p instanceof ViewElement) {
-//                ViewElement e = (ViewElement) p;
-//                String reuse = e.reuse();
-//                if(! _reuseIds.containsKey(reuse)) {
-//                    _reuseIds.put(reuse,viewType);
-//                    viewType ++;
-//                }
-//                _elements.add(e);
-//            }
-//            p = p.nextSibling();
-//        }
     }
 
     @Override

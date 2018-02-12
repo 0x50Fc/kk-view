@@ -31,6 +31,7 @@ public class FRecyclerView extends RecyclerView implements NestedScrollingParent
         super(context, attrs);
         this.mContext = context;
         setNestedScrollingEnabled(false);
+        setFocusable(false);
     }
 
 
@@ -146,9 +147,9 @@ public class FRecyclerView extends RecyclerView implements NestedScrollingParent
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
+        super.onInterceptTouchEvent(e);
         int action = e.getAction();
         if (action == MotionEvent.ACTION_DOWN){
-            super.onInterceptTouchEvent(e);
             return false;
         }
         return true;

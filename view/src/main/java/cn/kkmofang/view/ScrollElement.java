@@ -1,19 +1,16 @@
 package cn.kkmofang.view;
 
 
-import android.content.Context;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import cn.kkmofang.view.value.Edge;
+import cn.kkmofang.view.adapter.FRecyclerAdapter;
 import cn.kkmofang.view.value.Orientation;
 import cn.kkmofang.view.view.FRecyclerView;
 
@@ -24,7 +21,7 @@ import cn.kkmofang.view.view.FRecyclerView;
 public class ScrollElement extends ViewElement{
     //默认使用垂直滑动
     public Orientation mOrientation = Orientation.VERTICAL;
-    private MyAdapter adapter;
+    private FRecyclerAdapter adapter;
     private LayoutManager manager;
     public List<ViewElement> _elements = new ArrayList<>();
 
@@ -33,14 +30,14 @@ public class ScrollElement extends ViewElement{
         set("#view",FRecyclerView.class.getName());
     }
 
-    private FRecyclerView recyclerView() {
+    private FRecyclerView fetchView() {
         return (FRecyclerView) view();
     }
 
     @Override
     public void setView(View view) {
         if(view == null || view instanceof FRecyclerView) {
-            FRecyclerView v = recyclerView();
+            FRecyclerView v = fetchView();
             if (v != null){
                 manager = null;
                 adapter = null;
@@ -48,11 +45,11 @@ public class ScrollElement extends ViewElement{
                 v.setAdapter(null);
             }
             super.setView(view);
-            v = recyclerView();
+            v = fetchView();
             if (v != null){
                 manager = new LayoutManager(this);
                 v.setLayoutManager(manager);
-                adapter = new MyAdapter(this, viewContext.context);
+                adapter = new FRecyclerAdapter(this, viewContext.context);
                 v.setAdapter(adapter);
             }
         }
@@ -66,6 +63,7 @@ public class ScrollElement extends ViewElement{
             if (manager != null){
                 manager.setOrientation(mOrientation);
             }
+
         }
     }
 
@@ -140,7 +138,7 @@ public class ScrollElement extends ViewElement{
             Element p = mElement.parent();
             while (p != null){
                 if (p instanceof ScrollElement){
-                    return ((ScrollElement) p).recyclerView();
+                    return ((ScrollElement) p).fetchView();
                 }
                 p.parent();
             }
