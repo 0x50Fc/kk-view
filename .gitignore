@@ -40,7 +40,10 @@ captures/
 .idea/dictionaries
 .idea/libraries
 .idea/misc.xml
+<<<<<<< HEAD
 .idea/modules.xml
+=======
+>>>>>>> dev
 
 # Keystore files
 *.jks

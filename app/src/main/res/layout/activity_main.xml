@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cn.kkmofang.view.DocumentView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="cn.kkmofang.demo.MainActivity"
     android:id="@+id/documentView">
 
+    <cn.kkmofang.view.FRecyclerView
+        android:id="@+id/myRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-</cn.kkmofang.view.DocumentView>
+    <Button
+        android:id="@+id/btnChangeProperty"
+        android:text="change property"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

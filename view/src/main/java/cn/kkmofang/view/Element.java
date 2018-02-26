@@ -215,6 +215,7 @@ public class Element {
 
         keys.addAll(_attributes.keySet());
 
+        // TODO: 2018/2/5 这个v是干嘛用的
         String v = status();
 
         if(v == null) {
@@ -232,7 +233,7 @@ public class Element {
         return keys;
     }
 
-    public String get(String key) {
+    public String get(String key) {//有可能传的是空，那么就使用当前默认样式
 
         if(_attributes.containsKey(key)) {
             return _attributes.get(key);
@@ -259,6 +260,10 @@ public class Element {
         }
 
         return null;
+    }
+
+    public Map<String, String> getAttributes() {
+        return _attributes;
     }
 
     public void set(String key, String value) {
