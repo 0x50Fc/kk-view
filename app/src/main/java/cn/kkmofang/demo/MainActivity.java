@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 
 import cn.kkmofang.view.DocumentView;
+import cn.kkmofang.view.SpanElement;
 import cn.kkmofang.view.TextElement;
 import cn.kkmofang.view.ViewContext;
 import cn.kkmofang.view.ViewElement;
@@ -31,11 +32,13 @@ public class MainActivity extends Activity {
         ViewElement root = new ViewElement();
 
         root.setAttrs("width","100%","height","100%","background-color","#fff");
-
         {
             TextElement element = new TextElement();
             element.setAttrs("width","200rpx","height","200rpx","background-color","#f00",
-                    "#text", "nihao");
+                    "#text", "nihao","text-align","right");
+            SpanElement spanElement = new SpanElement();
+            spanElement.setAttrs("","");
+            element.append(spanElement);
             root.append(element);
         }
 

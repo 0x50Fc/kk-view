@@ -77,9 +77,7 @@ public class ViewElement extends Element {
     @Override
     public void changedKey(String key) {
         super.changedKey(key);
-
         String v = get(key);
-
         if("padding".equals(key)) {
             padding.set(v);
         } else if("margin".equals(key)) {
@@ -111,7 +109,6 @@ public class ViewElement extends Element {
         } else if("position".equals(key)) {
             position = Position.valueOf(v);
         }
-
         if(_view != null) {
             onSetProperty(_view,key,v);
         }
@@ -324,7 +321,6 @@ public class ViewElement extends Element {
         } else if(view instanceof ViewGroup) {
             ((ViewGroup) view).addView(vv);
         }
-
         onObtainView(vv);
         onLayout(vv);
         setView(vv);
