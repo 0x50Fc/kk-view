@@ -1,7 +1,10 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+<<<<<<< HEAD
 import android.graphics.drawable.Drawable;
+=======
+>>>>>>> feature_gaoyang_view
 import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -10,6 +13,12 @@ import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+<<<<<<< HEAD
+=======
+
+import com.kk.view.R;
+
+>>>>>>> feature_gaoyang_view
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.Map;
@@ -24,8 +33,14 @@ import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.Position;
 import cn.kkmofang.view.value.V;
 import cn.kkmofang.view.value.VerticalAlign;
+<<<<<<< HEAD
 import com.kk.view.R;
 import static android.R.attr.radius;
+=======
+
+import static android.R.attr.radius;
+
+>>>>>>> feature_gaoyang_view
 
 
 /**
@@ -46,7 +61,7 @@ public class ViewElement extends Element implements Cloneable{
     private int _translateY;
     private Layout _layout = RelativeLayout;
 
-    public final ViewContext viewContext;
+    public ViewContext viewContext;
 
     public final Edge padding = new Edge();
     public final Edge margin = new Edge();
@@ -77,10 +92,13 @@ public class ViewElement extends Element implements Cloneable{
     @Override
     public void changedKey(String key) {
         super.changedKey(key);
-
         String v = get(key);
+<<<<<<< HEAD
 
         if ("padding".equals(key)) {
+=======
+        if("padding".equals(key)) {
+>>>>>>> feature_gaoyang_view
             padding.set(v);
         } else if ("margin".equals(key)) {
             margin.set(v);
@@ -111,9 +129,14 @@ public class ViewElement extends Element implements Cloneable{
         } else if ("position".equals(key)) {
             position = Position.valueOf(v);
         }
+<<<<<<< HEAD
 
         if (_view != null) {
             onSetProperty(_view, key, v);
+=======
+        if(_view != null) {
+            onSetProperty(_view,key,v);
+>>>>>>> feature_gaoyang_view
         }
     }
 
@@ -322,7 +345,6 @@ public class ViewElement extends Element implements Cloneable{
         } else if (view instanceof ViewGroup) {
             ((ViewGroup) view).addView(vv);
         }
-
         onObtainView(vv);
         onLayout(vv);
         setView(vv);
@@ -483,6 +505,7 @@ public class ViewElement extends Element implements Cloneable{
     }
 
     protected void onSetProperty(View view, String key, String value) {
+<<<<<<< HEAD
         if ("background-color".equals(key)) {
             view.setBackgroundColor(Color.valueOf(value, 0));
         } else if ("border-color".equals(key)) {
@@ -495,6 +518,17 @@ public class ViewElement extends Element implements Cloneable{
             GradientDrawable drawable=new GradientDrawable();
             drawable.setCornerRadius(4);
             view.setBackgroundDrawable(drawable);
+=======
+
+        if("background-color".equals(key)) {
+            view.setBackgroundColor(Color.valueOf(value,0));
+        } else if("border-color".equals(key)) {
+            GradientDrawable background = (GradientDrawable)view.getBackground();
+            background.setColor(Color.valueOf(value,0));
+        } else if("border-width".equals(key)) {
+             view.setBackgroundResource(R.drawable.shape_textview_cart);
+        } else if("border-radius".equals(key)) {
+>>>>>>> feature_gaoyang_view
             int borderWidth = 0;
             float[] outerRadius = new float[8];
             float[] innerRadius = new float[8];
@@ -502,6 +536,7 @@ public class ViewElement extends Element implements Cloneable{
                 outerRadius[i] = radius + borderWidth;
                 innerRadius[i] = radius;
             }
+<<<<<<< HEAD
             ShapeDrawable shapeDrawable =
                     new ShapeDrawable(
                             new RoundRectShape(outerRadius,
@@ -509,15 +544,30 @@ public class ViewElement extends Element implements Cloneable{
                                     innerRadius));
             shapeDrawable.getPaint().setColor(Color.valueOf(value, 0));
             view.setBackgroundDrawable(shapeDrawable);
+=======
+            ShapeDrawable shapeDrawable = // 创建图形drawable
+                    new ShapeDrawable(// 创建圆角矩形
+                            new RoundRectShape(outerRadius,
+                                    new RectF(borderWidth, borderWidth, borderWidth, borderWidth),
+                                    innerRadius));
+            shapeDrawable.getPaint().setColor(Color.valueOf(value,0));
+>>>>>>> feature_gaoyang_view
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 view.setBackground(shapeDrawable);
             } else {
                 view.setBackgroundDrawable(shapeDrawable);
             }
+<<<<<<< HEAD
         } else if ("opacity".equals(key)) {
             view.setAlpha(V.floatValue(value, 1.0f));
         } else if ("hidden".equals(key)) {
             if (V.booleanValue(value, false)) {
+=======
+        } else if("opacity".equals(key)) {
+            view.setAlpha(V.floatValue(value,1.0f));
+        } else if("hidden".equals(key)) {
+            if(V.booleanValue(value,false)) {
+>>>>>>> feature_gaoyang_view
                 view.setVisibility(View.GONE);
             } else {
                 view.setVisibility(View.VISIBLE);
@@ -595,5 +645,8 @@ public class ViewElement extends Element implements Cloneable{
      * 水平布局 "horizontal" 左到右
      */
     public static Layout HorizontalLayout = new HorizontalLayout();
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature_gaoyang_view
 }

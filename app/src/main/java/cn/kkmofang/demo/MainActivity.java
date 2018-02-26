@@ -2,22 +2,23 @@ package cn.kkmofang.demo;
 
 import android.app.Activity;
 import android.graphics.Point;
-import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
+<<<<<<< HEAD
 import android.view.ViewGroup;
 import android.view.WindowManager;
+=======
+>>>>>>> feature_gaoyang_view
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.kkmofang.view.DocumentView;
 import cn.kkmofang.view.Element;
 import cn.kkmofang.view.ElementView;
 import cn.kkmofang.view.PagerElement;
 import cn.kkmofang.view.ScrollElement;
+import cn.kkmofang.view.SpanElement;
+import cn.kkmofang.view.TextElement;
 import cn.kkmofang.view.ViewContext;
 import cn.kkmofang.view.ViewElement;
 import cn.kkmofang.view.value.Orientation;
@@ -43,6 +44,7 @@ public class MainActivity extends Activity {
 
         ViewContext.push(viewContext);
 
+<<<<<<< HEAD
 
 
         DocumentView documentView = (DocumentView) findViewById(R.id.documentView);
@@ -145,6 +147,39 @@ public class MainActivity extends Activity {
                 ViewElement element = new ViewElement();
                 element.setAttrs("width","100%","height","50%","background-color","#000","left","50px", "right", "100px");
                 scrollElement.append(element);
+=======
+        FRecyclerView recyclerView = (FRecyclerView) findViewById(R.id.myRecyclerView);
+
+        scrollElement = new ScrollElement();
+        recyclerView.setElement(scrollElement);
+        elementList = new ArrayList<>();
+        ViewElement root = new ViewElement();
+        root.setAttrs("width","100%","height","100%","background-color","#fff");
+        {
+            TextElement element = new TextElement();
+            element.setAttrs("width","200rpx","height","200rpx","background-color","#f00",
+                    "#text", "nihao","text-align","right");
+            SpanElement spanElement = new SpanElement();
+            spanElement.setAttrs("","");
+            element.append(spanElement);
+            root.append(element);
+
+
+        scrollElement.setAttrs("width", "100%", "height", "100%", "background-color", "#ddd", "scroll", orientation.getVString());
+        int left = 0;
+        int color = 0;
+        for (int i = 0; i < 50; i++) {
+            ViewElement element1 = new ViewElement();
+            element1.setAttrs("width","50%","height","15%","background-color", "#" + color + "00" ,
+                    "left",left + "px", "right", "100px",
+                    "top","50px", "bottom", "10px",
+                    "reuse", "0");
+            elementList.add(element1);
+            left += 50;
+            color ++;
+            if (color >= 10){
+                color = 0;
+>>>>>>> feature_gaoyang_view
             }
 
             {
@@ -182,4 +217,5 @@ public class MainActivity extends Activity {
         ViewContext.pop();
 
     }
+}
 }
