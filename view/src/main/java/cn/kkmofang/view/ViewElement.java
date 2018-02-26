@@ -1,18 +1,16 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
-<<<<<<< HEAD
 import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
-=======
-import android.graphics.drawable.Drawable;
->>>>>>> dev
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.kk.view.R;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
@@ -30,12 +28,9 @@ import cn.kkmofang.view.value.Position;
 import cn.kkmofang.view.value.V;
 import cn.kkmofang.view.value.VerticalAlign;
 
-<<<<<<< HEAD
 import static android.R.attr.radius;
-=======
-import com.kk.view.R;
 
->>>>>>> dev
+
 
 /**
  * Created by hailong11 on 2018/1/17.

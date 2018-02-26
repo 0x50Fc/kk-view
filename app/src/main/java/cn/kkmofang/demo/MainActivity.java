@@ -2,28 +2,17 @@ package cn.kkmofang.demo;
 
 import android.app.Activity;
 import android.graphics.Point;
-import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
-<<<<<<< HEAD
-=======
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
->>>>>>> dev
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.kkmofang.view.DocumentView;
-<<<<<<< HEAD
-import cn.kkmofang.view.SpanElement;
-import cn.kkmofang.view.TextElement;
-=======
 import cn.kkmofang.view.Element;
 import cn.kkmofang.view.FRecyclerView;
 import cn.kkmofang.view.ScrollElement;
->>>>>>> dev
+import cn.kkmofang.view.SpanElement;
+import cn.kkmofang.view.TextElement;
 import cn.kkmofang.view.ViewContext;
 import cn.kkmofang.view.ViewElement;
 import cn.kkmofang.view.value.Orientation;
@@ -72,7 +61,7 @@ public class MainActivity extends Activity {
         scrollElement = new ScrollElement();
         recyclerView.setElement(scrollElement);
         elementList = new ArrayList<>();
-
+        ViewElement root = new ViewElement();
         root.setAttrs("width","100%","height","100%","background-color","#fff");
         {
             TextElement element = new TextElement();
@@ -88,12 +77,12 @@ public class MainActivity extends Activity {
         int left = 0;
         int color = 0;
         for (int i = 0; i < 50; i++) {
-            ViewElement element = new ViewElement();
-            element.setAttrs("width","50%","height","15%","background-color", "#" + color + "00" ,
+            ViewElement element1 = new ViewElement();
+            element1.setAttrs("width","50%","height","15%","background-color", "#" + color + "00" ,
                     "left",left + "px", "right", "100px",
                     "top","50px", "bottom", "10px",
                     "reuse", "0");
-            elementList.add(element);
+            elementList.add(element1);
             left += 50;
             color ++;
             if (color >= 10){
@@ -177,4 +166,5 @@ public class MainActivity extends Activity {
         ViewContext.pop();
 
     }
+}
 }
