@@ -29,7 +29,7 @@ import com.kk.view.R;
  * Created by hailong11 on 2018/1/17.
  */
 
-public class ViewElement extends Element {
+public class ViewElement extends Element implements Cloneable{
 
     private int _x;
     private int _y;
@@ -539,6 +539,21 @@ public class ViewElement extends Element {
 
     }
 
+    @Override
+    protected ViewElement clone() {
+        ViewElement element = null;
+        try {
+            element = (ViewElement) super.clone();
+
+        }catch (CloneNotSupportedException e){
+            e.printStackTrace();
+        }
+        if (element != null){
+            element._view = null;
+        }
+        return element;
+    }
+
     public static interface Layout {
         public void layout(ViewElement element);
     }
@@ -557,6 +572,5 @@ public class ViewElement extends Element {
      * 水平布局 "horizontal" 左到右
      */
     public static Layout HorizontalLayout = new HorizontalLayout();
-
 
 }

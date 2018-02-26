@@ -86,10 +86,6 @@ public class ScrollElement extends ViewElement{
         }
     }
 
-    @Override
-    public void remove() {
-        super.remove();
-    }
 
     public static class LayoutManager extends RecyclerView.LayoutManager {
         private int offset;
@@ -209,7 +205,11 @@ public class ScrollElement extends ViewElement{
                             offsetY + height + marginTop - offset);
                     offsetY += height + marginTop + marginBottom;
                 }else {//水平方向
-                    layoutDecorated(scrap, offsetX + marginLeft - offset, marginTop, offsetX + marginLeft + width - offset, height + marginTop);
+                    layoutDecorated(scrap,
+                            offsetX + marginLeft - offset,
+                            marginTop,
+                            offsetX + marginLeft + width - offset,
+                            height + marginTop);
                     offsetX += width + marginLeft + marginRight;
                 }
             }

@@ -34,6 +34,10 @@ public class FRecyclerView extends RecyclerView implements NestedScrollingParent
         setFocusable(false);
     }
 
+    @Override
+    protected void onMeasure(int widthSpec, int heightSpec) {
+        super.onMeasure(widthSpec, heightSpec);
+    }
 
     private int mLastX;
     private int mLastY;

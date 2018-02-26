@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.kkmofang.view.utils.WeakHandler;
 import cn.kkmofang.view.view.FViewPager;
 
 /**
@@ -19,6 +20,27 @@ import cn.kkmofang.view.view.FViewPager;
 
 public class PagerElement extends ViewElement {
     public List<ViewElement> _elements = new ArrayList<>();
+    private int _interval;//默认3s轮播
+
+    private int count;
+    private int currentItem;
+    private WeakHandler handler = new WeakHandler();
+    private Runnable task = new Runnable() {
+        @Override
+        public void run() {
+            FViewPager fViewPager = fetchView();
+            if (count > 1 && _interval > 0 && fViewPager != null){
+                currentItem = currentItem % (count + 1) + 1;
+                if (currentItem == 1){
+                    fViewPager.setCurrentItem(currentItem ,false);
+                    handler.post(task);
+                }else {
+                    fViewPager.setCurrentItem(currentItem);
+                    handler.postDelayed(task, _interval);
+                }
+            }
+        }
+    };
 
     public PagerElement() {
         super();
@@ -40,10 +62,60 @@ public class PagerElement extends ViewElement {
             super.setView(view);
             v = fetchView();
             if (v != null){
+                count = _elements.size();
                 v.setPagerElement(this);
+                v.addOnPageChangeListener(new FPageChangeListener());
+                v.setOffscreenPageLimit(count);//此处必须设置为item size，否则报错，可以考虑作优化
                 v.setAdapter(new FPagerAdapter(_elements, viewContext.context));
+                //默认设置当前页面为0
+                v.setCurrentItem(1, false);
+                //页面大于1时才可以滑动
+                v.setScrollable(count > 1);
+                if (count > 1 && _interval > 0){//自动滑动
+                    startAutoPlay();
+                }
             }
 
+        }
+    }
+
+    public void startAutoPlay(){
+        handler.removeCallbacks(task);
+        handler.postDelayed(task, _interval);
+    }
+
+    public void stopAtuoPlay(){
+        handler.removeCallbacks(task);
+    }
+
+    public boolean isAtuoPlay(){
+        return count > 1 && _interval > 0;
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
+        stopAtuoPlay();
+    }
+
+    @Override
+    public void recycleView() {
+        super.recycleView();
+        if (view() != null){
+            _elements.clear();
+        }
+    }
+
+    @Override
+    public void changedKey(String key) {
+        super.changedKey(key);
+        if ("interval".equals(key)){
+            try {
+                _interval = Integer.parseInt(get(key));
+            }catch (NumberFormatException e){
+                _interval = 0;
+                e.printStackTrace();
+            }
         }
     }
 
@@ -56,12 +128,19 @@ public class PagerElement extends ViewElement {
         }
     }
 
-    public class FPagerAdapter extends PagerAdapter{
+    class FPagerAdapter extends PagerAdapter{
         private List<ViewElement> mElements;
         private Context mContext;
 
         public FPagerAdapter(List<ViewElement> mElements, Context context) {
             this.mElements = mElements;
+            if (this.mElements.size() >= 1){
+                ViewElement tailElement = mElements.get(0).clone();
+                ViewElement headElement = mElements.get(mElements.size() - 1).clone();
+
+                mElements.add(0, headElement);
+                mElements.add(tailElement);
+            }
             this.mContext = context;
         }
 
@@ -88,19 +167,45 @@ public class PagerElement extends ViewElement {
                 p.obtainView(container);
             }
             view = p.view();
-//            view.setLayoutParams(new FrameLayout.LayoutParams(100, 100));
-//            int left = (int) p.left.floatValue(container.getWidth(), 0);
-//            int right = (int) p.right.floatValue(container.getWidth(), 0);
-//            int top = (int) p.top.floatValue(container.getHeight(), 0);
-//            int bottom = (int) p.bottom.floatValue(container.getHeight(), 0);
-//            view.layout(left, top, right, bottom);
-
             return view;
         }
 
         @Override
         public int getItemPosition(Object object) {
             return POSITION_NONE;
+        }
+    }
+
+    class FPageChangeListener implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            currentItem = position;
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            FViewPager fViewPager = fetchView();
+            if (fViewPager != null){
+                switch (state){
+                    case ViewPager.SCROLL_STATE_IDLE:
+                    case ViewPager.SCROLL_STATE_DRAGGING:
+                        if (currentItem == 0){
+                            fViewPager.setCurrentItem(count, false);
+                        }else if (currentItem == count + 1){
+                            fViewPager.setCurrentItem(1, false);
+                        }
+                        break;
+                    case ViewPager.SCROLL_STATE_SETTLING:
+                        break;
+                }
+            }
+
         }
     }
 }

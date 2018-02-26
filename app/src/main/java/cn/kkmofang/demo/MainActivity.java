@@ -56,9 +56,13 @@ public class MainActivity extends Activity {
             scrollElement.setAttrs("width","100%","height","100%","background-color","#f00", "scroll", "overflow-y");
             {
                 PagerElement pagerElement = new PagerElement();
-                pagerElement.setAttrs("width", "100%", "height", "50%", "background-color", "#000");
+                pagerElement.setAttrs("width", "100%", "height", "50%", "background-color", "#ddd", "interval", "3000");
 
                 {
+//                    ViewElement elementclone0 = new ViewElement();
+//                    elementclone0.setAttrs("width","100%","height","100%","background-color","#fff");
+//                    pagerElement.append(elementclone0);
+
                     ViewElement element = new ViewElement();
                     element.setAttrs("width","100%","height","100%","background-color","#999");
                     pagerElement.append(element);
@@ -66,10 +70,15 @@ public class MainActivity extends Activity {
                     ViewElement element1 = new ViewElement();
                     element1.setAttrs("width","100%","height","100%","background-color","#555");
                     pagerElement.append(element1);
+//
+//                    ViewElement element2 = new ViewElement();
+//                    element2.setAttrs("width","100%","height","100%","background-color","#fff");
+//                    pagerElement.append(element2);
 
-                    ViewElement element2 = new ViewElement();
-                    element2.setAttrs("width","100%","height","100%","background-color","#999");
-                    pagerElement.append(element2);
+//                    ViewElement element3 = new ViewElement();
+//                    element3.setAttrs("width","100%","height","100%","background-color","#999");
+//                    pagerElement.append(element3);
+
 
                 }
                 scrollElement.append(pagerElement);

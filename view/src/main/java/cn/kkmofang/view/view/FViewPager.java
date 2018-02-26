@@ -28,6 +28,7 @@ import cn.kkmofang.view.ViewElement;
 public class FViewPager extends ViewPager {
     private Context mContext;
     private PagerElement pagerElement;
+    private boolean scrollable = true;
 
     public FViewPager(Context context) {
         this(context, null);
@@ -36,6 +37,16 @@ public class FViewPager extends ViewPager {
     public FViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return scrollable && super.onTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return scrollable && super.onInterceptTouchEvent(ev);
     }
 
     private int mLastX;
@@ -72,6 +83,20 @@ public class FViewPager extends ViewPager {
         }
         mLastX = x;
         mLastY = y;
+
+
+        //处理viewpager自动滑动触摸
+        if (pagerElement != null && pagerElement.isAtuoPlay()){
+            int action = ev.getAction();
+            if (action == MotionEvent.ACTION_UP ||
+                    action == MotionEvent.ACTION_CANCEL ||
+                    action == MotionEvent.ACTION_OUTSIDE){
+                pagerElement.startAutoPlay();
+            }
+            else if (action == MotionEvent.ACTION_DOWN){
+                pagerElement.stopAtuoPlay();
+            }
+        }
         return super.dispatchTouchEvent(ev);
     }
 
@@ -92,12 +117,17 @@ public class FViewPager extends ViewPager {
         this.pagerElement = pagerElement;
     }
 
+    public void setScrollable(boolean scrollable) {
+        this.scrollable = scrollable;
+    }
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
         int count = pagerElement == null?0:pagerElement._elements.size();
         for (int i = 0; i < count; i++) {
             ViewElement p = pagerElement._elements.get(i);
+            if (p == null)continue;
             if (p.view() == null){
                 p.obtainView(this);
             }
