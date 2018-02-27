@@ -3,18 +3,15 @@ package cn.kkmofang.demo;
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.view.View;
-<<<<<<< HEAD
-import android.view.ViewGroup;
-import android.view.WindowManager;
-=======
->>>>>>> feature_gaoyang_view
+
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.kkmofang.view.DocumentView;
 import cn.kkmofang.view.Element;
 import cn.kkmofang.view.ElementView;
+import cn.kkmofang.view.ImgElement;
 import cn.kkmofang.view.PagerElement;
 import cn.kkmofang.view.ScrollElement;
 import cn.kkmofang.view.SpanElement;
@@ -35,16 +32,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
 
-        Point size = new Point();
-        getWindowManager().getDefaultDisplay().getSize(size);
+        getWindowManager().getDefaultDisplay().getSize(ViewContext.windowPoint);
 
-        Pixel.UnitRPX = size.x / 750.0f;
+        Pixel.UnitRPX = ViewContext.windowPoint.x / 750.0f;
 
         ViewContext viewContext = new ViewContext(getApplicationContext());
 
         ViewContext.push(viewContext);
-
-<<<<<<< HEAD
 
 
         DocumentView documentView = (DocumentView) findViewById(R.id.documentView);
@@ -58,29 +52,39 @@ public class MainActivity extends Activity {
             scrollElement.setAttrs("width","100%","height","100%","background-color","#f00", "scroll", "overflow-y");
             {
                 PagerElement pagerElement = new PagerElement();
-                pagerElement.setAttrs("width", "100%", "height", "50%", "background-color", "#ddd", "interval", "3000");
+                pagerElement.setAttrs("width", "100%", "height", "50%", "background-color", "#ddd", "interval", "0");
 
                 {
 //                    ViewElement elementclone0 = new ViewElement();
 //                    elementclone0.setAttrs("width","100%","height","100%","background-color","#fff");
 //                    pagerElement.append(elementclone0);
 
-                    ViewElement element = new ViewElement();
-                    element.setAttrs("width","100%","height","100%","background-color","#999");
+                    TextElement element = new TextElement();
+                    element.setAttrs("width","100%","height","100%","background-color","#999",
+                            "color", "#000", "#text", "你好\nni\nnfdsfjsl\nfjslfjslf", "text-align", "left", "font", "40rpx italic",
+                            "line-spacing", "", "letter-spacing", "0rpx");
+                    {
+                        SpanElement spanElement = new SpanElement();
+                        spanElement.setAttrs("#text", "我是王超", "color", "#f00", "font", "80rpx bold");
+                        element.append(spanElement);
+                    }
+
+                    {
+                        SpanElement spanElement = new SpanElement();
+                        spanElement.setAttrs("#text", "我是第二行内容了", "color", "#4f0", "font", "40rpx italic");
+                        element.append(spanElement);
+                    }
+
+                    {
+                        ImgElement imgElement = new ImgElement();
+                        imgElement.setAttrs("src", "ic_launcher");
+                        element.append(imgElement);
+                    }
                     pagerElement.append(element);
 
                     ViewElement element1 = new ViewElement();
                     element1.setAttrs("width","100%","height","100%","background-color","#555");
                     pagerElement.append(element1);
-//
-//                    ViewElement element2 = new ViewElement();
-//                    element2.setAttrs("width","100%","height","100%","background-color","#fff");
-//                    pagerElement.append(element2);
-
-//                    ViewElement element3 = new ViewElement();
-//                    element3.setAttrs("width","100%","height","100%","background-color","#999");
-//                    pagerElement.append(element3);
-
 
                 }
                 scrollElement.append(pagerElement);
@@ -147,39 +151,6 @@ public class MainActivity extends Activity {
                 ViewElement element = new ViewElement();
                 element.setAttrs("width","100%","height","50%","background-color","#000","left","50px", "right", "100px");
                 scrollElement.append(element);
-=======
-        FRecyclerView recyclerView = (FRecyclerView) findViewById(R.id.myRecyclerView);
-
-        scrollElement = new ScrollElement();
-        recyclerView.setElement(scrollElement);
-        elementList = new ArrayList<>();
-        ViewElement root = new ViewElement();
-        root.setAttrs("width","100%","height","100%","background-color","#fff");
-        {
-            TextElement element = new TextElement();
-            element.setAttrs("width","200rpx","height","200rpx","background-color","#f00",
-                    "#text", "nihao","text-align","right");
-            SpanElement spanElement = new SpanElement();
-            spanElement.setAttrs("","");
-            element.append(spanElement);
-            root.append(element);
-
-
-        scrollElement.setAttrs("width", "100%", "height", "100%", "background-color", "#ddd", "scroll", orientation.getVString());
-        int left = 0;
-        int color = 0;
-        for (int i = 0; i < 50; i++) {
-            ViewElement element1 = new ViewElement();
-            element1.setAttrs("width","50%","height","15%","background-color", "#" + color + "00" ,
-                    "left",left + "px", "right", "100px",
-                    "top","50px", "bottom", "10px",
-                    "reuse", "0");
-            elementList.add(element1);
-            left += 50;
-            color ++;
-            if (color >= 10){
-                color = 0;
->>>>>>> feature_gaoyang_view
             }
 
             {
@@ -218,4 +189,4 @@ public class MainActivity extends Activity {
 
     }
 }
-}
+

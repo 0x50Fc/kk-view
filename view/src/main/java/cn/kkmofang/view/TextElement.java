@@ -1,11 +1,17 @@
 package cn.kkmofang.view;
 
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
 import cn.kkmofang.view.value.Color;
+import cn.kkmofang.view.value.Font;
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
 
@@ -14,14 +20,16 @@ import cn.kkmofang.view.value.TextAlign;
  */
 
 public class TextElement extends ViewElement {
+    private Pixel fontSize = new Pixel();
+    private Pixel lineSpacing = new Pixel();
+    private Pixel letterSpacing = new Pixel();
+    private Font font;
+
+    private TextAlign textAlign = TextAlign.Left;
 
     public TextElement() {
         super();
         set("#view", TextView.class.getName());
-        Element p= firstChild();
-        while (p != null){
-            p= p.nextSibling();
-        }
 
     }
     @Override
@@ -32,30 +40,110 @@ public class TextElement extends ViewElement {
             if ("color".equals(key)){
                 textView.setTextColor(Color.valueOf(value,0));
             }else if ("font".equals(key)) {
-               if (Pixel.Type.valueOf(value).equals(Pixel.UnitRPX)){
-                   textView.setTextSize(32);
-                   TextPaint tp = textView.getPaint();
-                   tp.setFakeBoldText(true);
-               }
+                setTextSizeAndFont(value, textView);
+                //重新设置字间距，防止字体大小还没有设置
+                setLetterSpacing(get("line-spacing"), textView);
             }else if("line-spacing".equals(key)){
-                 textView.setLineSpacing(Pixel.UnitRPX,Pixel.UnitRPX);
+                setLineSpacing(value, textView);
             }else if ("paragraph-spacing".equals(key)){
-                // TODO: 2018\2\12 0012
+                //暂时无法实现，保留
             }else if ("letter-spacing".equals(key)){
-               textView.setLetterSpacing(Pixel.UnitPX);
+                setLetterSpacing(value, textView);
             }else if ("text-align".equals(key)){
-                if (TextAlign.fvalueOf(value)==TextAlign.Left){
-                    textView.setGravity(Gravity.LEFT);
-                }else if (TextAlign.fvalueOf(value)==TextAlign.Center){
-                    textView.setGravity(Gravity.CENTER);
-                }else if (TextAlign.fvalueOf(value)==TextAlign.Right){
-                    textView.setGravity(Gravity.RIGHT);
-                }else if  (TextAlign.fvalueOf(value)==TextAlign.Justify){
-                    textView.setGravity(Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
-                }
+                setTextAlign(value, textView);
             }else if ("#text".equals(key)){
-                textView.setText(value);
+                if (firstChild() == null)
+                    textView.setText(value);
             }
+        }
+    }
+
+    @Override
+    public void obtainChildrenView() {
+        TextView tv = (TextView) view();
+        if (tv == null || firstChild() == null)return;
+        Element p = firstChild();
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        while (p != null){
+            if (p instanceof SpanElement){
+                SpannableString ss = ((SpanElement) p).obtainContent();
+                if (ss != null)
+                    ssb.append(ss);
+            }
+
+            if (p instanceof ImgElement){
+                SpannableString ss = ((ImgElement) p).obtainContent();
+                if (ss != null){
+                    ssb.append(ss);
+                }
+            }
+            p = p.nextSibling();
+        }
+        tv.setText(ssb);
+    }
+
+    /**
+     * 设置字体大小和是否加粗
+     * @param value 如30rpx bold
+     * @param tv
+     */
+    private void setTextSizeAndFont(String value, TextView tv){
+        String[] values = value.split(" ");
+        fontSize.set(values[0]);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize.floatValue(ViewContext.windowPoint.x, 0));
+
+        if (values.length > 1){
+            font = Font.fvalueOf(values[1]);
+            tv.setTypeface(Font.createTypeface(font));
+        }
+    }
+
+    /**
+     * 设置行间距
+     * @param value 行间距如10rpx,-10%,20px
+     * @param tv
+     */
+    private void setLineSpacing(String value, TextView tv){
+        lineSpacing.set(value);
+        //mult默认为1.0,不进行操作
+        tv.setLineSpacing(
+                lineSpacing.floatValue(ViewContext.windowPoint.x, 0), 1.0f);
+    }
+
+    /**
+     * 设置字间距
+     * @param value 字间距如10rpx
+     * @param tv
+     */
+    private void setLetterSpacing(String value, TextView tv){
+        letterSpacing.set(value);
+        float fontMeasure = fontSize.value;
+        float space = 0;
+        if (fontMeasure != 0){
+            space = letterSpacing.value / fontMeasure;
+        }
+        tv.setLetterSpacing(space);
+    }
+
+    /**
+     * 设置文本对齐方式
+     * @param value left（默认） center right justify
+     * @param tv
+     */
+    private void setTextAlign(String value, TextView tv){
+        textAlign = TextAlign.fvalueOf(value);
+        switch (textAlign){
+            case Left:
+                tv.setGravity(Gravity.LEFT);
+                break;
+            case Right:
+                tv.setGravity(Gravity.RIGHT);
+                break;
+            case Center:
+                tv.setGravity(Gravity.CENTER);
+                break;
+            case Justify://俩端对齐，textview原生不支持，后续可以考虑手动实现
+                break;
         }
     }
 }

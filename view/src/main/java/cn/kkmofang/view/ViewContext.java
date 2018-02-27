@@ -1,6 +1,7 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 
 import java.util.Stack;
@@ -12,6 +13,8 @@ import java.util.Stack;
 public class ViewContext {
 
     public final Context context;
+
+    public static final Point windowPoint = new Point();
 
     public ViewContext(Context context) {
         this.context = context;
