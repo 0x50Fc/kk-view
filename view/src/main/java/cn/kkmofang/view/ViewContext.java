@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 
+import com.kk.view.R;
+
 import java.util.Stack;
 
 /**
@@ -20,8 +22,27 @@ public class ViewContext {
         this.context = context;
     }
 
+    private String _basePath;
+
+    /**
+     *
+     * @param uri
+     * @return
+     */
     public Drawable getImage(String uri) {
-        return null;
+//        String path;
+//        if(uri.startsWith("http") || uri.startsWith("https")) {
+//
+//        } else {
+//            path = _basePath + uri;
+//        }
+
+//        if(path.startsWith("assets://")) {
+//
+//        } else {
+//
+//        }
+        return context.getResources().getDrawable(R.mipmap.ic_launcher);
     }
 
     public boolean getImage(String url,ImageCallback callback) {

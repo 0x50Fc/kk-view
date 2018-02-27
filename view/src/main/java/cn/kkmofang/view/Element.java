@@ -6,11 +6,13 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import cn.kkmofang.view.event.EventEmitter;
+
 /**
  * Created by hailong11 on 2018/1/17.
  */
 
-public class Element {
+public class Element extends EventEmitter {
 
     private Element _firstChild;
     private Element _lastChild;

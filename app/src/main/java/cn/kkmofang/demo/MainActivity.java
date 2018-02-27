@@ -77,8 +77,14 @@ public class MainActivity extends Activity {
 
                     {
                         ImgElement imgElement = new ImgElement();
-                        imgElement.setAttrs("src", "ic_launcher");
+                        imgElement.setAttrs("src", "ic_launcher", "width", "100rpx", "height", "100rpx");
                         element.append(imgElement);
+                    }
+
+                    {
+                        SpanElement spanElement = new SpanElement();
+                        spanElement.setAttrs("#text", "我是第二行内容了", "color", "#4f0", "font", "40rpx italic");
+                        element.append(spanElement);
                     }
                     pagerElement.append(element);
 
@@ -181,6 +187,12 @@ public class MainActivity extends Activity {
 //            root.append(pagerElement);
 //
 //        }
+
+        Element.Event e = new Element.Event(root);
+
+        e.setData(root.data());
+
+        root.emit("tap",e);
 
         documentView.setElement(root);
 

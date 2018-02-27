@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import cn.kkmofang.view.utils.WeakHandler;
 import cn.kkmofang.view.view.FViewPager;
@@ -186,6 +187,7 @@ public class PagerElement extends ViewElement {
         @Override
         public void onPageSelected(int position) {
             currentItem = position;
+            emitPageChangeEvent(position);
         }
 
         @Override
@@ -206,6 +208,16 @@ public class PagerElement extends ViewElement {
                 }
             }
 
+        }
+
+        private void emitPageChangeEvent(int position){
+            if (position < 1 || position > count)return;
+            Event event = new Element.Event(PagerElement.this);
+            Map<String, String> map = data();
+            map.put("pageCount", String.valueOf(count));
+            map.put("pageIndex", String.valueOf(position));
+            event.setData(map);
+            emit("pagechange", event);
         }
     }
 }

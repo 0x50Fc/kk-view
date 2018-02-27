@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -20,6 +21,8 @@ public class ImgElement extends Element {
 
     public ImgElement() {
         super();
+        _height.type = Pixel.Type.Auto;
+        _width.type = Pixel.Type.Auto;
         viewContext = ViewContext.current();
     }
 
@@ -42,19 +45,20 @@ public class ImgElement extends Element {
 
     public SpannableString obtainContent(){
         if (TextUtils.isEmpty(_src))return null;
-        SpannableString span = new SpannableString("");
-        span.setSpan(new DynamicDrawableSpan(DynamicDrawableSpan.ALIGN_BOTTOM) {
+        SpannableString span = new SpannableString("加载图片");
+        span.setSpan(new DynamicDrawableSpan(DynamicDrawableSpan.ALIGN_BASELINE) {
             @Override
             public Drawable getDrawable() {
                 Drawable d = viewContext.getImage(_src);
-                int width = _width.type == Pixel.Type.Auto?d.getIntrinsicWidth():
+                //取不到宽高，暂时使用100作为默认值
+                int width = _width.type == Pixel.Type.Auto?100:
                         (int) _width.floatValue(ViewContext.windowPoint.x, 0);
-                int height = _height.type == Pixel.Type.Auto?d.getIntrinsicHeight():
+                int height = _height.type == Pixel.Type.Auto?100:
                         (int) _height.floatValue(ViewContext.windowPoint.x, 0);
                 d.setBounds(0, 0, width, height);
-                return null;
+                return d;
             }
-        }, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }, 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return span;
     }
 }
