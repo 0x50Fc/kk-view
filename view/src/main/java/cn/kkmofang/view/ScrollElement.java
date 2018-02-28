@@ -183,6 +183,7 @@ public class ScrollElement extends ViewElement{
             for (int i = 0; i < getItemCount() && i < mElement._elements.size(); i++) {
                 p = mElement._elements.get(i);
                 if (p == null)continue;
+
                 View scrap = recycler.getViewForPosition(i);
                 if (dy >= 0){
                     addView(scrap);

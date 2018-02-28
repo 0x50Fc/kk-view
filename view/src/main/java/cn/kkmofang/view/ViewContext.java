@@ -42,7 +42,7 @@ public class ViewContext {
 //        } else {
 //
 //        }
-        return context.getResources().getDrawable(R.mipmap.ic_launcher);
+        return context.getResources().getDrawable(R.mipmap.wbpay_ic_alipay);
     }
 
     public boolean getImage(String url,ImageCallback callback) {

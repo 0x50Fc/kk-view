@@ -49,10 +49,10 @@ public class MainActivity extends Activity {
 
         {
             ScrollElement scrollElement = new ScrollElement();
-            scrollElement.setAttrs("width","100%","height","100%","background-color","#f00", "scroll", "overflow-y");
+            scrollElement.setAttrs("width","100%","height","100%","background-color","#f00", "scroll", "overflow-y", "background-image", "fsd");
             {
                 PagerElement pagerElement = new PagerElement();
-                pagerElement.setAttrs("width", "100%", "height", "50%", "background-color", "#ddd", "interval", "0");
+                pagerElement.setAttrs("width", "100%", "height", "50%", "background-color", "#ddd", "interval", "0", "hidden", "false");
 
                 {
 //                    ViewElement elementclone0 = new ViewElement();
@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
                             "line-spacing", "", "letter-spacing", "0rpx");
                     {
                         SpanElement spanElement = new SpanElement();
-                        spanElement.setAttrs("#text", "我是王超", "color", "#f00", "font", "80rpx bold");
+                        spanElement.setAttrs("#text", "我是文本", "color", "#f00", "font", "80rpx bold");
                         element.append(spanElement);
                     }
 
@@ -101,7 +101,8 @@ public class MainActivity extends Activity {
                 element.setAttrs("width","100%","height","50%","background-color","#1f0","left","50px", "right", "100px");
                 {
                     ViewElement element1 = new ViewElement();
-                    element1.setAttrs("width","50%","height","50%","background-color","#000","left","50px", "right", "100px");
+                    element1.setAttrs("width","50%","height","50%","left","50px", "right", "100px","background-color", "#ddd",
+                            "border-width", "10rpx", "border-radius", "10rpx", "border-color", "#fff", "background-image", "#ddd");
                     element.append(element1);
                 }
                 scrollElement.append(element);

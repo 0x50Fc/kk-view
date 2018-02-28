@@ -2,11 +2,14 @@ package cn.kkmofang.view;
 
 import android.content.Context;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
 import android.text.Layout;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +73,8 @@ public class ViewElement extends Element implements Cloneable{
     public VerticalAlign verticalAlign = VerticalAlign.Top;
     public Position position = Position.None;
 
+    //view背景
+    private GradientDrawable gradientDrawable;
 
     private View _view;
 
@@ -485,43 +490,14 @@ public class ViewElement extends Element implements Cloneable{
 
     protected void onSetProperty(View view, String key, String value) {
 
-        if("background-color".equals(key)) {
-            view.setBackgroundColor(Color.valueOf(value,0));
-        } else if("border-color".equals(key)) {
-            GradientDrawable background = (GradientDrawable)view.getBackground();
-            background.setColor(Color.valueOf(value,0));
-        } else if("border-width".equals(key)) {
-             view.setBackgroundResource(R.drawable.shape_textview_cart);
-        } else if("border-radius".equals(key)) {
-            int borderWidth = 0;
-            float[] outerRadius = new float[8];
-            float[] innerRadius = new float[8];
-            for (int i = 0; i < 8; i++) {
-                outerRadius[i] = radius + borderWidth;
-                innerRadius[i] = radius;
-            }
-
-            ShapeDrawable shapeDrawable = // 创建图形drawable
-                    new ShapeDrawable(// 创建圆角矩形
-                            new RoundRectShape(outerRadius,
-                                    new RectF(borderWidth, borderWidth, borderWidth, borderWidth),
-                                    innerRadius));
-            shapeDrawable.getPaint().setColor(Color.valueOf(value,0));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                view.setBackground(shapeDrawable);
-            } else {
-                view.setBackgroundDrawable(shapeDrawable);
-            }
-        } else if("opacity".equals(key)) {
+        if(!TextUtils.isEmpty(key) &&
+                (key.startsWith("border") || key.startsWith("background"))) {
+            setBackground(key, value, view);
+        }else if("opacity".equals(key)) {
+            setAlpha(value, view);
             view.setAlpha(V.floatValue(value,1.0f));
         } else if("hidden".equals(key)) {
-            if(V.booleanValue(value,false)) {
-                view.setVisibility(View.GONE);
-            } else {
-                view.setVisibility(View.VISIBLE);
-            }
-        } else if ("background-image".equals(key)) {
-            //Drawable image = viewContext.getImage(value);
+            setVisible(!V.booleanValue(value, true), view);
         }else if ("padding".equals(key)){
             padding.set(value);
             // TODO: 2018/2/8 这个地方有一个问题，百分比基于父view的大小，当父view没有渲染在屏幕上时，获得的父view的大小为0
@@ -534,6 +510,77 @@ public class ViewElement extends Element implements Cloneable{
         if (view instanceof IElementView) {
             ((IElementView) view).setProperty(view, this, key, value);
         }
+    }
+
+    /**
+     * 设置view是否隐藏
+     * @param visible
+     */
+    private void setVisible(boolean visible, View view){
+        view.setVisibility(visible?View.VISIBLE:View.GONE);
+    }
+
+//    /**
+//     * 设置背景图片
+//     * @param src 图片路径
+//     * @param view
+//     */
+//    private void setBackgroundDrawable(String src, View view){
+//        view.setBackground(viewContext.getImage(src));
+//    }
+
+    /**
+     * 设置alpha
+     * @param value
+     * @param view
+     */
+    private void setAlpha(String value, View view){
+        float alpha = V.floatValue(value, 1.0f);
+        if (alpha > 1.0f)alpha = 1.0f;
+        if (alpha <= 0)alpha = 0;
+        view.setAlpha(alpha);
+    }
+
+    /**
+     * 设置view背景
+     * @param key 属性
+     * @param value 属性值
+     * @param view
+     */
+    private void setBackground(String key, String value, View view){
+        Drawable background = view.getBackground();
+
+        if (background == null || gradientDrawable == null){
+            gradientDrawable = new GradientDrawable();
+            String uri = get("background-image");
+            if (TextUtils.isEmpty(uri)){
+                background = new LayerDrawable(new Drawable[]{gradientDrawable});
+            }else {
+                Drawable imgDrawable = viewContext.getImage(uri);
+                background = new LayerDrawable(new Drawable[]{imgDrawable, gradientDrawable});
+            }
+        }
+
+        switch (key){
+            case "border-color":
+            case "border-width":
+                Pixel borderWidth = new Pixel();
+                borderWidth.set(get("border-width"));
+                gradientDrawable.setStroke(
+                        (int) borderWidth.floatValue(ViewContext.windowPoint.x, 0),
+                        Color.valueOf(get("border-color"), 0));
+                break;
+            case "border-radius":
+                Pixel borderRadius = new Pixel();
+                borderRadius.set(value);
+                gradientDrawable.setCornerRadius(borderRadius.floatValue(ViewContext.windowPoint.x, 0));
+                break;
+            case "background-color":
+                gradientDrawable.setColor(Color.valueOf(value, 0));
+                break;
+        }
+
+        view.setBackground(background);
     }
 
     protected void onLayout(View view) {
