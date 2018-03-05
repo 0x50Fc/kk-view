@@ -12,7 +12,7 @@ import cn.kkmofang.view.event.EventEmitter;
  * Created by hailong11 on 2018/1/17.
  */
 
-public class Element extends EventEmitter {
+public class Element extends EventEmitter implements Cloneable{
 
     private Element _firstChild;
     private Element _lastChild;
@@ -177,6 +177,12 @@ public class Element extends EventEmitter {
         }
     }
 
+    public void removeAllChildren(){
+        setPrevSibling(null);
+        setNextSibling(null);
+        setFirstChild(null);
+    }
+
     public void appendTo(Element element) {
         element.append(this);
     }
@@ -338,6 +344,13 @@ public class Element extends EventEmitter {
         v.putAll(attrs);
     }
 
+    protected Map<String, String> getStyle(String status){
+        if (status == null){
+           status = "";
+        }
+        return _styles.get(status);
+    }
+
     public void setCSSStyle(String cssStyle,String status) {
 
         String[] vs = cssStyle.split(";");
@@ -396,6 +409,11 @@ public class Element extends EventEmitter {
         }
 
         return data;
+    }
+
+    @Override
+    public Element clone() throws CloneNotSupportedException{
+        return (Element) super.clone();
     }
 
     @Override

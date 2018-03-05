@@ -8,35 +8,38 @@ import android.text.TextPaint;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Font;
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
+import cn.kkmofang.view.view.FTextView;
 
 /**
  * Created by hailong11 on 2018/1/20.
  */
 
-public class TextElement extends ViewElement {
+public class TextElement extends ViewElement implements Cloneable{
     private Pixel fontSize = new Pixel();
     private Pixel lineSpacing = new Pixel();
     private Pixel letterSpacing = new Pixel();
     private Font font;
+    private String content;
 
     private TextAlign textAlign = TextAlign.Left;
 
     public TextElement() {
         super();
-        set("#view", TextView.class.getName());
+        set("#view", FTextView.class.getName());
 
     }
     @Override
     protected void onSetProperty(View view, String key, String value) {
         super.onSetProperty(view, key, value);
-        if (view instanceof TextView){
-            TextView textView = (TextView) view;
+        if (view instanceof FTextView){
+            FTextView textView = (FTextView) view;
             if ("color".equals(key)){
                 textView.setTextColor(Color.valueOf(value,0));
             }else if ("font".equals(key)) {
@@ -52,15 +55,17 @@ public class TextElement extends ViewElement {
             }else if ("text-align".equals(key)){
                 setTextAlign(value, textView);
             }else if ("#text".equals(key)){
-                if (firstChild() == null)
-                    textView.setText(value);
+                if (firstChild() == null){
+                    content = value;
+                    textView.setText(content);
+                }
             }
         }
     }
 
     @Override
     public void obtainChildrenView() {
-        TextView tv = (TextView) view();
+        FTextView tv = (FTextView) view();
         if (tv == null || firstChild() == null)return;
         Element p = firstChild();
         SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -79,6 +84,7 @@ public class TextElement extends ViewElement {
             }
             p = p.nextSibling();
         }
+
         tv.setText(ssb);
     }
 
@@ -145,5 +151,12 @@ public class TextElement extends ViewElement {
             case Justify://俩端对齐，textview原生不支持，后续可以考虑手动实现
                 break;
         }
+    }
+
+    @Override
+    public TextElement clone() {
+        TextElement element = (TextElement) super.clone();
+        element.font = font;
+        return element;
     }
 }

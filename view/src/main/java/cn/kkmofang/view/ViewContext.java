@@ -16,6 +16,8 @@ public class ViewContext {
 
     public final Context context;
 
+    private static IImageLoader _imageLoader;
+
     public static final Point windowPoint = new Point();
 
     public ViewContext(Context context) {
@@ -51,6 +53,14 @@ public class ViewContext {
 
     public static interface ImageCallback {
         public void onImage(Drawable image);
+    }
+
+    public static IImageLoader getImageLoader() {
+        return _imageLoader;
+    }
+
+    public static void setImageLoader(IImageLoader _imageLoader) {
+        ViewContext._imageLoader = _imageLoader;
     }
 
     private final static ThreadLocal<Stack<ViewContext>> _viewContexts = new ThreadLocal<>();

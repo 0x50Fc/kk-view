@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.kk.view.R;
 
@@ -69,6 +70,11 @@ public class ViewElement extends Element implements Cloneable{
     public final Pixel top = new Pixel();
     public final Pixel right = new Pixel();
     public final Pixel bottom = new Pixel();
+
+    protected Pixel borderWidth = new Pixel();
+    protected Pixel borderRadius = new Pixel();
+
+
 
     public VerticalAlign verticalAlign = VerticalAlign.Top;
     public Position position = Position.None;
@@ -500,11 +506,11 @@ public class ViewElement extends Element implements Cloneable{
             setVisible(!V.booleanValue(value, true), view);
         }else if ("padding".equals(key)){
             padding.set(value);
-            // TODO: 2018/2/8 这个地方有一个问题，百分比基于父view的大小，当父view没有渲染在屏幕上时，获得的父view的大小为0
-            view.setPadding((int)padding.left.floatValue(width(), 0),
-                    (int)padding.top.floatValue(height(), 0),
-                    (int)padding.right.floatValue(width(), 0),
-                    (int)padding.bottom.floatValue(height(), 0));
+//            // TODO: 2018/2/8 这个地方有一个问题，百分比基于父view的大小，当父view没有渲染在屏幕上时，获得的父view的大小为0
+//            view.setPadding((int)padding.left.floatValue(width(), 0),
+//                    (int)padding.top.floatValue(height(), 0),
+//                    (int)padding.right.floatValue(width(), 0),
+//                    (int)padding.bottom.floatValue(height(), 0));
         }
 
         if (view instanceof IElementView) {
@@ -547,7 +553,7 @@ public class ViewElement extends Element implements Cloneable{
      * @param value 属性值
      * @param view
      */
-    private void setBackground(String key, String value, View view){
+    protected void setBackground(String key, String value, View view){
         Drawable background = view.getBackground();
 
         if (background == null || gradientDrawable == null){
@@ -564,14 +570,12 @@ public class ViewElement extends Element implements Cloneable{
         switch (key){
             case "border-color":
             case "border-width":
-                Pixel borderWidth = new Pixel();
                 borderWidth.set(get("border-width"));
                 gradientDrawable.setStroke(
                         (int) borderWidth.floatValue(ViewContext.windowPoint.x, 0),
                         Color.valueOf(get("border-color"), 0));
                 break;
             case "border-radius":
-                Pixel borderRadius = new Pixel();
                 borderRadius.set(value);
                 gradientDrawable.setCornerRadius(borderRadius.floatValue(ViewContext.windowPoint.x, 0));
                 break;
@@ -584,7 +588,7 @@ public class ViewElement extends Element implements Cloneable{
     }
 
     protected void onLayout(View view) {
-        view.requestLayout();
+//        view.requestLayout();//此处盗用requestlayout会导致卡顿
         if (view instanceof IElementView) {
             ((IElementView) view).layout(view, this);
         }
@@ -608,17 +612,30 @@ public class ViewElement extends Element implements Cloneable{
     }
 
     @Override
-    protected ViewElement clone() {
+    public ViewElement clone() {
         ViewElement element = null;
         try {
             element = (ViewElement) super.clone();
+            if (element != null){
+                element.removeAllChildren();
+                element._view = null;
+                Element p = firstChild();
+                while (p != null){
+                    if (p instanceof ViewElement){
+                        ViewElement clone = ((ViewElement) p).clone();
+                        element.append(clone);
 
+                    }
+                    p = p.nextSibling();
+                }
+
+            }
         }catch (CloneNotSupportedException e){
             e.printStackTrace();
         }
-        if (element != null){
-            element._view = null;
-        }
+
+
+
         return element;
     }
 

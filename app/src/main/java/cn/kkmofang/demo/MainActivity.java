@@ -1,16 +1,27 @@
 package cn.kkmofang.demo;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.kkmofang.view.ButtonElement;
 import cn.kkmofang.view.DocumentView;
 import cn.kkmofang.view.Element;
 import cn.kkmofang.view.ElementView;
+import cn.kkmofang.view.ImageElement;
 import cn.kkmofang.view.ImgElement;
 import cn.kkmofang.view.PagerElement;
 import cn.kkmofang.view.ScrollElement;
@@ -38,6 +49,8 @@ public class MainActivity extends Activity {
 
         ViewContext viewContext = new ViewContext(getApplicationContext());
 
+        ViewContext.setImageLoader(new ImageLoader());
+
         ViewContext.push(viewContext);
 
 
@@ -55,13 +68,27 @@ public class MainActivity extends Activity {
                 pagerElement.setAttrs("width", "100%", "height", "50%", "background-color", "#ddd", "interval", "0", "hidden", "false");
 
                 {
-//                    ViewElement elementclone0 = new ViewElement();
-//                    elementclone0.setAttrs("width","100%","height","100%","background-color","#fff");
-//                    pagerElement.append(elementclone0);
+
+                    {
+
+                        TextElement element2 = new TextElement();
+                        element2.setAttrs("width","100%","height","100%","background-color","#999",
+                                "color", "#000", "#text", "我是第四页", "text-align", "center", "font", "40rpx italic",
+                                "line-spacing", "", "letter-spacing", "0rpx");
+                        pagerElement.append(element2);
+
+                    }
+
+                    ViewElement elementclone0 = new ViewElement();
+                    elementclone0.setAttrs("width","100%","height","100%","background-color","#f00");
+                    pagerElement.append(elementclone0);
+
+//                    ViewElement element111 = new ViewElement();
+//                    element111.setAttrs("width","100%","height","100%","background-color","#fff");
 
                     TextElement element = new TextElement();
                     element.setAttrs("width","100%","height","100%","background-color","#999",
-                            "color", "#000", "#text", "你好\nni\nnfdsfjsl\nfjslfjslf", "text-align", "left", "font", "40rpx italic",
+                            "color", "#000", "#text", "你好\nni\nnfdsfjsl\nfjslfjslf", "text-align", "center", "font", "40rpx italic",
                             "line-spacing", "", "letter-spacing", "0rpx");
                     {
                         SpanElement spanElement = new SpanElement();
@@ -89,23 +116,88 @@ public class MainActivity extends Activity {
                     pagerElement.append(element);
 
                     ViewElement element1 = new ViewElement();
-                    element1.setAttrs("width","100%","height","100%","background-color","#555");
+                    element1.setAttrs("width","100%","height","100%","background-color","#fff");
+
+                    {
+                        TextElement element2 = new TextElement();
+                        element2.setAttrs("width","100%","height","100%","background-color","#999",
+                                "color", "#000", "#text", "你好\nni\nnfdsfjsl\nfjslfjslf", "text-align", "center", "font", "40rpx italic",
+                                "line-spacing", "", "letter-spacing", "0rpx");
+                        element1.append(element2);
+                    }
+
+
                     pagerElement.append(element1);
 
+                    {
+
+                            TextElement element2 = new TextElement();
+                            element2.setAttrs("width","100%","height","100%","background-color","#999",
+                                    "color", "#000", "#text", "我是第三页", "text-align", "center", "font", "40rpx italic",
+                                    "line-spacing", "", "letter-spacing", "0rpx");
+                            pagerElement.append(element2);
+
+                    }
+
+                    {
+
+                        TextElement element2 = new TextElement();
+                        element2.setAttrs("width","100%","height","100%","background-color","#999",
+                                "color", "#000", "#text", "我是第四页", "text-align", "center", "font", "40rpx italic",
+                                "line-spacing", "", "letter-spacing", "0rpx");
+                        pagerElement.append(element2);
+
+                    }
+
+                    ViewElement elementclone5 = new ViewElement();
+                    elementclone5.setAttrs("width","100%","height","100%","background-color","#f00");
+                    pagerElement.append(elementclone5);
+
                 }
+
+                ViewElement group = new ViewElement();
+                group.setAttrs("width","100%", "height", "50%");
+
+//                group.append(pagerElement);
                 scrollElement.append(pagerElement);
             }
 
+//            {
+//                TextElement element2 = new TextElement();
+//                element2.setAttrs("width","100%","height","100%","background-color","#999",
+//                        "color", "#000", "#text", "你好\nni\nnfdsfjsl\nfjslfjslf", "text-align", "center", "font", "40rpx italic",
+//                        "line-spacing", "", "letter-spacing", "0rpx");
+//                scrollElement.append(element2);
+//            }
+
             {
-                ViewElement element = new ViewElement();
-                element.setAttrs("width","100%","height","50%","background-color","#1f0","left","50px", "right", "100px");
+                ScrollElement selement = new ScrollElement();
+                selement.setAttrs("width","100%","height","50%","background-color","#1f0","left","50px", "right", "100px");
                 {
-                    ViewElement element1 = new ViewElement();
-                    element1.setAttrs("width","50%","height","50%","left","50px", "right", "100px","background-color", "#ddd",
-                            "border-width", "10rpx", "border-radius", "10rpx", "border-color", "#fff", "background-image", "#ddd");
-                    element.append(element1);
+                    ImageElement element1 = new ImageElement();
+                    element1.setAttrs("width","200rpx","height","200rpx","left","50px", "right", "100px","background-color", "#ddd",
+                            "color", "#000",
+                            "border-width", "10rpx", "border-radius", "100rpx", "border-color", "#fff",
+                            "#text", "button", "text-align", "center", "font", "32rpx italic", "status", "hover",
+                            "src", "http://tvax1.sinaimg.cn/crop.0.0.750.750.180/006AkuvSly8fnzregrc91j30ku0kugmm.jpg");
+                    element1.setCSSStyle("border-width:20rpx;border-radius:20rpx;border-color:#000", "hover");
+
+                    selement.append(element1);
                 }
-                scrollElement.append(element);
+
+                {
+                    ButtonElement element1 = new ButtonElement();
+                    element1.setAttrs("width","200rpx","height","200rpx","left","250rpx", "right", "100px", "top", "250rpx", "background-color", "#ddd",
+                            "color", "#000",
+                            "border-width", "10rpx", "border-radius", "100rpx", "border-color", "#fff",
+                            "#text", "button", "text-align", "center", "font", "32rpx italic", "status", "hover",
+                            "src", "http://tvax1.sinaimg.cn/crop.0.0.750.750.180/006AkuvSly8fnzregrc91j30ku0kugmm.jpg");
+                    element1.setCSSStyle("border-width:20rpx;border-radius:20rpx;border-color:#000", "hover");
+
+                    selement.append(element1);
+                }
+
+                scrollElement.append(selement);
             }
 
             {
@@ -168,37 +260,11 @@ public class MainActivity extends Activity {
             root.append(scrollElement);
         }
 
-
-//        PagerElement pagerElement = new PagerElement();
-//        pagerElement.setAttrs("width", "100%", "height", "50%", "background-color", "#000");
-//
-//        {
-//            ViewElement element = new ViewElement();
-//            element.setAttrs("width","100%","height","100%","background-color","#999");
-//            pagerElement.append(element);
-//
-//            ViewElement element1 = new ViewElement();
-//            element1.setAttrs("width","100%","height","100%","background-color","#555");
-//            pagerElement.append(element1);
-//
-//            ViewElement element2 = new ViewElement();
-//            element2.setAttrs("width","100%","height","100%","background-color","#fff");
-//            pagerElement.append(element2);
-//
-//            root.append(pagerElement);
-//
-//        }
-
-        Element.Event e = new Element.Event(root);
-
-        e.setData(root.data());
-
-        root.emit("tap",e);
-
         documentView.setElement(root);
 
 
         ViewContext.pop();
+
 
     }
 }

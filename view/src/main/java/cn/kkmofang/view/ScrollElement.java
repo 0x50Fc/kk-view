@@ -13,6 +13,7 @@ import java.util.List;
 import cn.kkmofang.view.adapter.FRecyclerAdapter;
 import cn.kkmofang.view.value.Orientation;
 import cn.kkmofang.view.view.FRecyclerView;
+import cn.kkmofang.view.view.FViewPager;
 
 /**
  * Created by hailong11 on 2018/1/20.

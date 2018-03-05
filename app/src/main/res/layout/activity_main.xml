@@ -12,4 +12,17 @@
         android:id="@+id/documentView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <!--<cn.kkmofang.demo.MyViewGroup-->
+        <!--android:background="#000000"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+        <!--<TextView-->
+            <!--android:background="#ff0000"-->
+            <!--android:text="nfs"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_width="200dp"-->
+            <!--android:layout_height="200dp" />-->
+    <!--</cn.kkmofang.demo.MyViewGroup>-->
+
 </RelativeLayout>

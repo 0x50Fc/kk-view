@@ -10,8 +10,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.kk.view.R;
-
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -123,18 +121,6 @@ public class FViewPager extends ViewPager {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
-        int count = pagerElement == null?0:pagerElement._elements.size();
-        for (int i = 0; i < count; i++) {
-            ViewElement p = pagerElement._elements.get(i);
-            if (p == null)continue;
-            if (p.view() == null){
-                p.obtainView(this);
-            }
-            ViewPager.LayoutParams params = new ViewPager.LayoutParams();
-            fireRecyclerViewScrollState(true, "needsMeasure", params);
-            p.view().setLayoutParams(params);
-        }
 
         measure(MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));

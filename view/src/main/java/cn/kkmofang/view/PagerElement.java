@@ -63,7 +63,8 @@ public class PagerElement extends ViewElement {
             super.setView(view);
             v = fetchView();
             if (v != null){
-                count = _elements.size();
+                if (_elements.size() < 3)return;
+                count = _elements.size() - 2;//realCount
                 v.setPagerElement(this);
                 v.addOnPageChangeListener(new FPageChangeListener());
                 v.setOffscreenPageLimit(count);//此处必须设置为item size，否则报错，可以考虑作优化
@@ -129,20 +130,12 @@ public class PagerElement extends ViewElement {
         }
     }
 
+
     class FPagerAdapter extends PagerAdapter{
         private List<ViewElement> mElements;
-        private Context mContext;
 
         public FPagerAdapter(List<ViewElement> mElements, Context context) {
             this.mElements = mElements;
-            if (this.mElements.size() >= 1){
-                ViewElement tailElement = mElements.get(0).clone();
-                ViewElement headElement = mElements.get(mElements.size() - 1).clone();
-
-                mElements.add(0, headElement);
-                mElements.add(tailElement);
-            }
-            this.mContext = context;
         }
 
         @Override
