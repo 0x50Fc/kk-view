@@ -3,7 +3,7 @@ package cn.kkmofang.view.value;
 /**
  * Created by hailong11 on 2018/1/17.
  */
-
+//边缘
 public final class Edge implements IValue<Edge> {
 
     public final Pixel top = new Pixel();
@@ -58,6 +58,4 @@ public final class Edge implements IValue<Edge> {
         bottom.set(v.bottom);
         left.set(v.left);
     }
-
-
 }

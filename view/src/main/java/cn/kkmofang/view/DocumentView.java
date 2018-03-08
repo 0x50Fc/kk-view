@@ -3,8 +3,13 @@ package cn.kkmofang.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.LinearLayout;
+
+import com.kk.view.R;
 
 import java.lang.ref.WeakReference;
+
+import cn.kkmofang.view.layout.FlexLayout;
 
 /**
  * Created by hailong11 on 2018/1/29.
@@ -13,6 +18,7 @@ import java.lang.ref.WeakReference;
 public class DocumentView extends ElementView {
 
     private ViewElement _element;
+
 
     public DocumentView(Context context) {
         super(context);
@@ -40,7 +46,7 @@ public class DocumentView extends ElementView {
                 _element.obtainView(this);
             }
 
-            requestLayout();
+//            requestLayout();
         }
 
     }
@@ -51,8 +57,8 @@ public class DocumentView extends ElementView {
         if(_element != null) {
             _element.layout(r - l , b - t);
         }
-
         super.onLayout(changed,l,t,r,b);
+
     }
 
 

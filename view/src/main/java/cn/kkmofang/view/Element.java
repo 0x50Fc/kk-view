@@ -6,11 +6,13 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import cn.kkmofang.view.event.EventEmitter;
+
 /**
  * Created by hailong11 on 2018/1/17.
  */
 
-public class Element {
+public class Element extends EventEmitter implements Cloneable{
 
     private Element _firstChild;
     private Element _lastChild;
@@ -64,7 +66,7 @@ public class Element {
         return _parent == null ? null : _parent.get();
     }
 
-    private void setParent(Element element) {
+    protected void setParent(Element element) {
         _parent = element == null ? null : new WeakReference<Element>(element);
     }
 
@@ -175,6 +177,12 @@ public class Element {
         }
     }
 
+    public void removeAllChildren(){
+        setPrevSibling(null);
+        setNextSibling(null);
+        setFirstChild(null);
+    }
+
     public void appendTo(Element element) {
         element.append(this);
     }
@@ -215,6 +223,7 @@ public class Element {
 
         keys.addAll(_attributes.keySet());
 
+        // TODO: 2018/2/5 这个v是干嘛用的
         String v = status();
 
         if(v == null) {
@@ -232,7 +241,7 @@ public class Element {
         return keys;
     }
 
-    public String get(String key) {
+    public String get(String key) {//有可能传的是空，那么就使用当前默认样式
 
         if(_attributes.containsKey(key)) {
             return _attributes.get(key);
@@ -259,6 +268,10 @@ public class Element {
         }
 
         return null;
+    }
+
+    public Map<String, String> getAttributes() {
+        return _attributes;
     }
 
     public void set(String key, String value) {
@@ -331,6 +344,13 @@ public class Element {
         v.putAll(attrs);
     }
 
+    protected Map<String, String> getStyle(String status){
+        if (status == null){
+           status = "";
+        }
+        return _styles.get(status);
+    }
+
     public void setCSSStyle(String cssStyle,String status) {
 
         String[] vs = cssStyle.split(";");
@@ -389,6 +409,11 @@ public class Element {
         }
 
         return data;
+    }
+
+    @Override
+    public Element clone() throws CloneNotSupportedException{
+        return (Element) super.clone();
     }
 
     @Override

@@ -1,7 +1,10 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+
+import com.kk.view.R;
 
 import java.util.Stack;
 
@@ -13,12 +16,35 @@ public class ViewContext {
 
     public final Context context;
 
+    private static IImageLoader _imageLoader;
+
+    public static final Point windowPoint = new Point();
+
     public ViewContext(Context context) {
         this.context = context;
     }
 
+    private String _basePath;
+
+    /**
+     *
+     * @param uri
+     * @return
+     */
     public Drawable getImage(String uri) {
-        return null;
+//        String path;
+//        if(uri.startsWith("http") || uri.startsWith("https")) {
+//
+//        } else {
+//            path = _basePath + uri;
+//        }
+
+//        if(path.startsWith("assets://")) {
+//
+//        } else {
+//
+//        }
+        return context.getResources().getDrawable(R.mipmap.wbpay_ic_alipay);
     }
 
     public boolean getImage(String url,ImageCallback callback) {
@@ -27,6 +53,14 @@ public class ViewContext {
 
     public static interface ImageCallback {
         public void onImage(Drawable image);
+    }
+
+    public static IImageLoader getImageLoader() {
+        return _imageLoader;
+    }
+
+    public static void setImageLoader(IImageLoader _imageLoader) {
+        ViewContext._imageLoader = _imageLoader;
     }
 
     private final static ThreadLocal<Stack<ViewContext>> _viewContexts = new ThreadLocal<>();
@@ -62,5 +96,4 @@ public class ViewContext {
 
         return null;
     }
-
 }
