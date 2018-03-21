@@ -553,12 +553,11 @@ public class ViewElement extends Element implements Cloneable{
 
         if (background == null || gradientDrawable == null){
             gradientDrawable = new GradientDrawable();
-            String uri = get("background-image");
-            if (TextUtils.isEmpty(uri)){
+            Drawable imgDrawable = viewContext.getImage(get("background-image"),ImageStyle.defaultStyle);
+            if (imgDrawable == null){
                 background = new LayerDrawable(new Drawable[]{gradientDrawable});
             }else {
-                Drawable imgDrawable = viewContext.getImage(uri,ImageStyle.defaultStyle);
-                background = new LayerDrawable(new Drawable[]{imgDrawable, gradientDrawable});
+                background = new LayerDrawable(new Drawable[]{imgDrawable});
             }
         }
 

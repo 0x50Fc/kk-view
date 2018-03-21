@@ -65,27 +65,35 @@ public class TextElement extends ViewElement implements Cloneable{
 
     @Override
     public void obtainChildrenView() {
+
         FTextView tv = (FTextView) view();
+
         if (tv == null || firstChild() == null)return;
+
         Element p = firstChild();
-        SpannableStringBuilder ssb = new SpannableStringBuilder();
-        while (p != null){
-            if (p instanceof SpanElement){
-                SpannableString ss = ((SpanElement) p).obtainContent();
-                if (ss != null)
-                    ssb.append(ss);
-            }
 
-            if (p instanceof ImgElement){
-                SpannableString ss = ((ImgElement) p).obtainContent();
-                if (ss != null){
-                    ssb.append(ss);
+        if(p == null) {
+            tv.setText(get("#text"));
+        } else {
+            SpannableStringBuilder ssb = new SpannableStringBuilder();
+            while (p != null) {
+                if (p instanceof SpanElement) {
+                    SpannableString ss = ((SpanElement) p).obtainContent();
+                    if (ss != null)
+                        ssb.append(ss);
                 }
-            }
-            p = p.nextSibling();
-        }
 
-        tv.setText(ssb);
+                if (p instanceof ImgElement) {
+                    SpannableString ss = ((ImgElement) p).obtainContent();
+                    if (ss != null) {
+                        ssb.append(ss);
+                    }
+                }
+                p = p.nextSibling();
+            }
+
+            tv.setText(ssb);
+        }
     }
 
     /**

@@ -46,7 +46,7 @@ public class DocumentView extends ElementView {
                 _element.obtainView(this);
             }
 
-//            requestLayout();
+            requestLayout();
         }
 
     }
