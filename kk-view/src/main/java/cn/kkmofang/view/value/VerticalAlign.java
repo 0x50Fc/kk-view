@@ -7,7 +7,7 @@ package cn.kkmofang.view.value;
 public enum VerticalAlign {
     Top,Middle,Bottom;
 
-    public static VerticalAlign valueOf(Object v) {
+    public static VerticalAlign valueOfString(String v) {
 
         if("middle".equals(v)) {
             return Middle;

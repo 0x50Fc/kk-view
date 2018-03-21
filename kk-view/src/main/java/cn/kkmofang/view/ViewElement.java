@@ -53,7 +53,7 @@ public class ViewElement extends Element implements Cloneable{
     private int _translateY;
     private Layout _layout = RelativeLayout;
 
-    public ViewContext viewContext;
+    public IViewContext viewContext;
 
     public final Edge padding = new Edge();
     public final Edge margin = new Edge();
@@ -71,9 +71,8 @@ public class ViewElement extends Element implements Cloneable{
     public final Pixel right = new Pixel();
     public final Pixel bottom = new Pixel();
 
-    protected Pixel borderWidth = new Pixel();
-    protected Pixel borderRadius = new Pixel();
-
+    public final Pixel borderWidth = new Pixel();
+    public final Pixel borderRadius = new Pixel();
 
 
     public VerticalAlign verticalAlign = VerticalAlign.Top;
@@ -120,9 +119,13 @@ public class ViewElement extends Element implements Cloneable{
         } else if ("layout".equals(key)) {
             setLayout(v);
         } else if ("vertical-align".equals(key)) {
-            verticalAlign = VerticalAlign.valueOf(v);
+            verticalAlign = VerticalAlign.valueOfString(v);
         } else if ("position".equals(key)) {
             position = Position.valueOf(v);
+        } else if("border-width".equals(key)) {
+            borderWidth.set(v);
+        } else if("border-radius".equals(key)) {
+            borderRadius.set(v);
         }
 
         if(_view != null) {
@@ -317,7 +320,7 @@ public class ViewElement extends Element implements Cloneable{
             Class<?> viewClass = viewClass();
             if (viewClass != null) {
                 try {
-                    vv = (View) viewClass.getConstructor(Context.class).newInstance(viewContext.context);
+                    vv = (View) viewClass.getConstructor(Context.class).newInstance(viewContext.getContext());
                 } catch (Throwable e) {
                     Log.d(Tag.Tag, Log.getStackTraceString(e));
                 }
@@ -325,7 +328,7 @@ public class ViewElement extends Element implements Cloneable{
         }
 
         if (vv == null) {
-            vv = new ElementView(viewContext.context);
+            vv = new ElementView(viewContext.getContext());
         }
 
         Element p = parent();
@@ -496,21 +499,13 @@ public class ViewElement extends Element implements Cloneable{
 
     protected void onSetProperty(View view, String key, String value) {
 
-        if(!TextUtils.isEmpty(key) &&
-                (key.startsWith("border") || key.startsWith("background"))) {
+        if(key.startsWith("border") || key.startsWith("background")) {
             setBackground(key, value, view);
         }else if("opacity".equals(key)) {
             setAlpha(value, view);
             view.setAlpha(V.floatValue(value,1.0f));
         } else if("hidden".equals(key)) {
             setVisible(!V.booleanValue(value, true), view);
-        }else if ("padding".equals(key)){
-            padding.set(value);
-//            // TODO: 2018/2/8 这个地方有一个问题，百分比基于父view的大小，当父view没有渲染在屏幕上时，获得的父view的大小为0
-//            view.setPadding((int)padding.left.floatValue(width(), 0),
-//                    (int)padding.top.floatValue(height(), 0),
-//                    (int)padding.right.floatValue(width(), 0),
-//                    (int)padding.bottom.floatValue(height(), 0));
         }
 
         if (view instanceof IElementView) {
@@ -562,7 +557,7 @@ public class ViewElement extends Element implements Cloneable{
             if (TextUtils.isEmpty(uri)){
                 background = new LayerDrawable(new Drawable[]{gradientDrawable});
             }else {
-                Drawable imgDrawable = viewContext.getImage(uri);
+                Drawable imgDrawable = viewContext.getImage(uri,ImageStyle.defaultStyle);
                 background = new LayerDrawable(new Drawable[]{imgDrawable, gradientDrawable});
             }
         }
@@ -570,14 +565,13 @@ public class ViewElement extends Element implements Cloneable{
         switch (key){
             case "border-color":
             case "border-width":
-                borderWidth.set(get("border-width"));
                 gradientDrawable.setStroke(
-                        (int) borderWidth.floatValue(ViewContext.windowPoint.x, 0),
+                        (int) borderWidth.floatValue(0, 0),
                         Color.valueOf(get("border-color"), 0));
                 break;
             case "border-radius":
                 borderRadius.set(value);
-                gradientDrawable.setCornerRadius(borderRadius.floatValue(ViewContext.windowPoint.x, 0));
+                gradientDrawable.setCornerRadius(borderRadius.floatValue(0, 0));
                 break;
             case "background-color":
                 gradientDrawable.setColor(Color.valueOf(value, 0));
@@ -588,7 +582,6 @@ public class ViewElement extends Element implements Cloneable{
     }
 
     protected void onLayout(View view) {
-//        view.requestLayout();//此处盗用requestlayout会导致卡顿
         if (view instanceof IElementView) {
             ((IElementView) view).layout(view, this);
         }

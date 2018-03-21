@@ -14,60 +14,11 @@ import java.util.Stack;
 
 public class ViewContext {
 
-    public final Context context;
+    private final static ThreadLocal<Stack<IViewContext>> _viewContexts = new ThreadLocal<>();
 
-    private static IImageLoader _imageLoader;
+    public final static void push(IViewContext viewContext) {
 
-    public static final Point windowPoint = new Point();
-
-    public ViewContext(Context context) {
-        this.context = context;
-    }
-
-    private String _basePath;
-
-    /**
-     *
-     * @param uri
-     * @return
-     */
-    public Drawable getImage(String uri) {
-//        String path;
-//        if(uri.startsWith("http") || uri.startsWith("https")) {
-//
-//        } else {
-//            path = _basePath + uri;
-//        }
-
-//        if(path.startsWith("assets://")) {
-//
-//        } else {
-//
-//        }
-        return context.getResources().getDrawable(R.mipmap.wbpay_ic_alipay);
-    }
-
-    public boolean getImage(String url,ImageCallback callback) {
-        return false;
-    }
-
-    public static interface ImageCallback {
-        public void onImage(Drawable image);
-    }
-
-    public static IImageLoader getImageLoader() {
-        return _imageLoader;
-    }
-
-    public static void setImageLoader(IImageLoader _imageLoader) {
-        ViewContext._imageLoader = _imageLoader;
-    }
-
-    private final static ThreadLocal<Stack<ViewContext>> _viewContexts = new ThreadLocal<>();
-
-    public final static void push(ViewContext viewContext) {
-
-        Stack<ViewContext> v = _viewContexts.get();
+        Stack<IViewContext> v = _viewContexts.get();
 
         if(v == null) {
             v = new Stack<>();
@@ -79,16 +30,16 @@ public class ViewContext {
 
     public final static void pop() {
 
-        Stack<ViewContext> v = _viewContexts.get();
+        Stack<IViewContext> v = _viewContexts.get();
 
         if(v != null && !v.empty()) {
             v.pop();
         }
     }
 
-    public final static ViewContext current() {
+    public final static IViewContext current() {
 
-        Stack<ViewContext> v = _viewContexts.get();
+        Stack<IViewContext> v = _viewContexts.get();
 
         if(v != null && !v.empty()) {
             return v.peek();

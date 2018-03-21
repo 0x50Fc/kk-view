@@ -50,7 +50,7 @@ public class ScrollElement extends ViewElement{
             if (v != null){
                 manager = new LayoutManager(this);
                 v.setLayoutManager(manager);
-                adapter = new FRecyclerAdapter(this, viewContext.context);
+                adapter = new FRecyclerAdapter(this, viewContext.getContext());
                 v.setAdapter(adapter);
             }
         }
@@ -59,12 +59,15 @@ public class ScrollElement extends ViewElement{
     @Override
     public void changedKey(String key) {
         super.changedKey(key);
-        if ("scroll".equals(key)){
-            mOrientation = Orientation.fValueOf(get(key));
+        if ("layout".equals(key)){
+            if(layout() == ViewElement.HorizontalLayout) {
+                mOrientation = Orientation.HORIZONTAL;
+            } else{
+                mOrientation = Orientation.VERTICAL;
+            }
             if (manager != null){
                 manager.setOrientation(mOrientation);
             }
-
         }
     }
 

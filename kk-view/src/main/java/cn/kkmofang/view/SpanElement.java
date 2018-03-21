@@ -57,7 +57,7 @@ public class SpanElement extends Element {
         fontSize.set(values[0]);
 
         if (values.length > 1){
-            font = Font.fvalueOf(values[1]);
+            font = Font.valueOfString(values[1]);
         }
     }
 
@@ -66,7 +66,7 @@ public class SpanElement extends Element {
         SpannableString span = new SpannableString(content);
         int length = content.length();
         span.setSpan(new ForegroundColorSpan(color), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        span.setSpan(new AbsoluteSizeSpan((int) fontSize.floatValue(ViewContext.windowPoint.x, 0)), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        span.setSpan(new AbsoluteSizeSpan((int) fontSize.floatValue(0, 0)), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         StyleSpan styleSpan;
         switch (font){
             default:

@@ -21,6 +21,7 @@ import cn.kkmofang.view.ButtonElement;
 import cn.kkmofang.view.DocumentView;
 import cn.kkmofang.view.Element;
 import cn.kkmofang.view.ElementView;
+import cn.kkmofang.view.IViewContext;
 import cn.kkmofang.view.ImageElement;
 import cn.kkmofang.view.ImgElement;
 import cn.kkmofang.view.PagerElement;
@@ -43,13 +44,14 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
 
-        getWindowManager().getDefaultDisplay().getSize(ViewContext.windowPoint);
+        Point size = new Point();
 
-        Pixel.UnitRPX = ViewContext.windowPoint.x / 750.0f;
+        getWindowManager().getDefaultDisplay().getSize(size);
 
-        ViewContext viewContext = new ViewContext(getApplicationContext());
+        Pixel.UnitRPX = size.x / 750.0f;
 
-        ViewContext.setImageLoader(new ImageLoader());
+        IViewContext viewContext = new MainViewContext(getApplicationContext());
+
 
         ViewContext.push(viewContext);
 

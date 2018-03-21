@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,6 +12,7 @@ import cn.kkmofang.view.value.Pixel;
  */
 
 public class ImageElement extends ViewElement {
+
     private String url;
 
     public ImageElement() {
@@ -23,14 +25,23 @@ public class ImageElement extends ViewElement {
         super.onSetProperty(view, key, value);
         if (view instanceof ImageView){
             if ("src".equals(key)){
-                IImageLoader loader = ViewContext.getImageLoader();
-                if (loader != null){
-                    int radius = (int) borderRadius.floatValue(ViewContext.windowPoint.x, 0);
-                    if (radius < 0){
-                        radius = 0;
+                ImageStyle style = new ImageStyle();
+                style.radius = (int) borderRadius.floatValue(0, 0);
+
+                final ImageView imageView = (ImageView) view;
+
+                viewContext.getImage(url, style, new ImageCallback() {
+
+                    @Override
+                    public void onImage(Drawable image) {
+                        imageView.setImageDrawable(image);
                     }
-                    loader.loadImage(get(key), (ImageView) view, viewContext.context, radius);
-                }
+
+                    @Override
+                    public void onException(Exception exception) {
+
+                    }
+                });
             }
         }
     }

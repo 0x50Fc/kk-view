@@ -96,10 +96,10 @@ public class TextElement extends ViewElement implements Cloneable{
     private void setTextSizeAndFont(String value, TextView tv){
         String[] values = value.split(" ");
         fontSize.set(values[0]);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize.floatValue(ViewContext.windowPoint.x, 0));
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize.floatValue(0, 0));
 
         if (values.length > 1){
-            font = Font.fvalueOf(values[1]);
+            font = Font.valueOfString(values[1]);
             tv.setTypeface(Font.createTypeface(font));
         }
     }
@@ -113,7 +113,7 @@ public class TextElement extends ViewElement implements Cloneable{
         lineSpacing.set(value);
         //mult默认为1.0,不进行操作
         tv.setLineSpacing(
-                lineSpacing.floatValue(ViewContext.windowPoint.x, 0), 1.0f);
+                lineSpacing.floatValue(0, 0), 1.0f);
     }
 
     /**
@@ -137,7 +137,7 @@ public class TextElement extends ViewElement implements Cloneable{
      * @param tv
      */
     private void setTextAlign(String value, TextView tv){
-        textAlign = TextAlign.fvalueOf(value);
+        textAlign = TextAlign.valueOfString(value);
         switch (textAlign){
             case Left:
                 tv.setGravity(Gravity.LEFT);

@@ -7,7 +7,7 @@ package cn.kkmofang.view.value;
 public enum Position {
     None,Top,Bottom,Left,Right;
 
-    public static Position valueOf(Object v) {
+    public static Position valueOfString(String v) {
 
         if("top".equals(v)) {
             return Top;

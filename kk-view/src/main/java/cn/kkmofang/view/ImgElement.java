@@ -17,7 +17,7 @@ public class ImgElement extends Element {
     private String _src;
     private Pixel _height = new Pixel();
     private Pixel _width = new Pixel();
-    private ViewContext viewContext;
+    private IViewContext viewContext;
 
     public ImgElement() {
         super();
@@ -49,12 +49,12 @@ public class ImgElement extends Element {
         span.setSpan(new DynamicDrawableSpan(DynamicDrawableSpan.ALIGN_BASELINE) {
             @Override
             public Drawable getDrawable() {
-                Drawable d = viewContext.getImage(_src);
+                Drawable d = viewContext.getImage(_src, ImageStyle.defaultStyle);
                 //取不到宽高，暂时使用100作为默认值
                 int width = _width.type == Pixel.Type.Auto?100:
-                        (int) _width.floatValue(ViewContext.windowPoint.x, 0);
+                        (int) _width.floatValue(0, 0);
                 int height = _height.type == Pixel.Type.Auto?100:
-                        (int) _height.floatValue(ViewContext.windowPoint.x, 0);
+                        (int) _height.floatValue(0, 0);
                 d.setBounds(0, 0, width, height);
                 return d;
             }

@@ -8,8 +8,10 @@ import android.graphics.Typeface;
  */
 
 public enum Font {
+
     NORAML,BOLD,ITALIC;
-    public static Font fvalueOf(Object v){
+
+    public static Font valueOfString(String v){
         if ("bold".equals(v)){
             return BOLD;
         }

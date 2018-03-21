@@ -68,7 +68,7 @@ public class PagerElement extends ViewElement {
                 v.setPagerElement(this);
                 v.addOnPageChangeListener(new FPageChangeListener());
                 v.setOffscreenPageLimit(count);//此处必须设置为item size，否则报错，可以考虑作优化
-                v.setAdapter(new FPagerAdapter(_elements, viewContext.context));
+                v.setAdapter(new FPagerAdapter(_elements, viewContext.getContext()));
                 //默认设置当前页面为0
                 v.setCurrentItem(1, false);
                 //页面大于1时才可以滑动

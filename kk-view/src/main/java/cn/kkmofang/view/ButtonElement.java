@@ -35,7 +35,7 @@ public class ButtonElement extends TextElement {
             bt.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(viewContext.context, "onclick", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(viewContext.getContext(), "onclick", Toast.LENGTH_SHORT).show();
                 }
             });
         }
