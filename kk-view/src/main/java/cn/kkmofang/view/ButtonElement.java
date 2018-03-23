@@ -2,9 +2,11 @@ package cn.kkmofang.view;
 
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,55 +16,36 @@ import cn.kkmofang.view.view.FTextView;
  * Created by hailong11 on 2018/1/20.
  */
 
-public class ButtonElement extends TextElement {
+public class ButtonElement extends ViewElement {
+
     public ButtonElement(){
         super();
     }
 
     @Override
-    public void obtainView(View view) {
-        super.obtainView(view);
-        final View bt = view();
-        if (bt != null && bt instanceof FTextView){
-            bt.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    setBackgroundForHover(event.getAction(), bt);
-                    return false;
-                }
-            });
+    public void setView(View view) {
+        View v = this.view();
+        if(v != null) {
+            v.setOnClickListener(null);
+        }
+        super.setView(view);
+        v = this.view();
+        if(v != null) {
 
-            bt.setOnClickListener(new View.OnClickListener() {
+            final WeakReference<ButtonElement> element = new WeakReference<ButtonElement>(this);
+
+            v.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(viewContext.getContext(), "onclick", Toast.LENGTH_SHORT).show();
+                    ButtonElement e = element.get();
+                    if(e != null) {
+                        Element.Event event = new Element.Event(e);
+                        event.setData(e.data());
+                        e.emit("tap",event);
+                    }
                 }
             });
         }
-    }
-
-    private void setBackgroundForHover(int state, View view){
-        if (state == MotionEvent.ACTION_MOVE)return;
-        Map<String, String> hovers = getStyle("hover");
-        if (hovers != null){
-            switch (state){
-                case MotionEvent.ACTION_DOWN:{
-                    Set<String> keySet = hovers.keySet();
-                    for (String key : keySet) {
-                        setBackground(key, hovers.get(key), view);
-                    }
-                    break;
-                }
-                case MotionEvent.ACTION_CANCEL:
-                case MotionEvent.ACTION_UP:{
-                    for (String key : keys()) {
-                        setBackground(key, get(key), view);
-                    }
-                    break;
-                }
-            }
-        }
-
     }
 
 }

@@ -7,6 +7,8 @@ package cn.kkmofang.view;
 public class ImageStyle {
 
     public int radius = 0;
+    public int capLeft = 0;
+    public int capTop = 0;
 
     public final static ImageStyle defaultStyle = new ImageStyle();
 
