@@ -25,6 +25,7 @@ public class ImageElement extends ViewElement {
         super.onSetProperty(view, key, value);
         if (view instanceof ImageView){
             if ("src".equals(key)){
+                url = get(key);
                 ImageStyle style = new ImageStyle();
                 style.radius = (int) borderRadius.floatValue(0, 0);
 

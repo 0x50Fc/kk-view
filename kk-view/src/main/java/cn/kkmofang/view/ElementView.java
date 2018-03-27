@@ -20,6 +20,8 @@ public class ElementView extends FrameLayout {
 
     public ElementView(Context context) {
         super(context);
+        //设置left=-10等防止出现剪裁
+        setClipChildren(false);
     }
 
     public ElementView(Context context, AttributeSet attrs) {

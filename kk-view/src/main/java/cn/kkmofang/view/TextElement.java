@@ -65,6 +65,7 @@ public class TextElement extends ViewElement implements Cloneable{
 
     @Override
     public void obtainChildrenView() {
+        super.obtainChildrenView();
 
         FTextView tv = (FTextView) view();
 
