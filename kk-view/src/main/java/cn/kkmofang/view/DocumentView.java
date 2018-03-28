@@ -42,10 +42,6 @@ public class DocumentView extends ElementView {
 
             _element = element;
 
-            if(_element != null) {
-                _element.obtainView(this);
-            }
-
             requestLayout();
         }
 
@@ -56,6 +52,7 @@ public class DocumentView extends ElementView {
 
         if(_element != null) {
             _element.layout(r - l , b - t);
+            _element.obtainView(this);
         }
         super.onLayout(changed,l,t,r,b);
 

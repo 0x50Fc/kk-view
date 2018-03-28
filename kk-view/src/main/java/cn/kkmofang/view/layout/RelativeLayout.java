@@ -79,11 +79,11 @@ public class RelativeLayout implements ViewElement.Layout {
                 float bottom = e.bottom.floatValue(inHeight,Pixel.Auto);
 
                 if(left == Pixel.Auto) {
-                    if(width == Pixel.Auto) {
+                    if(width == Pixel.Auto) {//left==auto width==auto直接得出left
                         left = paddingLeft + mleft;
-                    } else if(right == Pixel.Auto) {
+                    } else if(right == Pixel.Auto) {//都没标居中显示 left==auto right ==auto width!=atuo
                         left = paddingLeft + mleft + (inWidth - w - mleft - mright) * 0.5f;
-                    } else {
+                    } else {//right固定
                         left = paddingLeft + (inWidth - right - mright - w);
                     }
                 } else {

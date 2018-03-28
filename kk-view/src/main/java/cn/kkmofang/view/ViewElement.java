@@ -411,6 +411,9 @@ public class ViewElement extends Element implements Cloneable{
                 if (p instanceof ViewElement) {
                     ViewElement e = (ViewElement) p;
                     if (isChildrenVisible(e)) {
+                        if(e instanceof TextElement) {
+                            Log.d("","");
+                        }
                         e.obtainView(_view);
                     } else {
                         e.recycleView();
