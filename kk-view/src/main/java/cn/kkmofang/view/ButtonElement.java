@@ -23,7 +23,7 @@ public class ButtonElement extends ViewElement {
     }
 
     @Override
-    public void setView(View view) {
+    public void setView(final View view) {
         View v = this.view();
         if(v != null) {
             v.setOnClickListener(null);
@@ -43,6 +43,35 @@ public class ButtonElement extends ViewElement {
                         event.setData(e.data());
                         e.emit("tap",event);
                     }
+                }
+            });
+
+            v.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    ButtonElement e = element.get();
+                    if(e != null) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                e.setStatus("hover");
+                                break;
+                            case MotionEvent.ACTION_MOVE:
+                                System.out.println("Location:" + event.getX()+":"+v.getLeft()+":"+v.getWidth());
+                                if (event.getX() > v.getWidth() || event.getX() < 0){
+                                    e.setStatus("");
+                                }else if (event.getY() > v.getHeight() || event.getY() < 0){
+                                    e.setStatus("");
+                                }
+                                break;
+                            case MotionEvent.ACTION_CANCEL:
+                                e.setStatus("");
+                                return true;
+                            case MotionEvent.ACTION_UP:
+                                e.setStatus("");
+                                break;
+                        }
+                    }
+                    return false;
                 }
             });
         }
