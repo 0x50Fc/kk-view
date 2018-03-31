@@ -28,6 +28,8 @@ public class ImageElement extends ViewElement {
                 url = get(key);
                 ImageStyle style = new ImageStyle();
                 style.radius = (int) borderRadius.floatValue(0, 0);
+                style.width = (int) width.floatValue(0, 0);
+                style.height = (int) width.floatValue(0, 0);
 
                 final ImageView imageView = (ImageView) view;
 
