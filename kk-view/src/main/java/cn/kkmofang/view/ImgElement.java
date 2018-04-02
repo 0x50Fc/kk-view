@@ -49,7 +49,7 @@ public class ImgElement extends Element {
         span.setSpan(new DynamicDrawableSpan(DynamicDrawableSpan.ALIGN_BASELINE) {
             @Override
             public Drawable getDrawable() {
-                Drawable d = viewContext.getImage(_src, ImageStyle.defaultStyle);
+                Drawable d = viewContext.getImage(_src, new ImageStyle());
                 //取不到宽高，暂时使用100作为默认值
                 int width = _width.type == Pixel.Type.Auto?100:
                         (int) _width.floatValue(0, 0);

@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,7 +13,6 @@ import cn.kkmofang.view.value.Pixel;
  */
 
 public class ImageElement extends ViewElement {
-
     private String url;
 
     public ImageElement() {
@@ -36,8 +36,8 @@ public class ImageElement extends ViewElement {
                 viewContext.getImage(url, style, new ImageCallback() {
 
                     @Override
-                    public void onImage(Drawable image) {
-                        imageView.setImageDrawable(image);
+                    public void onImage(Drawable drawable) {
+                        imageView.setImageDrawable(drawable);
                     }
 
                     @Override
@@ -46,6 +46,14 @@ public class ImageElement extends ViewElement {
                     }
                 });
             }
+        }
+    }
+
+    @Override
+    protected void onRecycleView(View view) {
+        super.onRecycleView(view);
+        if (view instanceof ImageView){
+            recycleDrawable(((ImageView) view).getDrawable());
         }
     }
 }

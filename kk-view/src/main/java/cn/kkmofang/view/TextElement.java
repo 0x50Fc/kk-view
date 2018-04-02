@@ -38,7 +38,7 @@ public class TextElement extends ViewElement{
     private Pixel lineSpacing = new Pixel();
     private Pixel letterSpacing = new Pixel();
     private Font font;
-    private SpannableStringBuilder content = new SpannableStringBuilder();
+//    private SpannableStringBuilder content = new SpannableStringBuilder();
 
     private TextAlign textAlign = TextAlign.Left;
 
@@ -108,11 +108,10 @@ public class TextElement extends ViewElement{
             }else if ("text-align".equals(key)){
                 setTextAlign(value, textView);
             }else if ("#text".equals(key)){
-                if (firstChild() == null){
-                    content = obtainString();
-                    FTextView tv = (FTextView) view();
-                    if (tv != null)
-                        tv.setText(content);
+                SpannableStringBuilder builder = obtainString();
+                FTextView tv = (FTextView) view();
+                if (tv != null){
+                    tv.setText(builder.toString());
                 }
             }
         }
@@ -168,21 +167,7 @@ public class TextElement extends ViewElement{
                 size.set(0, 0, w, h);
                 System.out.println("SIZE："+size.width()+":"+size.height());
 
-
             }
-
-//            int len = str.length();
-//            int w = 0;
-//            float[] widths = new float[len];
-//            paint.getTextWidths(String.valueOf(obtainString()), widths);
-//            char[] chars = str.toCharArray();
-//
-//            for (int i = 0; i < len; i++) {
-//                w += Math.ceil(widths[i]);
-//            }
-//            Point point = new Point();
-//            size.set(0, 0, Math.min(w, point.x), point.y);
-//            System.out.println("SIZE："+size.width()+":"+size.height());
 
 
         }
@@ -268,7 +253,6 @@ public class TextElement extends ViewElement{
      * @param value 字间距如10rpx
      * @param tv
      */
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setLetterSpacing(String value, TextView tv){
         letterSpacing.set(value);
         float fontMeasure = fontSize.value;
@@ -276,7 +260,9 @@ public class TextElement extends ViewElement{
         if (fontMeasure != 0){
             space = letterSpacing.value / fontMeasure;
         }
-        tv.setLetterSpacing(space);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tv.setLetterSpacing(space);
+        }
     }
 
 

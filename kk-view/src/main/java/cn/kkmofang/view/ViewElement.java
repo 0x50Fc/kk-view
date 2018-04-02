@@ -1,7 +1,9 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
@@ -18,7 +20,9 @@ import android.widget.TextView;
 import com.kk.view.R;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
@@ -556,7 +560,8 @@ public class ViewElement extends Element implements Cloneable{
 
         if (background == null || gradientDrawable == null){
             gradientDrawable = new GradientDrawable();
-            Drawable imgDrawable = viewContext.getImage(get("background-image"),ImageStyle.defaultStyle);
+
+            Drawable imgDrawable = viewContext.getImage(get("background-image"), new ImageStyle());
             if (imgDrawable == null){
                 background = new LayerDrawable(new Drawable[]{gradientDrawable});
             }else {
@@ -601,9 +606,8 @@ public class ViewElement extends Element implements Cloneable{
         if (view instanceof IElementView) {
             ((IElementView) view).recycleView(view, this);
         }
-
+        recycleDrawable(view.getBackground());
         view.setTag(R.id.kk_view_element, null);
-
     }
 
     @Override
@@ -619,7 +623,6 @@ public class ViewElement extends Element implements Cloneable{
                     if (p instanceof ViewElement){
                         ViewElement clone = ((ViewElement) p).clone();
                         element.append(clone);
-
                     }
                     p = p.nextSibling();
                 }
@@ -632,6 +635,31 @@ public class ViewElement extends Element implements Cloneable{
 
 
         return element;
+    }
+
+    protected void recycleDrawable(Drawable recyleDrawable){
+        if (recyleDrawable == null)return;
+        if (recyleDrawable instanceof LayerDrawable){
+            int ofLayers = ((LayerDrawable) recyleDrawable).getNumberOfLayers();
+            for (int i = 0; i < ofLayers; i++) {
+                Drawable childDrawable = ((LayerDrawable) recyleDrawable).getDrawable(i);
+                if (childDrawable != null && childDrawable instanceof BitmapDrawable){
+                    Bitmap bm = ((BitmapDrawable) childDrawable).getBitmap();
+                    if (bm != null && !bm.isRecycled()){
+                        bm.recycle();
+                        bm = null;
+                        System.gc();
+                    }
+                }
+            }
+        }else if (recyleDrawable instanceof BitmapDrawable){
+            Bitmap bm = ((BitmapDrawable) recyleDrawable).getBitmap();
+            if (bm != null && !bm.isRecycled()){
+                bm.recycle();
+                bm = null;
+                System.gc();
+            }
+        }
     }
 
     public static interface Layout {

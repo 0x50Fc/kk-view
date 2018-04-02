@@ -14,4 +14,8 @@ public class ImageStyle {
 
     public final static ImageStyle defaultStyle = new ImageStyle();
 
+    @Override
+    public String toString() {
+        return "capLeft:" + capLeft + ">>  capTop: " + capTop;
+    }
 }
