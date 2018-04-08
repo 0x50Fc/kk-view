@@ -34,21 +34,8 @@ captures/
 
 # Intellij
 *.iml
-<<<<<<< HEAD
-.idea/
-=======
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/dictionaries
-.idea/libraries
-.idea/misc.xml
-<<<<<<< HEAD
-.idea/modules.xml
-=======
->>>>>>> dev
->>>>>>> feature_gaoyang_view
 
+.idea/
 # Keystore files
 *.jks
 

@@ -15,7 +15,7 @@ import cn.kkmofang.view.ViewElement;
  * Created by wangchao15 on 2018/3/1.
  */
 
-public class FTextView extends android.support.v7.widget.AppCompatTextView implements IElementView{
+public class FTextView extends TextView{
 
     public FTextView(Context context) {
         super(context);
@@ -42,32 +42,5 @@ public class FTextView extends android.support.v7.widget.AppCompatTextView imple
                 break;
         }
         return super.onTouchEvent(event);
-    }
-
-    @Override
-    public void setProperty(View view, ViewElement element, String key, String value) {
-
-    }
-
-    @Override
-    public void layout(View view, ViewElement element) {
-
-//        setGravity(Gravity.CENTER);
-//        requestLayout();
-        measure(MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
-//        layout();
-
-//        invalidate();
-    }
-
-    @Override
-    public void obtainView(View view, ViewElement element) {
-
-    }
-
-    @Override
-    public void recycleView(View view, ViewElement element) {
-
     }
 }

@@ -23,7 +23,7 @@ import cn.kkmofang.view.value.Pixel;
 public class SpanElement extends Element {
     private int color;
     private Pixel fontSize = new Pixel();
-    private Font font;
+    private Font font = Font.NORAML;
     private String letterSpacing;//字间距
     private String content;
 

@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,7 +13,6 @@ import cn.kkmofang.view.value.Pixel;
  */
 
 public class ImageElement extends ViewElement {
-
     private String url;
 
     public ImageElement() {
@@ -25,16 +25,19 @@ public class ImageElement extends ViewElement {
         super.onSetProperty(view, key, value);
         if (view instanceof ImageView){
             if ("src".equals(key)){
+                url = get(key);
                 ImageStyle style = new ImageStyle();
                 style.radius = (int) borderRadius.floatValue(0, 0);
+                style.width = (int) width.floatValue(0, 0);
+                style.height = (int) width.floatValue(0, 0);
 
                 final ImageView imageView = (ImageView) view;
 
                 viewContext.getImage(url, style, new ImageCallback() {
 
                     @Override
-                    public void onImage(Drawable image) {
-                        imageView.setImageDrawable(image);
+                    public void onImage(Drawable drawable) {
+                        imageView.setImageDrawable(drawable);
                     }
 
                     @Override
@@ -43,6 +46,14 @@ public class ImageElement extends ViewElement {
                     }
                 });
             }
+        }
+    }
+
+    @Override
+    protected void onRecycleView(View view) {
+        super.onRecycleView(view);
+        if (view instanceof ImageView){
+            recycleDrawable(((ImageView) view).getDrawable());
         }
     }
 }
