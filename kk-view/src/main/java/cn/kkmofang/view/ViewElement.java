@@ -89,6 +89,9 @@ public class ViewElement extends Element implements Cloneable{
 
     public ViewElement() {
         viewContext = ViewContext.current();
+        if(viewContext == null) {
+            Log.d("","");
+        }
     }
 
     @Override
