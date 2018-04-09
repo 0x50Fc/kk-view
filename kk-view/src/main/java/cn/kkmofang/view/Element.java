@@ -444,7 +444,7 @@ public class Element extends EventEmitter implements Cloneable{
                     v = v.replace("\n","\\n");
                     v = v.replace("\t","\\t");
                     v = v.replace("\"","\\\"");
-                    sb.append(" ").append(key).append("\"").append(v).append("\"");
+                    sb.append(" ").append(key).append("=\"").append(v).append("\"");
                 }
 
             }

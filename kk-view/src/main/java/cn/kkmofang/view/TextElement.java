@@ -63,13 +63,13 @@ public class TextElement extends ViewElement{
                 if(width != Pixel.Auto) {
                     maxWidth = width - paddingLeft - paddingRight;
                 }else if (element instanceof TextElement){
-                    maxWidth = (((TextElement) element).getTextRect()).width();
+                    maxWidth = (((TextElement) element).getTextRect()).width() + paddingLeft + paddingRight;
                 }
 
                 if (height != Pixel.Auto){
                     maxHeight = height - paddingTop - paddingBottom;
                 }else if (element instanceof TextElement){
-                    maxHeight = (((TextElement) element).getTextRect()).height();
+                    maxHeight = (((TextElement) element).getTextRect()).height() + paddingTop + paddingBottom;
                 }
 
                 element.setContentSize(maxWidth, maxHeight);
