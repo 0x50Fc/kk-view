@@ -1,6 +1,9 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Path;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +20,8 @@ import com.kk.view.R;
 
 public class ElementView extends FrameLayout {
 
-
     public ElementView(Context context) {
         super(context);
-        //设置left=-10等防止出现剪裁
         setClipChildren(false);
     }
 

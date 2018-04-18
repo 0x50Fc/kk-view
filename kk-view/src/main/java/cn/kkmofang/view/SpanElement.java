@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -21,11 +22,8 @@ import cn.kkmofang.view.value.Pixel;
  */
 
 public class SpanElement extends Element {
-    private int color;
-    private Pixel fontSize = new Pixel();
-    private Font font = Font.NORAML;
-    private String letterSpacing;//字间距
-    private String content;
+
+    public final Paint paint = new Paint();
 
     public SpanElement() {
         super();
@@ -34,54 +32,55 @@ public class SpanElement extends Element {
     @Override
     public void changedKey(String key) {
         super.changedKey(key);
-        String value = get(key);
-        switch (key){
-            case "#text":
-                content = value;
-                break;
-            case "color":
-                color = Color.valueOf(value, 0);
-                break;
-            case "font":
-                saveTextSizeAndFont(value);
-                break;
+
+        if("#text".equals(key)) {
+            Element p = parent();
+            if(p instanceof TextElement) {
+                ((TextElement) p).setNeedDisplay();
+            }
+        } else if("font".equals(key)) {
+            Font.valueOf(get(key),paint);
+            Element p = parent();
+            if(p instanceof TextElement) {
+                ((TextElement) p).setNeedDisplay();
+            }
+        } else if("color".equals(key)) {
+            int v = Color.valueOf(get(key),0xff000000);
+            paint.setColor(v);
+            paint.setAlpha(0x0ff & (v >> 24));
+            Element p = parent();
+            if(p instanceof TextElement) {
+                ((TextElement) p).setNeedDisplay();
+            }
         }
+
     }
 
-    /**
-     * 保存字体大小和是否加粗
-     * @param value 如30rpx bold
-     */
-    private void saveTextSizeAndFont(String value){
-        String[] values = value.split(" ");
-        fontSize.set(values[0]);
-
-        if (values.length > 1){
-            font = Font.valueOfString(values[1]);
-        }
-    }
 
     public SpannableString obtainContent(){
-        if (TextUtils.isEmpty(content))return null;
-        SpannableString span = new SpannableString(content);
-        int length = content.length();
-        span.setSpan(new ForegroundColorSpan(color), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        span.setSpan(new AbsoluteSizeSpan((int) fontSize.floatValue(0, 0)), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        StyleSpan styleSpan;
-        switch (font){
-            default:
-            case NORAML:
-                styleSpan = new StyleSpan(Typeface.NORMAL);
-                break;
-            case BOLD:
-                styleSpan = new StyleSpan(Typeface.BOLD);
-                break;
-            case ITALIC:
-                styleSpan = new StyleSpan(Typeface.ITALIC);
-                break;
+
+        String text = get("#text");
+
+        if (TextUtils.isEmpty(text))return null;
+
+        SpannableString span = new SpannableString(text);
+
+        int length = text.length();
+
+        span.setSpan(new ForegroundColorSpan(paint.getColor()), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        span.setSpan(new AbsoluteSizeSpan((int) Math.ceil( paint.getTextSize())), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+        if(paint.isFakeBoldText()) {
+            span.setSpan(new StyleSpan(Typeface.BOLD), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } else {
+            Typeface f = paint.getTypeface();
+
+            if(f != null) {
+                span.setSpan(new StyleSpan(f.getStyle()), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
         }
-        span.setSpan(styleSpan, 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        // TODO: 2018/2/27 字间距设置暂时保留，需要自定义span
+
         return span;
     }
 }

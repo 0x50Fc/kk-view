@@ -1,31 +1,18 @@
 package cn.kkmofang.view;
 
-import android.app.Activity;
-import android.app.Application;
 import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.text.Spannable;
+import android.os.Handler;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.TextPaint;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Font;
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
-import cn.kkmofang.view.view.FTextView;
 
 /**
  * Created by hailong11 on 2018/1/20.
@@ -34,14 +21,45 @@ import cn.kkmofang.view.view.FTextView;
 public class TextElement extends ViewElement{
 
 
-    private Pixel fontSize = new Pixel();
-    private Pixel lineSpacing = new Pixel();
-    private Pixel letterSpacing = new Pixel();
-    private Font font;
-//    private SpannableStringBuilder content = new SpannableStringBuilder();
+    public final Pixel lineSpacing = new Pixel();
+    public final Paint paint = new Paint();
+    public TextAlign textAlign = TextAlign.Left;
+    public Text _text = null;
 
-    private TextAlign textAlign = TextAlign.Left;
+    private final Handler _handler;
 
+    public Text text() {
+
+        if(_text == null) {
+            _text = new Text();
+
+            Element p = firstChild();
+
+            if(p == null) {
+                String text = get("#text");
+                if (text != null)
+                    _text.append(text);
+            } else {
+                while (p != null) {
+                    if (p instanceof SpanElement) {
+                        SpannableString ss = ((SpanElement) p).obtainContent();
+                        if (ss != null)
+                            _text.append(ss);
+                    }
+
+                    if (p instanceof ImgElement) {
+                        SpannableString ss = ((ImgElement) p).obtainContent();
+                        if (ss != null) {
+                            _text.append(ss);
+                        }
+                    }
+                    p = p.nextSibling();
+                }
+            }
+        }
+
+        return _text;
+    }
     private static final Layout TextLayout = new Layout(){
         @Override
         public void layout(ViewElement element) {
@@ -50,29 +68,37 @@ public class TextElement extends ViewElement{
             float height = element.height();
 
 
+            TextElement e = (TextElement) element;
+
             if(width == Pixel.Auto || height == Pixel.Auto) {
 
                 float paddingLeft = element.padding.left.floatValue(width,0);
                 float paddingRight = element.padding.right.floatValue(width,0);
-                float paddingTop = element.padding.top.floatValue(height,0);
-                float paddingBottom = element.padding.bottom.floatValue(height,0);
 
                 float maxWidth = width;
                 float maxHeight = height;
 
+
                 if(width != Pixel.Auto) {
                     maxWidth = width - paddingLeft - paddingRight;
-                }else if (element instanceof TextElement){
-                    maxWidth = (((TextElement) element).getTextRect()).width() + paddingLeft + paddingRight;
                 }
 
-                if (height != Pixel.Auto){
-                    maxHeight = height - paddingTop - paddingBottom;
-                }else if (element instanceof TextElement){
-                    maxHeight = (((TextElement) element).getTextRect()).height() + paddingTop + paddingBottom;
+                Text text = e.text();
+
+                text.contentSize((int) maxWidth,(int) e.lineSpacing.floatValue(0,0),e.paint);
+
+                if(width == Pixel.Auto) {
+                    width = text.width();
                 }
 
-                element.setContentSize(maxWidth, maxHeight);
+                if(height == Pixel.Auto) {
+                    height = text.height();
+                    if(height > maxHeight) {
+                        height = maxHeight;
+                    }
+                }
+
+                element.setContentSize(width, height);
 
             } else {
                 element.setContentSize(width,height);
@@ -83,150 +109,91 @@ public class TextElement extends ViewElement{
 
     public TextElement() {
         super();
-        set("#view", FTextView.class.getName());
+        _handler = new Handler() ;
+        set("#view", TextView.class.getName());
         setLayout(TextLayout);
+    }
+
+    public void setView(View view){
+        super.setView(view);
+        if(view != null && view instanceof TextView) {
+            TextView textView = (TextView) view;
+        }
     }
 
     @Override
     protected void onSetProperty(View view, String key, String value) {
         super.onSetProperty(view, key, value);
-        if (view instanceof FTextView){
-            FTextView textView = (FTextView) view;
-            if ("color".equals(key)){
 
+        if (view instanceof TextView){
+
+            TextView textView = (TextView) view;
+
+            if ("color".equals(key)){
                 textView.setTextColor(Color.valueOf(value,0));
             }else if ("font".equals(key)) {
-                setTextSizeAndFont(value, textView);
-                //重新设置字间距，防止字体大小还没有设置
-                setLetterSpacing(get("line-spacing"), textView);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_PX , paint.getTextSize());
+                setLetterSpacing(get("letter-spacing"), textView);
+                setNeedDisplay();
             }else if("line-spacing".equals(key)){
                 setLineSpacing(value, textView);
+                setNeedDisplay();
             }else if ("paragraph-spacing".equals(key)){
                 //暂时无法实现，保留
             }else if ("letter-spacing".equals(key)){
                 setLetterSpacing(value, textView);
+                setNeedDisplay();
             }else if ("text-align".equals(key)){
                 setTextAlign(value, textView);
             }else if ("#text".equals(key)){
-                SpannableStringBuilder builder = obtainString();
-                FTextView tv = (FTextView) view();
-                if (tv != null){
-                    tv.setText(builder.toString());
-                }
+                setNeedDisplay();
             }
         }
+    }
+
+    private boolean _displaying = false;
+
+    public void setNeedDisplay() {
+
+        _text = null;
+
+        if(_displaying) {
+            return;
+        }
+
+        _displaying = true;
+
+        _handler.post(new Runnable() {
+            @Override
+            public void run() {
+                TextView v = (TextView) view();
+                if(v != null) {
+                    v.setText(text());
+                }
+                _displaying = false;
+            }
+        });
+
+
     }
 
     @Override
     public void changedKey(String key) {
         super.changedKey(key);
-//        if ("#text".equals(key)){
-//            System.out.println("#text:"+get(key));
-//            if (firstChild() == null){
-//                System.out.println("#text:child is null");
-//
-//                content = get(key);
-//                FTextView tv = (FTextView) view();
-//                if (tv == null) System.out.println("#text:tv is null");
-//                if (tv != null)
-//                    tv.setText(content);
-//            }
-//        }
-    }
-
-
-    /**
-     * 获取文本宽高
-     * @return
-     */
-    public Rect getTextRect() {
-        Rect size = new Rect();
-        TextPaint paint = new TextPaint();
-        paint.setTextSize(getFontSize());
-        String str = obtainString().toString();
-
-        if (str.length() > 0) {
-            String[] strings = str.split("\\n");
-            int line = strings.length;
-            if (line > 0){
-                int w = 0;
-                for (String curLineStr : strings) {
-                    int len = curLineStr.length();
-                    float[] widths = new float[len];
-                    paint.getTextWidths(curLineStr, widths);
-                    int width = 0;
-                    for (int i = 0; i < len; i++) {
-                        width += Math.ceil(widths[i]);
-                    }
-                    if (width >= w)w=width;
-                }
-
-                int h = 0;
-                Paint.FontMetrics metrics = paint.getFontMetrics();
-                h += Math.ceil(metrics.bottom - metrics.top) * line + getLineSpacing() * (line - 1);
-                size.set(0, 0, w, h);
-                System.out.println("SIZE："+size.width()+":"+size.height());
-
-            }
-
-
+        if("#text".equals(key)) {
+            setNeedDisplay();
+        } else if("font".equals(key)) {
+            Font.valueOf(get(key),paint);
+        } else if("color".equals(key)) {
+            int v = Color.valueOf(get(key),0xff000000);
+            paint.setColor(v);
+            paint.setAlpha(0x0ff & (v >> 24));
+        } else if("line-spacing".equals(key)) {
+            lineSpacing.set(get(key));
         }
 
-        return size;
     }
 
-    public SpannableStringBuilder obtainString(){
-        Element p = firstChild();
-        SpannableStringBuilder ssb = new SpannableStringBuilder();
-
-        if(p == null) {
-            String text = get("#text");
-            if (text != null)
-                ssb.append(text);
-        } else {
-            while (p != null) {
-                if (p instanceof SpanElement) {
-                    SpannableString ss = ((SpanElement) p).obtainContent();
-                    if (ss != null)
-                        ssb.append(ss);
-                }
-
-                if (p instanceof ImgElement) {
-                    SpannableString ss = ((ImgElement) p).obtainContent();
-                    if (ss != null) {
-                        ssb.append(ss);
-                    }
-                }
-                p = p.nextSibling();
-            }
-        }
-        return ssb;
-    }
-
-
-    /**
-     * 设置字体大小和是否加粗
-     * @param value 如30rpx bold
-     * @param tv
-     */
-    private void setTextSizeAndFont(String value, TextView tv){
-        String[] values = value.split(" ");
-        fontSize.set(values[0]);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize.floatValue(0, 0));
-
-        if (values.length > 1){
-            font = Font.valueOfString(values[1]);
-            tv.setTypeface(Font.createTypeface(font));
-        }
-    }
-
-    private int getFontSize(){
-        String font = get("font");
-        String[] values = font.split(" ");
-        if (values.length > 0)
-            fontSize.set(values[0]);
-        return (int) fontSize.floatValue(0, 0);
-    }
 
     /**
      * 设置行间距
@@ -254,13 +221,16 @@ public class TextElement extends ViewElement{
      * @param tv
      */
     private void setLetterSpacing(String value, TextView tv){
-        letterSpacing.set(value);
-        float fontMeasure = fontSize.value;
+        float fontMeasure = paint.getTextSize();
         float space = 0;
+        Pixel p = new Pixel();
+        p.set(value);
         if (fontMeasure != 0){
-            space = letterSpacing.value / fontMeasure;
+            space = p.floatValue(0,0) / fontMeasure;
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            paint.setLetterSpacing(space);
             tv.setLetterSpacing(space);
         }
     }
@@ -276,13 +246,13 @@ public class TextElement extends ViewElement{
         textAlign = TextAlign.valueOfString(value);
         switch (textAlign){
             case Left:
-                tv.setGravity(Gravity.LEFT);
+                tv.setGravity(Gravity.LEFT | Gravity.TOP);
                 break;
             case Right:
-                tv.setGravity(Gravity.RIGHT);
+                tv.setGravity(Gravity.RIGHT | Gravity.TOP);
                 break;
             case Center:
-                tv.setGravity(Gravity.CENTER);
+                tv.setGravity(Gravity.CENTER | Gravity.TOP);
                 break;
             case Justify://俩端对齐，textview原生不支持，后续可以考虑手动实现
                 break;

@@ -2,15 +2,8 @@ package cn.kkmofang.view;
 
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
-import java.util.Map;
-import java.util.Set;
-
-import cn.kkmofang.view.view.FTextView;
 
 /**
  * Created by hailong11 on 2018/1/20.

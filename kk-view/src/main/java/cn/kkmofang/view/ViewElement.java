@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
+
+import cn.kkmofang.image.ImageStyle;
 import cn.kkmofang.view.layout.FlexLayout;
 import cn.kkmofang.view.layout.HorizontalLayout;
 import cn.kkmofang.view.layout.RelativeLayout;
@@ -89,9 +91,6 @@ public class ViewElement extends Element implements Cloneable{
 
     public ViewElement() {
         viewContext = ViewContext.current();
-        if(viewContext == null) {
-            Log.d("","");
-        }
     }
 
     @Override
@@ -509,13 +508,23 @@ public class ViewElement extends Element implements Cloneable{
 
     protected void onSetProperty(View view, String key, String value) {
 
-        if(key.startsWith("border") || key.startsWith("background")) {
-            setBackground(key, value, view);
-        }else if("opacity".equals(key)) {
+        if("opacity".equals(key)) {
             setAlpha(value, view);
             view.setAlpha(V.floatValue(value,1.0f));
         } else if("hidden".equals(key)) {
             setVisible(!V.booleanValue(value, true), view);
+        } else if("overflow".equals(key)) {
+            if("hidden".equals(value)) {
+                if(view instanceof ViewGroup) {
+                    ((ViewGroup)view).setClipChildren(true);
+                }
+            } else {
+                if(view instanceof ViewGroup) {
+                    ((ViewGroup)view).setClipChildren(false);
+                }
+            }
+        } else if(key.startsWith("border") || key.startsWith("background")) {
+            setBackground(key, value, view);
         }
 
         if (view instanceof IElementView) {
@@ -564,7 +573,7 @@ public class ViewElement extends Element implements Cloneable{
         if (background == null || gradientDrawable == null){
             gradientDrawable = new GradientDrawable();
 
-            Drawable imgDrawable = viewContext.getImage(get("background-image"), new ImageStyle());
+            Drawable imgDrawable = viewContext.getImage(get("background-image"), new ImageStyle(viewContext.getContext()));
             if (imgDrawable == null){
                 background = new LayerDrawable(new Drawable[]{gradientDrawable});
             }else {
@@ -609,7 +618,7 @@ public class ViewElement extends Element implements Cloneable{
         if (view instanceof IElementView) {
             ((IElementView) view).recycleView(view, this);
         }
-        recycleDrawable(view.getBackground());
+
         view.setTag(R.id.kk_view_element, null);
     }
 
@@ -640,30 +649,6 @@ public class ViewElement extends Element implements Cloneable{
         return element;
     }
 
-    protected void recycleDrawable(Drawable recyleDrawable){
-        if (recyleDrawable == null)return;
-        if (recyleDrawable instanceof LayerDrawable){
-            int ofLayers = ((LayerDrawable) recyleDrawable).getNumberOfLayers();
-            for (int i = 0; i < ofLayers; i++) {
-                Drawable childDrawable = ((LayerDrawable) recyleDrawable).getDrawable(i);
-                if (childDrawable != null && childDrawable instanceof BitmapDrawable){
-                    Bitmap bm = ((BitmapDrawable) childDrawable).getBitmap();
-                    if (bm != null && !bm.isRecycled()){
-                        bm.recycle();
-                        bm = null;
-                        System.gc();
-                    }
-                }
-            }
-        }else if (recyleDrawable instanceof BitmapDrawable){
-            Bitmap bm = ((BitmapDrawable) recyleDrawable).getBitmap();
-            if (bm != null && !bm.isRecycled()){
-                bm.recycle();
-                bm = null;
-                System.gc();
-            }
-        }
-    }
 
     public static interface Layout {
         public void layout(ViewElement element);

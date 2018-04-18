@@ -7,6 +7,10 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.DynamicDrawableSpan;
 
+import java.lang.ref.WeakReference;
+
+import cn.kkmofang.image.Image;
+import cn.kkmofang.image.ImageStyle;
 import cn.kkmofang.view.value.Pixel;
 
 /**
@@ -45,20 +49,63 @@ public class ImgElement extends Element {
 
     public SpannableString obtainContent(){
         if (TextUtils.isEmpty(_src))return null;
-        SpannableString span = new SpannableString("加载图片");
+
+        final WeakReference<ImgElement> v = new WeakReference<ImgElement>(this);
+
+        SpannableString span = new SpannableString("...");
+
         span.setSpan(new DynamicDrawableSpan(DynamicDrawableSpan.ALIGN_BASELINE) {
             @Override
             public Drawable getDrawable() {
-                Drawable d = viewContext.getImage(_src, new ImageStyle());
-                //取不到宽高，暂时使用100作为默认值
-                int width = _width.type == Pixel.Type.Auto?100:
-                        (int) _width.floatValue(0, 0);
-                int height = _height.type == Pixel.Type.Auto?100:
-                        (int) _height.floatValue(0, 0);
-                d.setBounds(0, 0, width, height);
-                return d;
+
+                ImgElement e = v.get();
+
+                if(e != null) {
+
+                    ImageStyle style = new ImageStyle(e.viewContext.getContext());
+                    Drawable image = viewContext.getImage(_src, style);
+
+                    if(image != null) {
+
+                        int r=0,b = 0;
+
+                        if(e._width.type == Pixel.Type.Auto || e._height.type == Pixel.Type.Auto) {
+
+                            if(image instanceof Image) {
+                                r = ((Image) image).getBitmap().getWidth();
+                                b = ((Image) image).getBitmap().getHeight();
+                            } else if(image instanceof BitmapDrawable) {
+                                r = ((BitmapDrawable) image).getBitmap().getWidth();
+                                b = ((BitmapDrawable) image).getBitmap().getHeight();
+                            }
+
+                            if(e._width.type == Pixel.Type.Auto && e._height.type == Pixel.Type.Auto) {
+
+                            } else if(e._width.type == Pixel.Type.Auto) {
+                                float v = e._height.floatValue(0, 0);
+                                r = (int) Math.ceil(r *  v / b);
+                                b = (int) Math.ceil(v);
+                            } else if(e._height.type == Pixel.Type.Auto) {
+                                float v = e._width.floatValue(0, 0);
+                                b = (int) Math.ceil(b *  v / r);
+                                r = (int) Math.ceil(v);
+                            }
+
+                        } else {
+                            r = (int) Math.ceil(e._width.floatValue(0, 0));
+                            b = (int) Math.ceil(e._height.floatValue(0, 0));
+                        }
+                        image.setBounds(0,0, r,b);
+                    }
+
+                    return image;
+
+                }
+
+                return null;
             }
         }, 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
         return span;
     }
 }

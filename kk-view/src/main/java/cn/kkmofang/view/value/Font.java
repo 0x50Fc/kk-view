@@ -1,35 +1,56 @@
 package cn.kkmofang.view.value;
 
+import android.graphics.Paint;
 import android.graphics.Typeface;
 
 /**
  * 字体
- * Created by wangchao15 on 2018/2/27.
+ * Created by zhanghailong on 2018/2/27.
  */
 
-public enum Font {
+public class Font {
 
-    NORAML,BOLD,ITALIC;
+    public static void valueOf(String value,Paint paint) {
 
-    public static Font valueOfString(String v){
-        if ("bold".equals(v)){
-            return BOLD;
+        if(value == null) {
+            return ;
         }
-        if ("italic".equals(v)){
-            return ITALIC;
+
+        Pixel fontSize = new Pixel();
+        boolean bold = false;
+        boolean italic= false;
+        String name = null;
+
+        String[] vs = value.split(" ");
+
+        for(String v : vs) {
+
+            if(Pixel.is(v)) {
+                fontSize.set(v);
+            } else if("bold".equals(v)) {
+                bold = true;
+            } else if("italic".equals(v)) {
+                italic = true;
+            } else {
+                name = v;
+            }
         }
-        return NORAML;
+
+        paint.setTextSize(fontSize.floatValue(0,0));
+        paint.setFakeBoldText(bold);
+
+        if(name == null) {
+            if(italic) {
+                paint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.ITALIC));
+            }
+        } else {
+            if(italic) {
+                paint.setTypeface(Typeface.create(name,Typeface.ITALIC));
+            } else {
+                paint.setTypeface(Typeface.create(name,Typeface.NORMAL));
+            }
+        }
+
     }
 
-    public static Typeface createTypeface(Font font){
-        switch (font){
-            case BOLD:
-                return Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
-            case ITALIC:
-                return Typeface.create(Typeface.DEFAULT, Typeface.ITALIC);
-            case NORAML:
-            default:
-                return Typeface.create(Typeface.DEFAULT, Typeface.NORMAL);
-        }
-    }
 }

@@ -2,13 +2,14 @@ package cn.kkmofang.view;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.NinePatchDrawable;
+
+import cn.kkmofang.image.ImageStyle;
 
 /**
- * Created by hailong11 on 2018/3/23.
+ * Created by zhanghailong on 2018/3/23.
  */
 
-public class AbstractViewContext implements IViewContext {
+public abstract class AbstractViewContext implements IViewContext {
 
     private final Context _context;
 
@@ -22,12 +23,8 @@ public class AbstractViewContext implements IViewContext {
     }
 
     @Override
-    public ImageTask getImage(String url, ImageStyle style, ImageCallback callback) {
-        return null;
-    }
+    abstract public ImageTask getImage(String url, ImageStyle style, ImageCallback callback) ;
 
     @Override
-    public Drawable getImage(String url, ImageStyle style) {
-        return null;
-    }
+    abstract public Drawable getImage(String url, ImageStyle style);
 }
