@@ -12,7 +12,7 @@ import cn.kkmofang.view.event.EventEmitter;
  * Created by hailong11 on 2018/1/17.
  */
 
-public class Element extends EventEmitter implements Cloneable{
+public class Element extends EventEmitter {
 
     private Element _firstChild;
     private Element _lastChild;
@@ -149,13 +149,14 @@ public class Element extends EventEmitter implements Cloneable{
 
     public void remove() {
 
+        Element e = this;
         Element prev = prevSibling();
         Element next = nextSibling();
         Element parent = parent();
 
         if(prev != null) {
 
-            parent.onWillRemoveChildren(this);
+            parent.onWillRemoveChildren(e);
 
             prev.setNextSibling(next);
 
@@ -164,9 +165,12 @@ public class Element extends EventEmitter implements Cloneable{
             } else {
                 parent.setLastChild(prev);
             }
+
+            parent.onDidRemoveChildren(e);
         }
         else if(parent != null) {
-            parent.onWillRemoveChildren(this);
+
+            parent.onWillRemoveChildren(e);
 
             parent.setFirstChild(next);
             if(next != null) {
@@ -174,14 +178,11 @@ public class Element extends EventEmitter implements Cloneable{
             } else {
                 parent.setLastChild(null);
             }
+
+            parent.onDidRemoveChildren(e);
         }
     }
 
-    public void removeAllChildren(){
-        setPrevSibling(null);
-        setNextSibling(null);
-        setFirstChild(null);
-    }
 
     public void appendTo(Element element) {
         element.append(this);
@@ -195,6 +196,9 @@ public class Element extends EventEmitter implements Cloneable{
         element.after(this);
     }
 
+    protected void onDidRemoveChildren(Element element) {
+
+    }
     protected void onWillRemoveChildren(Element element) {
         element._levelId = 0;
         element._depth = 0;
@@ -223,7 +227,6 @@ public class Element extends EventEmitter implements Cloneable{
 
         keys.addAll(_attributes.keySet());
 
-        // TODO: 2018/2/5 这个v是干嘛用的
         String v = status();
 
         if(v == null) {
@@ -241,7 +244,7 @@ public class Element extends EventEmitter implements Cloneable{
         return keys;
     }
 
-    public String get(String key) {//有可能传的是空，那么就使用当前默认样式
+    public String get(String key) {
 
         if(_attributes.containsKey(key)) {
             return _attributes.get(key);
@@ -299,6 +302,14 @@ public class Element extends EventEmitter implements Cloneable{
             }
 
             changedKeys(keys);
+
+            Element e = firstChild();
+
+            while(e != null) {
+                e.set("in-status",v);
+                e = e.nextSibling();
+            }
+
         } else {
             Set<String> keys = new TreeSet<>();
             keys.add(key);

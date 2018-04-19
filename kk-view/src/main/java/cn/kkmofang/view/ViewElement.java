@@ -127,7 +127,7 @@ public class ViewElement extends Element implements Cloneable{
         } else if ("vertical-align".equals(key)) {
             verticalAlign = VerticalAlign.valueOfString(v);
         } else if ("position".equals(key)) {
-            position = Position.valueOf(v);
+            position = Position.valueOfString(v);
         } else if("border-width".equals(key)) {
             borderWidth.set(v);
         } else if("border-radius".equals(key)) {
@@ -408,8 +408,12 @@ public class ViewElement extends Element implements Cloneable{
     }
 
     public void obtainChildrenView() {
+        obtainChildrenView(_view);
+    }
 
-        if (_view != null) {
+    protected void obtainChildrenView(View view) {
+
+        if (view != null) {
 
             Element p = firstChild();
 
@@ -417,10 +421,7 @@ public class ViewElement extends Element implements Cloneable{
                 if (p instanceof ViewElement) {
                     ViewElement e = (ViewElement) p;
                     if (isChildrenVisible(e)) {
-                        if(e instanceof TextElement) {
-                            Log.d("","");
-                        }
-                        e.obtainView(_view);
+                        e.obtainView(view);
                     } else {
                         e.recycleView();
                     }
@@ -620,33 +621,6 @@ public class ViewElement extends Element implements Cloneable{
         }
 
         view.setTag(R.id.kk_view_element, null);
-    }
-
-    @Override
-    public ViewElement clone() {
-        ViewElement element = null;
-        try {
-            element = (ViewElement) super.clone();
-            if (element != null){
-                element.removeAllChildren();
-                element._view = null;
-                Element p = firstChild();
-                while (p != null){
-                    if (p instanceof ViewElement){
-                        ViewElement clone = ((ViewElement) p).clone();
-                        element.append(clone);
-                    }
-                    p = p.nextSibling();
-                }
-
-            }
-        }catch (CloneNotSupportedException e){
-            e.printStackTrace();
-        }
-
-
-
-        return element;
     }
 
 

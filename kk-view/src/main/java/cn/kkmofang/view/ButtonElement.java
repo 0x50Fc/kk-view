@@ -49,7 +49,6 @@ public class ButtonElement extends ViewElement {
                                 e.setStatus("hover");
                                 break;
                             case MotionEvent.ACTION_MOVE:
-                                System.out.println("Location:" + event.getX()+":"+v.getLeft()+":"+v.getWidth());
                                 if (event.getX() > v.getWidth() || event.getX() < 0){
                                     e.setStatus("");
                                 }else if (event.getY() > v.getHeight() || event.getY() < 0){

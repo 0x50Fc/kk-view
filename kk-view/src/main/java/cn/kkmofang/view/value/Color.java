@@ -32,7 +32,7 @@ public class Color {
                 }
             } else if(v.length() == 7) {
                 try {
-                    int vv = Integer.valueOf(v.substring(1), 16);
+                    int vv = Long.valueOf(v.substring(1), 16).intValue();
                     return 0x0ff000000 | vv;
                 }
                 catch(Throwable e) {
@@ -40,7 +40,7 @@ public class Color {
                 }
             } else if(v.length() == 9) {
                 try {
-                    int vv = Integer.valueOf(v.substring(1), 16);
+                    int vv = Long.valueOf(v.substring(1), 16).intValue();
                     return vv;
                 }
                 catch(Throwable e) {

@@ -104,7 +104,7 @@ public class ImgElement extends Element {
 
                 return null;
             }
-        }, 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }, 0, 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         return span;
     }

@@ -43,8 +43,8 @@ public final class Edge implements IValue<Edge> {
 
                 } else {
                     right.set(top);
-                    bottom.set(bottom);
-                    left.set(left);
+                    bottom.set(top);
+                    left.set(top);
                 }
             }
         }

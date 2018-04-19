@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.TreeMap;
 
 import cn.kkmofang.view.Element;
 import cn.kkmofang.view.ElementView;
-import cn.kkmofang.view.ScrollElement;
+import cn.kkmofang.view.v1.ScrollElement;
 import cn.kkmofang.view.ViewElement;
 
 /**

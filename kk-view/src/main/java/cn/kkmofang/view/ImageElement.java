@@ -2,8 +2,11 @@ package cn.kkmofang.view;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+
 import java.lang.ref.WeakReference;
 import cn.kkmofang.image.Image;
 import cn.kkmofang.image.ImageStyle;
@@ -17,12 +20,16 @@ public class ImageElement extends ViewElement {
 
     public final Pixel borderRadius = new Pixel();
 
+    private final Handler _handler;
     private ImageStyle _imageStyle;
     private Drawable _image;
+    private Drawable _defaultImage;
 
     public ImageElement() {
         super();
+        set("#view", ImageView.class.getName());
         setLayout(ImageLayout);
+        _handler = new Handler();
     }
 
     public ImageStyle imageStyle() {
@@ -30,13 +37,11 @@ public class ImageElement extends ViewElement {
         if(_imageStyle== null) {
             _imageStyle = new ImageStyle(viewContext.getContext());
             _imageStyle.radius = borderRadius.floatValue(0,0);
-            if(_imageStyle.radius >0){
-                Log.d("","");
-            }
         }
 
         return _imageStyle;
     }
+
     public Drawable getImage() {
 
         if(_image == null) {
@@ -44,6 +49,18 @@ public class ImageElement extends ViewElement {
         }
 
         return _image;
+    }
+
+    public Drawable getDefaultImage() {
+        if(_defaultImage == null) {
+            String v = get("default-src");
+            if(v != null) {
+                ImageStyle style = new ImageStyle(viewContext.getContext());
+                style.radius = borderRadius.floatValue(0,0);
+                _defaultImage = viewContext.getImage(v,style);
+            }
+        }
+        return _defaultImage;
     }
 
     public void loadImage(ImageCallback cb) {
@@ -56,10 +73,6 @@ public class ImageElement extends ViewElement {
 
     public void setImage(Drawable image) {
         _image = image;
-        View v = view();
-        if(v != null) {
-            v.setBackground(image);
-        }
     }
 
     @Override
@@ -72,7 +85,61 @@ public class ImageElement extends ViewElement {
             if(_imageStyle != null) {
                 _imageStyle.radius = borderRadius.floatValue(0,0);
             }
+        } else if("default-src".equals(key)) {
+            _defaultImage = null;
         }
+    }
+
+    public ImageView imageView() {
+        View v = view();
+        if(v != null && v instanceof ImageView) {
+            return (ImageView) v;
+        }
+        return null;
+    }
+
+    @Override
+    public void setView(View view) {
+        super.setView(view);
+        setNeedDisplay();
+    }
+
+    private boolean _displaying = false;
+
+    public void setNeedDisplay() {
+
+
+        if(imageView() == null) {
+            return;
+        }
+
+        if(_displaying) {
+            return;
+        }
+
+        _displaying = true;
+
+        _handler.post(new Runnable() {
+            @Override
+            public void run() {
+                display();
+            }
+        });
+
+    }
+
+    protected void display() {
+
+        ImageView v = imageView();
+
+        if(v != null) {
+            if(_image != null) {
+                v.setImageDrawable(_image);
+            } else {
+                v.setImageDrawable(getDefaultImage());
+            }
+        }
+        _displaying = false;
     }
 
     @Override
@@ -80,6 +147,8 @@ public class ImageElement extends ViewElement {
         super.onSetProperty(view, key, value);
 
         if ("src".equals(key)){
+
+            _image = null;
 
             final WeakReference<ImageElement> v = new WeakReference<ImageElement>(this);
 
@@ -92,6 +161,7 @@ public class ImageElement extends ViewElement {
 
                     if(e != null) {
                         e.setImage(drawable);
+                        e.display();
                     }
                 }
 
@@ -119,11 +189,11 @@ public class ImageElement extends ViewElement {
                 int r = 0,b = 0;
 
                 if(image instanceof Image) {
-                    r = (int) Math.ceil( ((Image) image).getBitmap().getWidth() / Pixel.UnitPX );
-                    b = (int) Math.ceil( ((Image) image).getBitmap().getHeight() / Pixel.UnitPX );
+                    r = (int) Math.ceil( ((Image) image).width() );
+                    b = (int) Math.ceil( ((Image) image).height() );
                 } else if(image instanceof BitmapDrawable) {
-                    r = (int) Math.ceil( ((BitmapDrawable) image).getBitmap().getWidth() / Pixel.UnitPX);
-                    b = (int) Math.ceil( ((BitmapDrawable) image).getBitmap().getHeight() / Pixel.UnitPX);
+                    r = (int) Math.ceil( ((BitmapDrawable) image).getBitmap().getWidth() );
+                    b = (int) Math.ceil( ((BitmapDrawable) image).getBitmap().getHeight() );
                 }
 
                 if(width == Pixel.Auto && height == Pixel.Auto) {
@@ -133,7 +203,7 @@ public class ImageElement extends ViewElement {
                     b = (int) Math.ceil(height);
                 } else if(height == Pixel.Auto) {
                     b = (int) Math.ceil(b *  width / r);
-                    r = (int) Math.ceil(height);
+                    r = (int) Math.ceil(width);
                 }
 
                 element.setContentSize(r, b);

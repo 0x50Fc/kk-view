@@ -6,7 +6,7 @@ import cn.kkmofang.view.value.Pixel;
 
 /**
  * 相对布局 "relative"
- * Created by hailong11 on 2018/1/18.
+ * Created by zhanghailong on 2018/1/18.
  */
 
 public class RelativeLayout implements ViewElement.Layout {
@@ -50,7 +50,7 @@ public class RelativeLayout implements ViewElement.Layout {
                 if(w == Pixel.Auto) {
                     w = e.contentWidth();
                     float min = e.minWidth.floatValue(inWidth,0);
-                    float max = e.minWidth.floatValue(inWidth,Pixel.Auto);
+                    float max = e.maxWidth.floatValue(inWidth,Pixel.Auto);
                     if(w < min) {
                         w = min;
                     }

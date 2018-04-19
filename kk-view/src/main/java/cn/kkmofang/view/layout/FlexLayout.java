@@ -10,7 +10,7 @@ import cn.kkmofang.view.value.VerticalAlign;
 
 /**
  * 流式布局 "flex" 左到右 上到下
- * Created by hailong11 on 2018/1/18.
+ * Created by zhanghailong on 2018/1/18.
  */
 
 public class FlexLayout implements ViewElement.Layout {
@@ -25,12 +25,12 @@ public class FlexLayout implements ViewElement.Layout {
                 float y = element.y();
                 float mtop = element.margin.top.floatValue(inHeight,0);
                 float mbottom = element.margin.bottom.floatValue(inHeight,0);
-                element.setY((int) Math.ceil( y + (lineHeight - mtop - mbottom - element.height())));
+                element.setY(y + (lineHeight - mtop - mbottom - element.height()));
             } else if(v == VerticalAlign.Middle) {
                 float y = element.y();
                 float mtop = element.margin.top.floatValue(inHeight,0);
                 float mbottom = element.margin.bottom.floatValue(inHeight,0);
-                element.setY((int) Math.ceil( y + (lineHeight - mtop - mbottom - element.height()) * 0.5f));
+                element.setY( y + (lineHeight - mtop - mbottom - element.height()) * 0.5f);
             }
         }
     }
@@ -107,6 +107,7 @@ public class FlexLayout implements ViewElement.Layout {
                     if(h > max) {
                         h = max;
                     }
+                    e.setHeight(h);
                 }
 
 
@@ -126,14 +127,14 @@ public class FlexLayout implements ViewElement.Layout {
                 x += w + mleft + mright;
 
                 if(lineHeight < h + mtop + mbottom) {
-                    lineHeight = height + mtop + mbottom;
+                    lineHeight = h + mtop + mbottom;
                 }
 
                 e.setX(left);
                 e.setY(top);
 
-                if(left + paddingRight + mright > maxWidth) {
-                    maxWidth = left + paddingRight + mright;
+                if(x + paddingRight  > maxWidth) {
+                    maxWidth = x + paddingRight ;
                 }
 
                 lineElements.add(e);

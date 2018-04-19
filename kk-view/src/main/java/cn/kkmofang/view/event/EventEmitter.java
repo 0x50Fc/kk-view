@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by hailong11 on 2018/1/17.
+ * Created by zhanghailong on 2018/1/17.
  */
 
 public class EventEmitter {

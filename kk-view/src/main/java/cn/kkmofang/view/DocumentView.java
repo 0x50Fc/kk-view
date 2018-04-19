@@ -12,13 +12,13 @@ import java.lang.ref.WeakReference;
 import cn.kkmofang.view.layout.FlexLayout;
 
 /**
- * Created by hailong11 on 2018/1/29.
+ * Created by zhanghailong on 2018/1/29.
  */
 
 public class DocumentView extends ElementView {
 
     private ViewElement _element;
-
+    private ViewElement _obtainElement;
 
     public DocumentView(Context context) {
         super(context);
@@ -45,6 +45,34 @@ public class DocumentView extends ElementView {
             requestLayout();
         }
 
+    }
+
+    public ViewElement obtainElement() {
+        return _obtainElement;
+    }
+
+    public void setObtainElement(ViewElement element) {
+
+        if(_element != null) {
+            _element.recycleView();
+            _element = null;
+        }
+
+        if(_obtainElement != element) {
+
+            if(_obtainElement != null) {
+                _obtainElement.recycleView();
+            }
+
+            _obtainElement = element;
+
+            if(_obtainElement != null) {
+                _obtainElement.setX(0);
+                _obtainElement.setY(0);
+                _obtainElement.obtainView(this);
+            }
+
+        }
     }
 
     @Override
