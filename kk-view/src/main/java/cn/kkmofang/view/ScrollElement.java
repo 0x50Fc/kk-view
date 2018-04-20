@@ -4,6 +4,7 @@ package cn.kkmofang.view;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,7 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.kkmofang.view.adapter.FRecyclerAdapter;
+import cn.kkmofang.view.layout.RelativeLayout;
 import cn.kkmofang.view.value.Orientation;
+import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.view.FRecyclerView;
 import cn.kkmofang.view.view.FViewPager;
 
@@ -90,6 +93,9 @@ public class ScrollElement extends ViewElement{
         }
     }
 
+    @Override
+    public void obtainChildrenView() {
+    }
 
     public static class LayoutManager extends RecyclerView.LayoutManager {
         private int offset;
@@ -200,7 +206,8 @@ public class ScrollElement extends ViewElement{
                 int marginTop = (int) p.top.floatValue(getHeight(), 0);
                 int marginBottom = (int) p.bottom.floatValue(getHeight(), 0);
                 int width = (int) p.width.floatValue(getWidth() - marginLeft - marginRight, 0);
-                int height = (int) p.height.floatValue(getHeight() - marginTop - marginBottom, 0);
+                int height = measureHeight(p);
+
                 p.layout(width, height);
                 if (mOrientation == Orientation.VERTICAL){
                     layoutDecorated(scrap,
@@ -220,6 +227,11 @@ public class ScrollElement extends ViewElement{
             }
             totalWidth = Math.max(offsetX, getHorizontalSpace());
             totalHeight = Math.max(offsetY, getVerticalSpace());
+        }
+
+        public int measureHeight(ViewElement e){
+            e.layoutChildren();
+            return (int) ((int) (e.contentHeight() + e.padding.top.floatValue(e.height(),0)) + e.padding.bottom.floatValue(e.height(), 0));
         }
 
         public int getVerticalSpace() {

@@ -107,10 +107,12 @@ public class FlexLayout implements ViewElement.Layout {
                     if(h > max) {
                         h = max;
                     }
+                    e.setHeight(h);
                 }
 
 
-                if(isAutoWarp() && x + mleft + mright + paddingRight >= width) {
+                if(isAutoWarp() && x + mleft + mright + paddingRight + w > width) {
+
                     if(lineElements.size() >0) {
                         layoutLineElements(lineElements,inWidth,inHeight,lineHeight);
                         lineElements.clear();
@@ -126,7 +128,7 @@ public class FlexLayout implements ViewElement.Layout {
                 x += w + mleft + mright;
 
                 if(lineHeight < h + mtop + mbottom) {
-                    lineHeight = height + mtop + mbottom;
+                    lineHeight = h + mtop + mbottom;
                 }
 
                 e.setX(left);

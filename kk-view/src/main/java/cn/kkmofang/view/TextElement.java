@@ -121,13 +121,10 @@ public class TextElement extends ViewElement{
     public void changedKey(String key) {
         super.changedKey(key);
 //        if ("#text".equals(key)){
-//            System.out.println("#text:"+get(key));
 //            if (firstChild() == null){
-//                System.out.println("#text:child is null");
 //
 //                content = get(key);
 //                FTextView tv = (FTextView) view();
-//                if (tv == null) System.out.println("#text:tv is null");
 //                if (tv != null)
 //                    tv.setText(content);
 //            }
@@ -144,12 +141,14 @@ public class TextElement extends ViewElement{
         TextPaint paint = new TextPaint();
         paint.setTextSize(getFontSize());
         String str = obtainString().toString();
+        System.out.println("TextElement=" + str);
 
         if (str.length() > 0) {
             String[] strings = str.split("\\n");
             int line = strings.length;
             if (line > 0){
                 int w = 0;
+                line = 0;
                 for (String curLineStr : strings) {
                     int len = curLineStr.length();
                     float[] widths = new float[len];
@@ -158,6 +157,12 @@ public class TextElement extends ViewElement{
                     for (int i = 0; i < len; i++) {
                         width += Math.ceil(widths[i]);
                     }
+                    if (this.width.type != Pixel.Type.Auto) {
+                        int mw = (int) this.width.floatValue(0, 0);
+                        if(mw > 0)
+                            line += Math.floor(((float)width) / mw);
+                    }
+                    line += 1;
                     if (width >= w)w=width;
                 }
 
@@ -165,7 +170,6 @@ public class TextElement extends ViewElement{
                 Paint.FontMetrics metrics = paint.getFontMetrics();
                 h += Math.ceil(metrics.bottom - metrics.top) * line + getLineSpacing() * (line - 1);
                 size.set(0, 0, w, h);
-                System.out.println("SIZE："+size.width()+":"+size.height());
 
             }
 
