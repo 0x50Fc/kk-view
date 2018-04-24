@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
@@ -625,6 +626,27 @@ public class ViewElement extends Element implements Cloneable{
         view.setTag(R.id.kk_view_element, null);
     }
 
+    public void onPause(Activity activity) {
+
+        Element e = firstChild();
+        while(e != null) {
+            if(e instanceof ViewElement) {
+                ((ViewElement) e).onPause(activity);
+            }
+            e = e.nextSibling();
+        }
+    }
+
+    public void onResume(Activity activity) {
+
+        Element e = firstChild();
+        while(e != null) {
+            if(e instanceof ViewElement) {
+                ((ViewElement) e).onResume(activity);
+            }
+            e = e.nextSibling();
+        }
+    }
 
     public static interface Layout {
         public void layout(ViewElement element);
