@@ -22,10 +22,12 @@ public class ElementView extends FrameLayout {
 
     public ElementView(Context context) {
         super(context);
+        setClipChildren(false);
     }
 
     public ElementView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setClipChildren(false);
     }
 
     @Override
@@ -49,6 +51,8 @@ public class ElementView extends FrameLayout {
                                 element.right() + element.translateX(),
                                 element.bottom() + element.translateY());
                     }
+                } else {
+                    v.layout(0,0,r-l,b-t);
                 }
             }
 
