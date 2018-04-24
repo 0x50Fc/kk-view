@@ -189,8 +189,8 @@ public class ImageElement extends ViewElement {
                 int r = 0,b = 0;
 
                 if(image instanceof Image) {
-                    r = (int) Math.ceil( ((Image) image).width() );
-                    b = (int) Math.ceil( ((Image) image).height() );
+                    r = (int) Math.ceil( ((Image) image).width() * Pixel.UnitPX);
+                    b = (int) Math.ceil( ((Image) image).height() * Pixel.UnitPX );
                 } else if(image instanceof BitmapDrawable) {
                     r = (int) Math.ceil( ((BitmapDrawable) image).getBitmap().getWidth() );
                     b = (int) Math.ceil( ((BitmapDrawable) image).getBitmap().getHeight() );

@@ -42,10 +42,16 @@ public class Font {
         if(name == null) {
             if(italic) {
                 paint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.ITALIC));
+            } else if(bold) {
+                paint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.BOLD));
+            } else {
+                paint.setTypeface(Typeface.create(Typeface.DEFAULT,Typeface.NORMAL));
             }
         } else {
             if(italic) {
                 paint.setTypeface(Typeface.create(name,Typeface.ITALIC));
+            } else if(bold) {
+                paint.setTypeface(Typeface.create(name,Typeface.BOLD));
             } else {
                 paint.setTypeface(Typeface.create(name,Typeface.NORMAL));
             }

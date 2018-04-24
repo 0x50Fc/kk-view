@@ -1,5 +1,7 @@
 package cn.kkmofang.view.layout;
 
+import android.util.Log;
+
 import java.util.LinkedList;
 import java.util.List;
 

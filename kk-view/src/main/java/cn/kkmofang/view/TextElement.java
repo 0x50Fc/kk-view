@@ -2,6 +2,7 @@ package cn.kkmofang.view;
 
 import android.os.Handler;
 import android.text.SpannableString;
+import android.util.Log;
 import android.view.View;
 import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Font;

@@ -206,7 +206,7 @@ public class PagerElement extends ViewElement {
         private void emitPageChangeEvent(int position){
             if (position < 1 || position > count)return;
             Event event = new Element.Event(PagerElement.this);
-            Map<String, String> map = data();
+            Map<String, Object> map = data();
             map.put("pageCount", String.valueOf(count));
             map.put("pageIndex", String.valueOf(position));
             event.setData(map);

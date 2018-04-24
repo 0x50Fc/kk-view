@@ -314,7 +314,7 @@ public class ViewElement extends Element implements Cloneable{
             Map<String, Queue<View>> dequeue = (Map<String, Queue<View>>) view.getTag(R.id.kk_view_dequeue);
 
             if (dequeue != null && dequeue.containsKey(reuse)) {
-                Queue<View> queue = (Queue<View>) dequeue.get(reuse);
+                Queue<View> queue = dequeue.get(reuse);
                 if (!queue.isEmpty()) {
                     vv = queue.poll();
                 }
@@ -343,6 +343,7 @@ public class ViewElement extends Element implements Cloneable{
             ((ViewElement) p).addSubview(vv, this, view);
         } else if (view instanceof ViewGroup) {
             ((ViewGroup) view).addView(vv);
+            view.requestLayout();
         }
         onObtainView(vv);
         onLayout(vv);
@@ -441,6 +442,7 @@ public class ViewElement extends Element implements Cloneable{
             } else {
                 p.addView(view);
             }
+            p.requestLayout();
         }
     }
 

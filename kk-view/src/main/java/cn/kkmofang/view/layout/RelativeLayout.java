@@ -1,5 +1,7 @@
 package cn.kkmofang.view.layout;
 
+import android.util.Log;
+
 import cn.kkmofang.view.Element;
 import cn.kkmofang.view.ViewElement;
 import cn.kkmofang.view.value.Pixel;

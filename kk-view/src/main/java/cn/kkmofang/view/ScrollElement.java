@@ -94,11 +94,11 @@ public class ScrollElement extends ViewElement {
             int height = contentHeight();
 
             if("scroll".equals(get("overflow-y"))) {
-                height = Math.max(height, height());
+                height = Math.max(height, height() + 1);
             }
 
             if("scroll".equals(get("overflow-x"))) {
-                width = Math.max(width, width());
+                width = Math.max(width, width() +1);
             }
 
             v.setContentSize(width,height);
@@ -115,6 +115,7 @@ public class ScrollElement extends ViewElement {
             } else {
                 p.addView(view,0);
             }
+            p.requestLayout();
         }
     }
 

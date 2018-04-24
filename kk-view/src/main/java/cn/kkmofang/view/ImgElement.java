@@ -72,8 +72,8 @@ public class ImgElement extends Element {
                         if(e._width.type == Pixel.Type.Auto || e._height.type == Pixel.Type.Auto) {
 
                             if(image instanceof Image) {
-                                r = ((Image) image).getBitmap().getWidth();
-                                b = ((Image) image).getBitmap().getHeight();
+                                r = (int) Math.ceil( ((Image) image).getBitmap().getWidth() * Pixel.UnitPX );
+                                b = (int) Math.ceil( ((Image) image).getBitmap().getHeight() * Pixel.UnitPX );
                             } else if(image instanceof BitmapDrawable) {
                                 r = ((BitmapDrawable) image).getBitmap().getWidth();
                                 b = ((BitmapDrawable) image).getBitmap().getHeight();

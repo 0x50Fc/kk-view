@@ -406,9 +406,9 @@ public class Element extends EventEmitter {
         }
     }
 
-    public Map<String,String> data() {
+    public Map<String,Object> data() {
 
-        Map<String,String> data = new TreeMap<>();
+        Map<String,Object> data = new TreeMap<>();
 
         for(String key : keys()) {
             if(key.startsWith("data-")) {
