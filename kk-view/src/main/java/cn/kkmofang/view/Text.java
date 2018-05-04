@@ -3,7 +3,16 @@ package cn.kkmofang.view;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
+import android.text.BoringLayout;
+import android.text.Layout;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.StaticLayout;
+import android.text.TextPaint;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +28,7 @@ public class Text {
     public float lineSpacing = 0;
     public float letterSpacing = 0;
     public TextAlign textAlign = TextAlign.Left;
-    public final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    public final TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     public final SpannableStringBuilder string = new SpannableStringBuilder();
 
     public void setNeedDisplay() {
@@ -60,12 +69,13 @@ public class Text {
     }
 
     public void draw(Canvas canvas) {
-
         build();
 
         float width = canvas.getWidth();
-        float dy = 0.0f;
-        float dx = 0.0f;
+
+        Paint.FontMetrics metrics = paint.getFontMetrics();
+        float dy = metrics.descent - metrics.ascent - (metrics.bottom - metrics.descent) + lineSpacing;
+        Layout.Alignment align = Layout.Alignment.ALIGN_NORMAL;
 
         for(Line line : _lines) {
 
@@ -74,11 +84,10 @@ public class Text {
             }
 
             if(textAlign == TextAlign.Center) {
-                dx = (width - line.width) * 0.5f;
+                align = Layout.Alignment.ALIGN_CENTER;
             } else if(textAlign == TextAlign.Right) {
-                dx = width - line.width;
+                align = Layout.Alignment.ALIGN_OPPOSITE;
             } else if(textAlign == TextAlign.Justify) {
-                dx = 0;
                 int c = (line.end - line.start - 1);
                 float dw = width - line.width;
                 if(c > 0) {
@@ -86,14 +95,20 @@ public class Text {
                         paint.setLetterSpacing(letterSpacing + dw / c);
                     }
                 }
-            } else {
-                dx = 0;
             }
 
-            canvas.drawText(string, line.start, line.end, dx, dy - paint.ascent(), paint);
-
-            dy += - paint.ascent() + paint.descent()  + lineSpacing;
-
+            StaticLayout layout = new StaticLayout(
+                    string,
+                    line.start,
+                    line.end,
+                    paint,
+                    (int) width,
+                    align,
+                    1.0f,
+                    0f,
+                    false);
+            layout.draw(canvas);
+            canvas.translate(0, dy);
         }
     }
 

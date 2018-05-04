@@ -4,18 +4,12 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.util.TypedValue;
-import android.view.View;
-import android.widget.TextView;
 
-import cn.kkmofang.view.value.Color;
-import cn.kkmofang.view.value.Font;
-import cn.kkmofang.view.value.Pixel;
+import cn.kkmofang.view.value.TextPaint;
 
 /**
  * Created by hailong11 on 2018/1/20.
@@ -23,7 +17,7 @@ import cn.kkmofang.view.value.Pixel;
 
 public class SpanElement extends Element {
 
-    public final Paint paint = new Paint();
+    public final TextPaint paint = new TextPaint();
 
     public SpanElement() {
         super();
@@ -39,15 +33,13 @@ public class SpanElement extends Element {
                 ((TextElement) p).setNeedDisplay();
             }
         } else if("font".equals(key)) {
-            Font.valueOf(get(key),paint);
+            paint.setFont(get(key));
             Element p = parent();
             if(p instanceof TextElement) {
                 ((TextElement) p).setNeedDisplay();
             }
         } else if("color".equals(key)) {
-            int v = Color.valueOf(get(key),0xff000000);
-            paint.setColor(v);
-            paint.setAlpha(0x0ff & (v >> 24));
+            paint.setColor(get(key));
             Element p = parent();
             if(p instanceof TextElement) {
                 ((TextElement) p).setNeedDisplay();
@@ -56,8 +48,23 @@ public class SpanElement extends Element {
 
     }
 
+    private Paint getPaint(){
+        Element p = parent();
+        if (p instanceof TextElement){
+            if (!paint.isSetColor()){
+                paint.setColor(p.get("color"));
+            }
+
+            if (!paint.isSetFont()){
+                paint.setFont(p.get("font"));
+            }
+        }
+
+        return paint.getPaint();
+    }
 
     public SpannableString obtainContent(){
+        Paint paint = getPaint();
 
         String text = get("#text");
 
