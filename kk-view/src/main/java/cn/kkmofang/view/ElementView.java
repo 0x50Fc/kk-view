@@ -31,6 +31,28 @@ public class ElementView extends FrameLayout {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+
+        int width = getDefaultSize(Integer.MAX_VALUE,widthMeasureSpec);
+        int height = getDefaultSize(Integer.MAX_VALUE,heightMeasureSpec);
+
+        WeakReference<ViewElement> e = (WeakReference<ViewElement>) getTag(R.id.kk_view_element);
+
+        if(e != null) {
+            ViewElement element = e.get();
+            if (element != null) {
+                width = element.width();
+                height = element.height();
+            }
+        }
+
+        setMeasuredDimension(width, height);
+
+        measureChildren(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST));
+
+    }
+
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int count = getChildCount();
 
