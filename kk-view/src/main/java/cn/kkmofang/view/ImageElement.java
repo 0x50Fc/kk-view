@@ -170,6 +170,8 @@ public class ImageElement extends ViewElement {
 
                 }
             });
+        } else if("overflow".equals(key)) {
+            view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
     }
 
