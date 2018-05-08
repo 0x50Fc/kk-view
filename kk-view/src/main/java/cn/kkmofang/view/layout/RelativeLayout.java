@@ -38,14 +38,20 @@ public class RelativeLayout implements ViewElement.Layout {
 
                 float mleft = e.margin.left.floatValue(width,0);
                 float mright = e.margin.right.floatValue(width,0);
-                float mtop = e.margin.top.floatValue(width,0);
-                float mbottom = e.margin.bottom.floatValue(width,0);
+                float mtop = e.margin.top.floatValue(height,0);
+                float mbottom = e.margin.bottom.floatValue(height,0);
 
                 float w = e.width.floatValue(inWidth - mleft - mright, Pixel.Auto);
                 float h = e.height.floatValue(inHeight - mtop - mbottom,Pixel.Auto);
 
-                e.setWidth((int) Math.ceil(w));
-                e.setHeight((int) Math.ceil(h));
+                if(element.padding.right.type == Pixel.Type.RPX && element.padding.right.value == 6
+                        && e.width.type == Pixel.Type.Percent
+                        && e.width.value == 100) {
+                    Log.d("","");
+                }
+
+                e.setWidth(w);
+                e.setHeight(h);
 
                 e.layoutChildren();
 
@@ -59,7 +65,7 @@ public class RelativeLayout implements ViewElement.Layout {
                     if(w > max) {
                         w = max;
                     }
-                    e.setWidth((int) Math.ceil(w));
+                    e.setWidth(w);
                 }
 
                 if(h == Pixel.Auto) {
@@ -72,7 +78,7 @@ public class RelativeLayout implements ViewElement.Layout {
                     if(h > max) {
                         h = max;
                     }
-                    e.setHeight((int) Math.ceil(h));
+                    e.setHeight(h);
                 }
 
                 float left = e.left.floatValue(inWidth,Pixel.Auto);
@@ -104,8 +110,8 @@ public class RelativeLayout implements ViewElement.Layout {
                     top = paddingTop + top + mtop;
                 }
 
-                e.setX((int) Math.ceil(left));
-                e.setY((int) Math.ceil(top));
+                e.setX(left);
+                e.setY(top);
 
                 if(left + paddingRight + mright + w > contentWidth) {
                     contentWidth = left + paddingRight + mright + w;
@@ -122,7 +128,7 @@ public class RelativeLayout implements ViewElement.Layout {
             p = p.nextSibling();
         }
 
-        element.setContentSize((int) Math.ceil(contentWidth),(int) Math.ceil(contentHeight));
+        element.setContentSize(contentWidth,contentHeight);
 
     }
 }

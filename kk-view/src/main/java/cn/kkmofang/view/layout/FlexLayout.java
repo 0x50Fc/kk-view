@@ -80,7 +80,7 @@ public class FlexLayout implements ViewElement.Layout {
 
                 float w = e.width.floatValue(inWidth - mleft - mright,Pixel.Auto);
                 float h = e.height.floatValue(inHeight - mtop - mbottom,Pixel.Auto);
-                
+
                 e.setWidth(w);
                 e.setHeight(h);
 

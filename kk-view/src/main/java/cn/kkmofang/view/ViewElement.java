@@ -501,6 +501,7 @@ public class ViewElement extends Element implements Cloneable{
             if ("hidden".equals(value)) {
                 if (view instanceof ViewGroup) {
                     ((ViewGroup) view).setClipChildren(true);
+                    view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
                 }
             } else {
                 if (view instanceof ViewGroup) {
