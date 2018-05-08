@@ -22,12 +22,10 @@ public class ElementView extends FrameLayout {
 
     public ElementView(Context context) {
         super(context);
-        setClipChildren(false);
     }
 
     public ElementView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setClipChildren(false);
     }
 
     @Override
@@ -41,8 +39,8 @@ public class ElementView extends FrameLayout {
         if(e != null) {
             ViewElement element = e.get();
             if (element != null) {
-                width = element.width();
-                height = element.height();
+                width = (int) Math.ceil(element.width());
+                height =(int) Math.ceil(element.height());
             }
         }
 
@@ -68,10 +66,10 @@ public class ElementView extends FrameLayout {
                     ViewElement element = e.get();
                     if(element != null) {
                         v.layout(
-                                element.left() + element.translateX(),
-                                element.top()+ element.translateY(),
-                                element.right() + element.translateX(),
-                                element.bottom() + element.translateY());
+                                (int) (element.left() + element.translateX()),
+                                (int) (element.top()+ element.translateY()),
+                                (int) Math.ceil(element.right() + element.translateX()),
+                                (int) Math.ceil(element.bottom() + element.translateY()));
                     }
                 } else {
                     v.layout(0,0,r-l,b-t);

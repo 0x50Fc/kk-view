@@ -48,16 +48,16 @@ import static android.R.attr.radius;
 
 public class ViewElement extends Element implements Cloneable{
 
-    private int _x;
-    private int _y;
-    private int _width;
-    private int _height;
-    private int _contentWidth;
-    private int _contentHeight;
-    private int _contentOffsetX;
-    private int _contentOffsetY;
-    private int _translateX;
-    private int _translateY;
+    private float _x;
+    private float _y;
+    private float _width;
+    private float _height;
+    private float _contentWidth;
+    private float _contentHeight;
+    private float _contentOffsetX;
+    private float _contentOffsetY;
+    private float _translateX;
+    private float _translateY;
     private Layout _layout = RelativeLayout;
 
     public IViewContext viewContext;
@@ -140,110 +140,90 @@ public class ViewElement extends Element implements Cloneable{
         }
     }
 
-    public int x() {
+    public float x() {
         return _x;
     }
 
-    public int y() {
+    public float y() {
         return _y;
     }
 
-    public int left() {
+    public float left() {
         return _x;
     }
 
-    public int top() {
+    public float top() {
         return _y;
     }
 
-    public int right() {
+    public float right() {
         return _x + _width;
     }
 
-    public int bottom() {
+    public float bottom() {
         return _y + _height;
     }
 
-    public int width() {
+    public float width() {
         return _width;
     }
 
-    public int height() {
+    public float height() {
         return _height;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(float width) {
         _width = width;
     }
 
-    public void setWidth(float width) {
-        _width = (int) Math.ceil(width);
-    }
-
-    public void setHeight(int height) {
+    public void setHeight(float height) {
         _height = height;
     }
 
-    public void setHeight(float height) {
-        _height = (int) Math.ceil(height);
-    }
-
-    public void setX(int x) {
+    public void setX(float x) {
         _x = x;
     }
 
-    public void setX(float x) {
-        _x = (int) Math.ceil(x);
-    }
-
-    public void setY(int y) {
+    public void setY(float y) {
         _y = y;
     }
 
-    public void setY(float y) {
-        _y = (int) Math.ceil(y);
-    }
-
-    public int contentWidth() {
+    public float contentWidth() {
         return _contentWidth;
     }
 
-    public int contentHeight() {
+    public float contentHeight() {
         return _contentHeight;
     }
 
-    public void setContentSize(int width, int height) {
+    public void setContentSize(float width, float height) {
         _contentWidth = width;
         _contentHeight = height;
     }
 
-    public void setContentSize(float width, float height) {
-        _contentWidth = (int) Math.ceil(width);
-        _contentHeight = (int) Math.ceil(height);
-    }
 
-    public int contentOffsetX() {
+    public float contentOffsetX() {
         return _contentOffsetX;
     }
 
-    public int contentOffsetY() {
+    public float contentOffsetY() {
         return _contentOffsetY;
     }
 
-    public void setContentOffset(int x, int y) {
+    public void setContentOffset(float x, float y) {
         _contentOffsetX = x;
         _contentOffsetY = y;
     }
 
-    public int translateX() {
+    public float translateX() {
         return _translateX;
     }
 
-    public int translateY() {
+    public float translateY() {
         return _translateY;
     }
 
-    public void translateTo(int x, int y) {
+    public void translateTo(float x, float y) {
         _translateX = x;
         _translateY = y;
     }
@@ -476,10 +456,10 @@ public class ViewElement extends Element implements Cloneable{
 
     public boolean isChildrenVisible(ViewElement element) {
 
-        int l = Math.max(element.left() + element.translateX(), contentOffsetX());
-        int t = Math.max(element.top() + element.translateY(), contentOffsetY());
-        int r = Math.min(element.right() + element.translateX(), contentOffsetX() + width());
-        int b = Math.min(element.bottom() + element.translateY(), contentOffsetY() + height());
+        int l = (int) Math.max(element.left() + element.translateX(), contentOffsetX());
+        int t = (int) Math.max(element.top() + element.translateY(), contentOffsetY());
+        int r = (int) Math.ceil(Math.min(element.right() + element.translateX(), contentOffsetX() + width()));
+        int b = (int) Math.ceil(Math.min(element.bottom() + element.translateY(), contentOffsetY() + height()));
 
         return r > l && b > t;
     }
@@ -518,15 +498,17 @@ public class ViewElement extends Element implements Cloneable{
         } else if("hidden".equals(key)) {
             setVisible(!V.booleanValue(value, true), view);
         } else if("overflow".equals(key)) {
-            if("hidden".equals(value)) {
-                if(view instanceof ViewGroup) {
-                    ((ViewGroup)view).setClipChildren(true);
+            if ("hidden".equals(value)) {
+                if (view instanceof ViewGroup) {
+                    ((ViewGroup) view).setClipChildren(true);
                 }
             } else {
-                if(view instanceof ViewGroup) {
-                    ((ViewGroup)view).setClipChildren(false);
+                if (view instanceof ViewGroup) {
+                    ((ViewGroup) view).setClipChildren(false);
                 }
             }
+        } else if("enabled".equals(key)) {
+            view.setEnabled(V.booleanValue(value,true));
         } else if(key.startsWith("border") || key.startsWith("background")) {
             setBackground(key, value, view);
         }

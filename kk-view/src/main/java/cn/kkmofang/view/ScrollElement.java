@@ -90,8 +90,9 @@ public class ScrollElement extends ViewElement {
         super.onLayout(view);
         ScrollView v = scrollView();
         if(v != null) {
-            int width = contentWidth();
-            int height = contentHeight();
+
+            float width = contentWidth();
+            float height = contentHeight();
 
             if("scroll".equals(get("overflow-y"))) {
                 height = Math.max(height, height() + 1);
@@ -101,7 +102,7 @@ public class ScrollElement extends ViewElement {
                 width = Math.max(width, width() +1);
             }
 
-            v.setContentSize(width,height);
+            v.setContentSize((int) Math.ceil(width),(int) Math.ceil(height));
         }
     }
 
@@ -117,6 +118,11 @@ public class ScrollElement extends ViewElement {
             }
             p.requestLayout();
         }
+    }
+
+    @Override
+    public boolean isChildrenVisible(ViewElement element) {
+        return true;
     }
 
 }

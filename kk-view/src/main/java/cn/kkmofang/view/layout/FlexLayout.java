@@ -75,12 +75,12 @@ public class FlexLayout implements ViewElement.Layout {
 
                 float mleft = e.margin.left.floatValue(width,0);
                 float mright = e.margin.right.floatValue(width,0);
-                float mtop = e.margin.top.floatValue(width,0);
-                float mbottom = e.margin.bottom.floatValue(width,0);
+                float mtop = e.margin.top.floatValue(height,0);
+                float mbottom = e.margin.bottom.floatValue(height,0);
 
                 float w = e.width.floatValue(inWidth - mleft - mright,Pixel.Auto);
                 float h = e.height.floatValue(inHeight - mtop - mbottom,Pixel.Auto);
-
+                
                 e.setWidth(w);
                 e.setHeight(h);
 
@@ -113,7 +113,7 @@ public class FlexLayout implements ViewElement.Layout {
                 }
 
 
-                if(isAutoWarp() && x + mleft + mright + paddingRight >= width) {
+                if(isAutoWarp() && x + w + mleft + mright + paddingRight > width) {
                     if(lineElements.size() >0) {
                         layoutLineElements(lineElements,inWidth,inHeight,lineHeight);
                         lineElements.clear();
