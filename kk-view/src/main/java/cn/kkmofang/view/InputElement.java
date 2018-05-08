@@ -91,6 +91,7 @@ public class InputElement extends ViewElement {
             text.setFocusable(true);
             text.setFocusableInTouchMode(true);
             text.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            text.setBackground(null);
 
             final WeakReference<InputElement> e = new WeakReference<>(this);
 
