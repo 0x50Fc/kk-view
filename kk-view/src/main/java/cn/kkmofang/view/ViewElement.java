@@ -36,10 +36,12 @@ import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Edge;
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.Position;
+import cn.kkmofang.view.value.Shadow;
 import cn.kkmofang.view.value.V;
 import cn.kkmofang.view.value.VerticalAlign;
 
 import static android.R.attr.radius;
+import static android.R.attr.shadowColor;
 
 
 /**
@@ -80,7 +82,7 @@ public class ViewElement extends Element implements Cloneable{
 
     public final Pixel borderWidth = new Pixel();
     public final Pixel borderRadius = new Pixel();
-
+    public final Shadow shadow = new Shadow();
 
     public VerticalAlign verticalAlign = VerticalAlign.Top;
     public Position position = Position.None;
@@ -133,6 +135,8 @@ public class ViewElement extends Element implements Cloneable{
             borderWidth.set(v);
         } else if("border-radius".equals(key)) {
             borderRadius.set(v);
+        } else if("box-shadow".equals(key)) {
+            shadow.set(v);
         }
 
         if(_view != null) {
@@ -508,8 +512,6 @@ public class ViewElement extends Element implements Cloneable{
                     ((ViewGroup) view).setClipChildren(false);
                 }
             }
-        } else if("enabled".equals(key)) {
-            view.setEnabled(V.booleanValue(value,true));
         } else if(key.startsWith("border") || key.startsWith("background")) {
             setBackground(key, value, view);
         }
@@ -527,14 +529,6 @@ public class ViewElement extends Element implements Cloneable{
         view.setVisibility(visible?View.VISIBLE:View.GONE);
     }
 
-//    /**
-//     * 设置背景图片
-//     * @param src 图片路径
-//     * @param view
-//     */
-//    private void setBackgroundDrawable(String src, View view){
-//        view.setBackground(viewContext.getImage(src));
-//    }
 
     /**
      * 设置alpha

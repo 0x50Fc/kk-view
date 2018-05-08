@@ -20,24 +20,6 @@ import com.kk.view.R;
 
 public class ElementView extends FrameLayout {
 
-    private BackgroundView _backgroundView;
-
-    public BackgroundView backgroundView(){
-        if(_backgroundView == null) {
-            _backgroundView = new BackgroundView(getContext());
-            super.addView(_backgroundView,0);
-        }
-        return _backgroundView;
-    }
-
-    @Override
-    public void addView(View child, int index) {
-        if(index == 0 && _backgroundView != null) {
-            super.addView(child, 1);
-        } else {
-            super.addView(child,index);
-        }
-    }
 
     public ElementView(Context context) {
         super(context);
@@ -81,11 +63,6 @@ public class ElementView extends FrameLayout {
 
             if(v != null && v.getVisibility() == View.VISIBLE) {
 
-                if(v instanceof BackgroundView) {
-                    v.layout(0,0,r-l,b-t);
-                    continue;
-                }
-
                 WeakReference<ViewElement> e = (WeakReference<ViewElement>) v.getTag(R.id.kk_view_element);
 
                 if(e != null) {
@@ -102,14 +79,6 @@ public class ElementView extends FrameLayout {
                 }
             }
 
-        }
-    }
-
-    public static class BackgroundView extends View {
-
-        
-        public BackgroundView(Context context) {
-            super(context);
         }
     }
 
