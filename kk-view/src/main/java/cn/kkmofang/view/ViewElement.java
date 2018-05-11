@@ -460,6 +460,10 @@ public class ViewElement extends Element implements Cloneable{
 
     public boolean isChildrenVisible(ViewElement element) {
 
+        if(V.booleanValue(element.get("keepalive"),false)) {
+            return true;
+        }
+
         int l = (int) Math.max(element.left() + element.translateX(), contentOffsetX());
         int t = (int) Math.max(element.top() + element.translateY(), contentOffsetY());
         int r = (int) Math.ceil(Math.min(element.right() + element.translateX(), contentOffsetX() + width()));
