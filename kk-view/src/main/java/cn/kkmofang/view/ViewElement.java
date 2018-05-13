@@ -2,32 +2,19 @@ package cn.kkmofang.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RoundRectShape;
-import android.os.Build;
-import android.text.Layout;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.kk.view.R;
-
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
 
+import cn.kkmofang.unity.R;
 import cn.kkmofang.image.ImageStyle;
 import cn.kkmofang.view.layout.FlexLayout;
 import cn.kkmofang.view.layout.HorizontalLayout;
@@ -40,12 +27,9 @@ import cn.kkmofang.view.value.Shadow;
 import cn.kkmofang.view.value.V;
 import cn.kkmofang.view.value.VerticalAlign;
 
-import static android.R.attr.radius;
-import static android.R.attr.shadowColor;
-
 
 /**
- * Created by hailong11 on 2018/1/17.
+ * Created by zhanghailong on 2018/1/17.
  */
 
 public class ViewElement extends Element implements Cloneable{

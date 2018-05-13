@@ -5,9 +5,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-
-import com.kk.view.R;
-
 import java.lang.ref.WeakReference;
 
 import cn.kkmofang.view.layout.FlexLayout;

@@ -1,18 +1,12 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Path;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.TextView;
-
 import java.lang.ref.WeakReference;
+import cn.kkmofang.unity.R;
 
-import com.kk.view.R;
 
 /**
  * Created by zhanghailong on 2018/1/18.
