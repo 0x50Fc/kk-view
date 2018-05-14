@@ -71,7 +71,7 @@ public class Text {
     public void draw(Canvas canvas) {
         build();
 
-        float width = canvas.getWidth();
+        int width = canvas.getWidth();
 
         Paint.FontMetrics metrics = paint.getFontMetrics();
         float dy = metrics.descent - metrics.ascent - (metrics.bottom - metrics.descent) + lineSpacing;
@@ -102,7 +102,7 @@ public class Text {
                     line.start,
                     line.end,
                     paint,
-                    (int) width,
+                    width,
                     align,
                     1.0f,
                     0f,

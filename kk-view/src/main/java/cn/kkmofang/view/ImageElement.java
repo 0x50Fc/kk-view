@@ -73,6 +73,14 @@ public class ImageElement extends ViewElement {
 
     public void setImage(Drawable image) {
         _image = image;
+
+        if(_image != null) {
+
+            if(width.type == Pixel.Type.Auto
+                    || height.type == Pixel.Type.Auto) {
+                emit("layout",new Event(this));
+            }
+        }
     }
 
     @Override

@@ -85,7 +85,7 @@ public class PagerElement extends ViewElement {
         private List<ViewElement> _elements;
 
         public PagerElementAdapter(PagerElement element) {
-            _element = new WeakReference<PagerElement>(element);
+            _element = new WeakReference<>(element);
             _documentViews = new LinkedList<>();
         }
 
