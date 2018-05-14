@@ -3,7 +3,7 @@ package cn.kkmofang.view;
 import android.graphics.drawable.Drawable;
 
 /**
- * Created by hailong11 on 2018/3/21.
+ * Created by zhanghailong on 2018/3/21.
  */
 
 public interface ImageCallback {

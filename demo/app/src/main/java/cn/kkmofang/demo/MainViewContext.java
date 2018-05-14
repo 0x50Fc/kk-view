@@ -16,7 +16,7 @@ import cn.kkmofang.view.ImageStyle;
 import cn.kkmofang.view.ImageTask;
 
 /**
- * Created by hailong11 on 2018/3/21.
+ * Created by zhanghailong on 2018/3/21.
  */
 
 public class MainViewContext implements IViewContext {

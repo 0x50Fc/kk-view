@@ -12,7 +12,7 @@ import android.text.style.StyleSpan;
 import cn.kkmofang.view.value.TextPaint;
 
 /**
- * Created by hailong11 on 2018/1/20.
+ * Created by zhanghailong on 2018/1/20.
  */
 
 public class SpanElement extends Element {

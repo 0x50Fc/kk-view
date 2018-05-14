@@ -5,7 +5,7 @@ import android.view.View;
 import java.lang.ref.WeakReference;
 
 /**
- * Created by hailong11 on 2018/1/18.
+ * Created by zhanghailong on 2018/1/18.
  */
 
 public interface IElementView {

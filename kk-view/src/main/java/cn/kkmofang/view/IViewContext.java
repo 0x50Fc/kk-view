@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable;
 import cn.kkmofang.image.ImageStyle;
 
 /**
- * Created by hailong11 on 2018/3/13.
+ * Created by zhanghailong on 2018/3/13.
  */
 
 public interface IViewContext {

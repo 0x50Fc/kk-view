@@ -1,7 +1,7 @@
 package cn.kkmofang.view.value;
 
 /**
- * Created by hailong11 on 2018/1/17.
+ * Created by zhanghailong on 2018/1/17.
  */
 //边缘
 public final class Edge implements IValue<Edge> {

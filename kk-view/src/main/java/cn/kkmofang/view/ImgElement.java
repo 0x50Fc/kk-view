@@ -14,7 +14,7 @@ import cn.kkmofang.image.ImageStyle;
 import cn.kkmofang.view.value.Pixel;
 
 /**
- * Created by hailong11 on 2018/1/20.
+ * Created by zhanghailong on 2018/1/20.
  */
 
 public class ImgElement extends Element {

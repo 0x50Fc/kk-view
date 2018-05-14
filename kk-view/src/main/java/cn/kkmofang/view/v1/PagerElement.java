@@ -16,7 +16,7 @@ import cn.kkmofang.view.utils.WeakHandler;
 import cn.kkmofang.view.view.FViewPager;
 
 /**
- * Created by hailong11 on 2018/1/20.
+ * Created by zhanghailong on 2018/1/20.
  */
 
 public class PagerElement extends ViewElement {

@@ -1,7 +1,7 @@
 package cn.kkmofang.view.value;
 
 /**
- * Created by hailong11 on 2018/5/8.
+ * Created by zhanghailong on 2018/5/8.
  */
 
 public class Shadow implements IValue<Shadow>{
