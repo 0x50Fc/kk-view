@@ -489,17 +489,6 @@ public class ViewElement extends Element implements Cloneable{
             view.setAlpha(V.floatValue(value,1.0f));
         } else if("hidden".equals(key)) {
             setVisible(!V.booleanValue(value, true), view);
-        } else if("overflow".equals(key)) {
-            if ("hidden".equals(value)) {
-                if (view instanceof ViewGroup) {
-                    ((ViewGroup) view).setClipChildren(true);
-                    view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-                }
-            } else {
-                if (view instanceof ViewGroup) {
-                    ((ViewGroup) view).setClipChildren(false);
-                }
-            }
         } else if(key.startsWith("border") || key.startsWith("background")) {
             setBackground(key, value, view);
         }
@@ -608,6 +597,28 @@ public class ViewElement extends Element implements Cloneable{
         while(e != null) {
             if(e instanceof ViewElement) {
                 ((ViewElement) e).onResume(activity);
+            }
+            e = e.nextSibling();
+        }
+    }
+
+    public void onStart(Activity activity) {
+
+        Element e = firstChild();
+        while(e != null) {
+            if(e instanceof ViewElement) {
+                ((ViewElement) e).onStart(activity);
+            }
+            e = e.nextSibling();
+        }
+    }
+
+    public void onStop(Activity activity) {
+
+        Element e = firstChild();
+        while(e != null) {
+            if(e instanceof ViewElement) {
+                ((ViewElement) e).onStop(activity);
             }
             e = e.nextSibling();
         }
