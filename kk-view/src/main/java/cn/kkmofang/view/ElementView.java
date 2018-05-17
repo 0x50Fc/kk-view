@@ -12,7 +12,7 @@ import cn.kkmofang.unity.R;
  * Created by zhanghailong on 2018/1/18.
  */
 
-public class ElementView extends FrameLayout {
+public class ElementView extends FrameLayout implements IElementView{
 
 
     public ElementView(Context context) {
@@ -76,4 +76,23 @@ public class ElementView extends FrameLayout {
         }
     }
 
+    @Override
+    public void setProperty(View view, ViewElement element, String key, String value) {
+
+    }
+
+    @Override
+    public void layout(View view, ViewElement element) {
+        requestLayout();
+    }
+
+    @Override
+    public void obtainView(View view, ViewElement element) {
+
+    }
+
+    @Override
+    public void recycleView(View view, ViewElement element) {
+
+    }
 }

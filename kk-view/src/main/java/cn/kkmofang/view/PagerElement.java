@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -17,9 +18,11 @@ import java.util.Queue;
 public class PagerElement extends ViewElement {
 
     private PagerElementAdapter _adapter;
+    private final Handler _handler;
 
     public PagerElement() {
         super();
+        _handler = new Handler();
         set("#view",ViewPager.class.getName());
     }
 
@@ -76,6 +79,53 @@ public class PagerElement extends ViewElement {
 
     }
 
+
+    @Override
+    protected void onDidAddChildren(Element element) {
+        super.onDidAddChildren(element);
+        setNeedDisplay();
+    }
+
+    @Override
+    protected void onWillRemoveChildren(Element element) {
+        setNeedDisplay();
+        super.onWillRemoveChildren(element);
+    }
+
+
+    private boolean _displaying = false;
+
+    public void setNeedDisplay() {
+
+        if(view() == null) {
+            return;
+        }
+
+        if(_displaying) {
+            return;
+        }
+
+        _displaying = true;
+
+        _handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(_displaying) {
+                    display();
+                }
+            }
+        });
+
+    }
+
+    public void display() {
+
+        _displaying = false;
+
+        if(_adapter != null) {
+            _adapter.notifyDataSetChanged();
+        }
+    }
 
     private static class PagerElementAdapter extends PagerAdapter {
 
