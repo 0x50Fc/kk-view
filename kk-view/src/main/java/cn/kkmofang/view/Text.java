@@ -3,20 +3,10 @@ package cn.kkmofang.view;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
-import android.text.BoringLayout;
 import android.text.Layout;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
 
 /**
@@ -72,8 +62,9 @@ public class Text {
         }
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas,int width,int height) {
         build();
+        canvas.translate(0,(height - _layout.getHeight()) * 0.5f);
         _layout.draw(canvas);
     }
 

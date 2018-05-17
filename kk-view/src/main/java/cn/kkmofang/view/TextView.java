@@ -34,7 +34,7 @@ public class TextView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if(_text != null) {
-            _text.draw(canvas);
+            _text.draw(canvas,getWidth(),getHeight());
         }
     }
 }
