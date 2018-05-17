@@ -50,6 +50,7 @@ public class TextElement extends ViewElement{
                     p = p.nextSibling();
                 }
             }
+            _text.build();
         }
 
         return _text;

@@ -6,6 +6,6 @@ package cn.kkmofang.view;
 
 public final class Tag {
 
-    public final static String Tag = "kk-view";
+    public final static String Tag = "kk";
 
 }

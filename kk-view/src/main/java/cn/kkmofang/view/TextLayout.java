@@ -3,27 +3,21 @@ package cn.kkmofang.view;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
-import android.text.BoringLayout;
 import android.text.Layout;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
 
 /**
  * Created by zhanghailong on 2018/4/18.
  */
 
-public class Text {
+public class TextLayout {
 
     public float maxWidth = 0;
     public float lineSpacing = 0;
@@ -32,15 +26,12 @@ public class Text {
     public final TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     public final SpannableStringBuilder string = new SpannableStringBuilder();
 
-    private StaticLayout _layout;
-    private float _width;
-
     public void setNeedDisplay() {
-        _layout = null;
+        _lines = null;
     }
 
     public boolean isNeedDisplay() {
-        return _layout == null;
+        return _lines == null;
     }
 
     public void setMaxWidth(int v) {
@@ -74,47 +65,94 @@ public class Text {
 
     public void draw(Canvas canvas) {
         build();
-        _layout.draw(canvas);
-    }
 
+        int width = canvas.getWidth();
 
-    public void build() {
+        Paint.FontMetrics metrics = paint.getFontMetrics();
+        float dy = metrics.descent - metrics.ascent - (metrics.bottom - metrics.descent) + lineSpacing;
+        Layout.Alignment align = Layout.Alignment.ALIGN_NORMAL;
 
-        if(_layout == null) {
-
+        for(Line line : _lines) {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 paint.setLetterSpacing(letterSpacing);
             }
 
-            Layout.Alignment align = Layout.Alignment.ALIGN_NORMAL;
-
             if(textAlign == TextAlign.Center) {
                 align = Layout.Alignment.ALIGN_CENTER;
             } else if(textAlign == TextAlign.Right) {
                 align = Layout.Alignment.ALIGN_OPPOSITE;
+            } else if(textAlign == TextAlign.Justify) {
+                int c = (line.end - line.start - 1);
+                float dw = width - line.width;
+                if(c > 0) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        paint.setLetterSpacing(letterSpacing + dw / c);
+                    }
+                }
             }
 
-           _layout = new StaticLayout(
+            StaticLayout layout = new StaticLayout(
                     string,
-                    0,
-                    string.length(),
+                    line.start,
+                    line.end,
                     paint,
-                   (int) Math.ceil(maxWidth),
+                    width + 12,
                     align,
                     1.0f,
                     0f,
                     false);
 
+            layout.draw(canvas);
+            canvas.translate(0, dy);
+        }
+    }
+
+    private Line[] _lines;
+    private float _width;
+    private float _height;
+
+    private void build() {
+
+        if(_lines == null) {
+
+            List<Line> lines = new ArrayList<Line>(4);
+
+            _height = 0;
             _width = 0;
 
-            for(int i=0;i<_layout.getLineCount();i++) {
-                float v = _layout.getLineWidth(i);
-                if(v > _width) {
-                    _width = v;
+            float[] widths = new float[1];
+
+            int start = 0;
+            int end = string.length();
+            int len;
+
+            while(start < end ){
+
+                if(start != 0) {
+                    _height += lineSpacing;
                 }
+
+                len = paint.breakText(string, start, end, false, maxWidth, widths);
+
+                Line v = new Line();
+                v.start = start;
+                v.end = start + len;
+                v.width = widths[0];
+
+                lines.add(v);
+
+                _height +=  - paint.ascent() + paint.descent();
+
+                if(_width < widths[0]) {
+                    _width = widths[0];
+                }
+
+                start += len;
+
             }
 
+            _lines = lines.toArray(new Line[lines.size()]);
         }
 
     }
@@ -126,7 +164,12 @@ public class Text {
 
     public float height() {
         build();
-        return _layout.getHeight();
+        return _height;
     }
 
+    private static class Line {
+        public int start;
+        public int end;
+        public float width;
+    }
 }

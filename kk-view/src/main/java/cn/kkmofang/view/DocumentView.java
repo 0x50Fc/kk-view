@@ -77,7 +77,7 @@ public class DocumentView extends ElementView {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
-        if (_element != null) {
+        if (_element != null ) {
             _element.layout(r - l, b - t);
             _element.obtainView(this);
         }

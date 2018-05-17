@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Created by zhanghailong on 2018/4/19.
@@ -26,6 +27,7 @@ public class TextView extends View {
 
     public TextView(Context context) {
         super(context);
+
     }
 
     @Override
