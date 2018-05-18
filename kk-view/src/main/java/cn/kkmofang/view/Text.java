@@ -7,6 +7,8 @@ import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+
+import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
 
 /**
@@ -84,6 +86,10 @@ public class Text {
                 align = Layout.Alignment.ALIGN_CENTER;
             } else if(textAlign == TextAlign.Right) {
                 align = Layout.Alignment.ALIGN_OPPOSITE;
+            }
+
+            if(maxWidth == Pixel.Auto) {
+                align =  Layout.Alignment.ALIGN_NORMAL;
             }
 
            _layout = new StaticLayout(
