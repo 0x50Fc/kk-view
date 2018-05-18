@@ -489,12 +489,50 @@ public class ViewElement extends Element implements Cloneable{
             view.setAlpha(V.floatValue(value,1.0f));
         } else if("hidden".equals(key)) {
             setVisible(!V.booleanValue(value, true), view);
+        } else if("overflow".equals(key)) {
+            if("hidden".equals(value)) {
+                if(_viewLayer != View.LAYER_TYPE_HARDWARE) {
+                    if(view instanceof ViewGroup) {
+                        ((ViewGroup) view).setClipChildren(true);
+                        view.setLayerType(View.LAYER_TYPE_HARDWARE,null);
+                    }
+                }
+            }
         } else if(key.startsWith("border") || key.startsWith("background")) {
             setBackground(key, value, view);
         }
 
         if (view instanceof IElementView) {
             ((IElementView) view).setProperty(view, this, key, value);
+        }
+    }
+
+    private int _viewLayer = View.LAYER_TYPE_NONE;
+
+    public int viewLayer() {
+        return _viewLayer;
+    }
+
+    public void setViewLayer(int viewLayer) {
+
+        _viewLayer = viewLayer;
+
+        if(_viewLayer != View.LAYER_TYPE_NONE) {
+
+            View v = view();
+
+            if(v != null) {
+                v.setLayerType(_viewLayer,null);
+            }
+
+            Element p = parent();
+
+            while(p != null && p instanceof ViewElement) {
+
+                ((ViewElement) p).setViewLayer(viewLayer);
+
+                p = p.parent();
+            }
         }
     }
 
