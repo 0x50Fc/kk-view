@@ -92,6 +92,12 @@ public class PagerElement extends ViewElement {
         super.onWillRemoveChildren(element);
     }
 
+    @Override
+    protected void onLayout(View view) {
+        setNeedDisplay();
+        super.onLayout(view);
+    }
+
 
     private boolean _displaying = false;
 
