@@ -3,9 +3,7 @@ package cn.kkmofang.view;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-
-import com.kk.view.R;
-
+import cn.kkmofang.unity.R;
 import java.lang.ref.WeakReference;
 
 /**
