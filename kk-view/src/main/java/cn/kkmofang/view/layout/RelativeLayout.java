@@ -36,6 +36,8 @@ public class RelativeLayout implements ViewElement.Layout {
 
                 ViewElement e = (ViewElement) p;
 
+                e.willLayout();
+
                 float mleft = e.margin.left.floatValue(width,0);
                 float mright = e.margin.right.floatValue(width,0);
                 float mtop = e.margin.top.floatValue(height,0);

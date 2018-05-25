@@ -2,6 +2,8 @@ package cn.kkmofang.view.value;
 
 import android.util.Log;
 
+import java.util.Map;
+
 import cn.kkmofang.view.Tag;
 
 /**
@@ -39,6 +41,32 @@ public final class V {
             }
         }
         return defaultValue;
+    }
+
+    public final static String stringValue(Object v,String defaultValue) {
+
+        if(v == null){
+            return defaultValue;
+        }
+
+        if(v instanceof String) {
+            return (String) v;
+        }
+
+        return v.toString();
+    }
+
+    public final static Object get(Object object,String key) {
+        if(object == null) {
+            return null;
+        }
+        if(object instanceof Map){
+            Map m = (Map) object;
+            if(m.containsKey(key)) {
+                return m.get(key);
+            }
+        }
+        return null;
     }
 
 }

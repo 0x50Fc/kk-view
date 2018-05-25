@@ -214,6 +214,11 @@ public class ViewElement extends Element implements Cloneable{
     public void translateTo(float x, float y) {
         _translateX = x;
         _translateY = y;
+        View v = view();
+        if(v != null) {
+            v.setTranslationX(x);
+            v.setTranslationY(y);
+        }
     }
 
     public Layout layout() {
@@ -265,10 +270,16 @@ public class ViewElement extends Element implements Cloneable{
         return ElementView.class;
     }
 
+
     public void obtainView(View view) {
 
         if (_view != null && _view.getParent() == view) {
+
+            _view.setTranslationX(_translateX);
+            _view.setTranslationY(_translateY);
+
             obtainChildrenView();
+
             return;
         }
 
@@ -314,6 +325,10 @@ public class ViewElement extends Element implements Cloneable{
             ((ViewGroup) view).addView(vv);
             view.requestLayout();
         }
+
+        vv.setTranslationX(_translateX);
+        vv.setTranslationY(_translateY);
+
         onObtainView(vv);
         onLayout(vv);
         setView(vv);
@@ -428,6 +443,14 @@ public class ViewElement extends Element implements Cloneable{
     protected void onDidAddChildren(Element element) {
         super.onDidAddChildren(element);
 
+        if(element instanceof ViewElement) {
+
+            ViewElement e = (ViewElement) element;
+
+            if(e.viewLayer() != View.LAYER_TYPE_NONE) {
+                setViewLayer(e.viewLayer());
+            }
+        }
     }
 
     @Override
@@ -466,11 +489,14 @@ public class ViewElement extends Element implements Cloneable{
         }
     }
 
+    public void willLayout() {
+
+    }
+
     public void onLayout() {
         if (_view != null) {
             onLayout(_view);
         }
-        obtainChildrenView();
     }
 
     public void layout(int width, int height) {
@@ -494,7 +520,7 @@ public class ViewElement extends Element implements Cloneable{
                 if(_viewLayer != View.LAYER_TYPE_HARDWARE) {
                     if(view instanceof ViewGroup) {
                         ((ViewGroup) view).setClipChildren(true);
-                        view.setLayerType(View.LAYER_TYPE_HARDWARE,null);
+                        view.setLayerType(View.LAYER_TYPE_SOFTWARE,null);
                     }
                 }
             }

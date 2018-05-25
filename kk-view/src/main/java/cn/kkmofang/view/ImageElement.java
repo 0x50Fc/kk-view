@@ -29,6 +29,7 @@ public class ImageElement extends ViewElement {
         super();
         set("#view", ImageView.class.getName());
         setLayout(ImageLayout);
+        setViewLayer(View.LAYER_TYPE_HARDWARE);
         _handler = new Handler();
     }
 

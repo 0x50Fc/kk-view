@@ -2,12 +2,6 @@ package cn.kkmofang.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
-import android.widget.LinearLayout;
-import java.lang.ref.WeakReference;
-
-import cn.kkmofang.view.layout.FlexLayout;
 
 /**
  * Created by zhanghailong on 2018/1/29.
@@ -15,6 +9,8 @@ import cn.kkmofang.view.layout.FlexLayout;
 
 public class DocumentView extends ElementView {
 
+    private boolean _animated;
+    private boolean _changed;
     private ViewElement _element;
     private ViewElement _obtainElement;
 
@@ -39,7 +35,7 @@ public class DocumentView extends ElementView {
             }
 
             _element = element;
-
+            _changed = true;
             requestLayout();
         }
 
@@ -63,25 +59,35 @@ public class DocumentView extends ElementView {
             }
 
             _obtainElement = element;
-
-            if (_obtainElement != null) {
-                _obtainElement.setX(0);
-                _obtainElement.setY(0);
-                _obtainElement.obtainView(this);
-            }
+            _changed = true;
 
             requestLayout();
         }
 
     }
 
+    public void setNeedsLayout(boolean animated) {
+        _changed = true;
+        _animated = animated;
+        requestLayout();
+    }
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
-        if (_element != null ) {
+        if (_element != null && (changed || _changed)) {
             _element.layout(r - l, b - t);
             _element.obtainView(this);
         }
+
+        if (_obtainElement != null && (changed || _changed)) {
+            _obtainElement.setX(0);
+            _obtainElement.setY(0);
+            _obtainElement.obtainView(this);
+        }
+
+        _changed = false;
+        _animated = false;
 
         super.onLayout(changed, l, t, r, b);
     }

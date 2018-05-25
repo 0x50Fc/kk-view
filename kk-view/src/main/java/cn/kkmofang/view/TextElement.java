@@ -31,8 +31,9 @@ public class TextElement extends ViewElement{
 
             if(p == null) {
                 String v = get("#text");
-                if (v != null)
+                if (v != null) {
                     _text.string.append(v);
+                }
             } else {
                 while (p != null) {
                     if (p instanceof SpanElement) {

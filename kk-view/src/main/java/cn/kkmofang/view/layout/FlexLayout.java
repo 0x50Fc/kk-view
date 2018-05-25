@@ -1,6 +1,5 @@
 package cn.kkmofang.view.layout;
 
-import android.util.Log;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +33,8 @@ public class FlexLayout implements ViewElement.Layout {
                 float mbottom = element.margin.bottom.floatValue(inHeight,0);
                 element.setY( y + (lineHeight - mtop - mbottom - element.height()) * 0.5f);
             }
+
+            element.onLayout();
         }
     }
 
@@ -72,6 +73,8 @@ public class FlexLayout implements ViewElement.Layout {
                     p = p.nextSibling();
                     continue;
                 }
+
+                e.willLayout();
 
                 float mleft = e.margin.left.floatValue(width,0);
                 float mright = e.margin.right.floatValue(width,0);

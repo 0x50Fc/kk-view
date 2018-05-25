@@ -1,8 +1,11 @@
 package cn.kkmofang.view.event;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by zhanghailong on 2018/1/17.
@@ -10,57 +13,75 @@ import java.util.List;
 
 public class EventEmitter {
 
-    private final List<EventCallback> _funcs;
+    private final Map<String,List<EventFunction>> _funcs ;
 
     public EventEmitter() {
-        _funcs = new LinkedList<EventCallback>();
+        _funcs = new TreeMap<>();
     }
 
     public void on(String name, EventFunction func) {
-        _funcs.add(new EventCallback(name,func));
+        List<EventFunction> cbs;
+        if(_funcs.containsKey(name)) {
+            cbs = _funcs.get(name);
+        } else {
+            cbs = new LinkedList<>();
+            _funcs.put(name,cbs);
+        }
+        cbs.add(func);
     }
 
     public void off(String name,EventFunction func) {
 
-        Iterator<EventCallback> i = _funcs.iterator();
+        if(name == null && func == null) {
+            _funcs.clear();
+        } else if(name == null) {
+            for(String key : _funcs.keySet()) {
 
-        while(i.hasNext()) {
-            EventCallback cb = i.next()   ;
-            if((name == null || name.equals(cb.name))
-                    && (func == null || func == cb.func)) {
-                i.remove();
+                List<EventFunction> cbs = _funcs.get(key);
+
+                Iterator<EventFunction> i = cbs.iterator();
+
+                while(i.hasNext()) {
+                    EventFunction cb = i.next()   ;
+                    if( func == cb) {
+                        i.remove();
+                    }
+                }
+
+            }
+        } else if(_funcs.containsKey(name)){
+
+            List<EventFunction> cbs = _funcs.get(name);
+
+            Iterator<EventFunction> i = cbs.iterator();
+
+            while(i.hasNext()) {
+                EventFunction cb = i.next()   ;
+                if( func == cb) {
+                    i.remove();
+                }
             }
         }
+
     }
 
     public void emit(String name, Event event) {
-        List<EventCallback> cbs = new LinkedList<EventCallback>();
 
-        Iterator<EventCallback> i = _funcs.iterator();
+        if(_funcs.containsKey(name)) {
 
-        while(i.hasNext()) {
-            EventCallback cb = i.next();
-            if(cb.name.equals(name)) {
-                cbs.add(cb);
+            List<EventFunction> cbs = _funcs.get(name);
+
+            for(EventFunction fn : new ArrayList<>(cbs)) {
+                fn.onEvent(event);
             }
+
         }
 
-        i = cbs.iterator();
-
-        while(i.hasNext()) {
-            EventCallback cb = i.next();
-            cb.func.onEvent(event);
-        }
     }
 
-    private static class EventCallback {
-
-        public final String name;
-        public final EventFunction func;
-
-        public EventCallback(String name,EventFunction func) {
-            this.name = name;
-            this.func = func;
-        }
+    public boolean hasEvent(String name) {
+        return _funcs.containsKey(name) && _funcs.get(name).size() > 0;
     }
+
+
 }

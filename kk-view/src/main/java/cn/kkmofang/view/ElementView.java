@@ -63,10 +63,10 @@ public class ElementView extends FrameLayout implements IElementView{
                     ViewElement element = e.get();
                     if(element != null) {
                         v.layout(
-                                (int) (element.left() + element.translateX()),
-                                (int) (element.top()+ element.translateY()),
-                                (int) Math.ceil(element.right() + element.translateX()),
-                                (int) Math.ceil(element.bottom() + element.translateY()));
+                                (int) (element.left()),
+                                (int) (element.top()),
+                                (int) Math.ceil(element.right()),
+                                (int) Math.ceil(element.bottom()));
                     }
                 } else {
                     v.layout(0,0,r-l,b-t);
@@ -81,9 +81,34 @@ public class ElementView extends FrameLayout implements IElementView{
 
     }
 
+    private boolean _layouting = false;
+
+    protected void setNeedsLayout() {
+
+        if(_layouting) {
+            return;
+        }
+
+        _layouting = true;
+
+        final WeakReference<ElementView> v = new WeakReference<>(this);
+
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                ElementView vv = v.get();
+                if(vv != null) {
+                    vv._layouting = false;
+                    vv.requestLayout();
+                }
+            }
+        });
+
+    }
+
     @Override
     public void layout(View view, ViewElement element) {
-        requestLayout();
+        setNeedsLayout();
     }
 
     @Override

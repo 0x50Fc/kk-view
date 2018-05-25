@@ -77,6 +77,9 @@ public class PagerElement extends ViewElement {
     @Override
     public void obtainChildrenView() {
 
+        if(_adapter != null) {
+            _adapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -129,7 +132,7 @@ public class PagerElement extends ViewElement {
         _displaying = false;
 
         if(_adapter != null) {
-            _adapter.notifyDataSetChanged();
+            _adapter.reloadElements();
         }
     }
 
@@ -196,10 +199,9 @@ public class PagerElement extends ViewElement {
 
         }
 
-        @Override
-        public void notifyDataSetChanged() {
+        public void reloadElements() {
             _elements = null;
-            super.notifyDataSetChanged();
+            notifyDataSetChanged();
         }
 
         protected List<ViewElement> elements() {

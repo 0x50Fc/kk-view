@@ -1,5 +1,7 @@
 package cn.kkmofang.view;
 
+import android.util.Log;
+
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.Set;
@@ -353,6 +355,8 @@ public class Element extends EventEmitter {
         }
 
         v.putAll(attrs);
+
+        changedKeys(attrs.keySet());
     }
 
     protected Map<String, String> getStyle(String status){
@@ -512,6 +516,18 @@ public class Element extends EventEmitter {
         }
 
         return sb.toString();
+    }
+
+    public boolean hasBubbleEvent(String name) {
+        boolean v = hasEvent(name);
+        if(v) {
+            return true;
+        }
+        Element p = parent();
+        if(p != null) {
+            return p.hasBubbleEvent(name);
+        }
+        return false;
     }
 
     public static class Event extends cn.kkmofang.view.event.Event {
