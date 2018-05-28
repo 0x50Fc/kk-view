@@ -110,7 +110,7 @@ public class SlideElement extends ScrollElement {
 
                 cur.setTag(R.id.kk_view_element,new WeakReference<>(element));
 
-                ScrollView pv = scrollView();
+                ContainerView pv = scrollView();
 
                 if(pv != null) {
                     pv.contentView.addView(cur,0);

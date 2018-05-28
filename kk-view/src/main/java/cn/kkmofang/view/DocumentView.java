@@ -81,8 +81,8 @@ public class DocumentView extends ElementView {
         }
 
         if (_obtainElement != null && (changed || _changed)) {
-            _obtainElement.setX(0);
-            _obtainElement.setY(0);
+            _obtainElement.setX(_obtainElement.margin.left.floatValue(0,0));
+            _obtainElement.setY(_obtainElement.margin.top.floatValue(0,0));
             _obtainElement.obtainView(this);
         }
 

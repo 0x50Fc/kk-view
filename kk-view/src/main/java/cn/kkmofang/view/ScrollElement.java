@@ -9,11 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.lang.ref.WeakReference;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
-import cn.kkmofang.view.event.Event;
 import cn.kkmofang.view.value.Edge;
+import cn.kkmofang.view.value.Position;
 import cn.kkmofang.view.value.V;
 
 /**
@@ -28,14 +31,14 @@ public class ScrollElement extends ViewElement {
 
     @Override
     public Class<?> viewClass() {
-        return ScrollView.class;
+        return ContainerView.class;
     }
 
     private boolean _tracking = false;
 
 
     public void setView(View view) {
-        ScrollView v = scrollView();
+        ContainerView v = scrollView();
         if(v != null) {
             v.setOnTouchListener(null);
             v.setOnScrollListener(null);
@@ -46,7 +49,7 @@ public class ScrollElement extends ViewElement {
 
             final WeakReference<ScrollElement> e = new WeakReference<ScrollElement>(this);
 
-            v.setOnScrollListener(new ScrollView.OnScrollListener() {
+            v.setOnScrollListener(new ContainerView.OnScrollListener() {
                 @Override
                 public void onScroll(int x, int y) {
                     ScrollElement v = e.get();
@@ -107,7 +110,7 @@ public class ScrollElement extends ViewElement {
 
             if("scrolltop".equals(name)) {
                 ((Element.Event) event).setCancelBubble(true);
-                ScrollView v = scrollView();
+                ContainerView v = scrollView();
                 if(v != null) {
                     final WeakReference<ScrollElement> e = new WeakReference<>(this);
                     @SuppressLint("ObjectAnimatorBinding") ObjectAnimator animator = ObjectAnimator.ofFloat(v, "scrollY", (int) contentOffsetY(), 0);
@@ -208,10 +211,10 @@ public class ScrollElement extends ViewElement {
         }
     }
 
-    public ScrollView scrollView() {
+    public ContainerView scrollView() {
         View v = view();
-        if(v != null && v instanceof ScrollView) {
-            return (ScrollView)v;
+        if(v != null && v instanceof ContainerView) {
+            return (ContainerView)v;
         }
         return null;
     }
@@ -259,8 +262,8 @@ public class ScrollElement extends ViewElement {
                     ViewElement e = (ViewElement) p;
                     anchor = p.get("anchor");
                     if(anchor != null) {
-                        float tx = e.x() + e.translateX();
-                        float ty = e.y() + e.translateY();
+                        float tx = e.x();
+                        float ty = e.y();
                         float twidth = e.width();
                         float theight = e.height();
                         float l  = Math.max(x,tx);
@@ -335,7 +338,7 @@ public class ScrollElement extends ViewElement {
 
     public void setNeedObtainChildrening() {
 
-        ScrollView v = scrollView();
+        ContainerView v = scrollView();
 
         if(v == null) {
             return;
@@ -357,50 +360,83 @@ public class ScrollElement extends ViewElement {
     }
 
     @Override
+    protected void obtainChildrenView(View view) {
+
+        if (view != null) {
+
+            ContainerView v = (ContainerView) view();
+
+            Set<Position> positions = new HashSet<>();
+
+            positions.add(Position.Top);
+            positions.add(Position.Bottom);
+            positions.add(Position.Pull);
+
+            Element p = firstChild();
+
+            while (p != null) {
+                if (p instanceof ViewElement) {
+                    ViewElement e = (ViewElement) p;
+
+                    if(e.position == Position.Top) {
+                        float offsetY = contentOffsetY();
+                        float mtop = e.margin.top.floatValue(0,0);
+                        float y = e.y();
+                        if(y - offsetY - mtop < 0) {
+                            v.setPosition(e,Position.Top);
+                            positions.remove(Position.Top);
+                            p = p.nextSibling();
+                            continue;
+                        }
+                    } else if(e.position == Position.Bottom) {
+                        float y = e.y();
+                        float h = e.height();
+                        float mbottom = e.margin.bottom.floatValue(0,0);
+                        float dy = contentOffsetY() + height() - h -mbottom - y;
+                        if(dy > 0) {
+                            v.setPosition(e,Position.Bottom);
+                            positions.remove(Position.Bottom);
+                            p = p.nextSibling();
+                            continue;
+                        }
+                    } else if(e.position == Position.Pull) {
+                        if(contentOffsetY() < 0) {
+                            v.setPosition(e,Position.Pull);
+                            positions.remove(Position.Pull);
+                            p = p.nextSibling();
+                            continue;
+                        }
+                    }
+
+                    if (isChildrenVisible(e)) {
+                        e.obtainView(view);
+                    } else {
+                        e.recycleView();
+                    }
+                }
+                p = p.nextSibling();
+            }
+
+            for(Position position : positions) {
+                v.setPosition(null,position);
+            }
+
+        }
+    }
+
+    @Override
     public void obtainChildrenView() {
-        ScrollView v = scrollView();
+        ContainerView v = scrollView();
         if(v != null) {
             obtainChildrenView(v.contentView);
         }
     }
 
-    public boolean isChildrenVisible(ViewElement element) {
-
-        switch (element.position) {
-            case Top:
-            {
-                float offsetY = contentOffsetY();
-                float mtop = element.margin.top.floatValue(0,0);
-                float y = element.y();
-                if(y - offsetY - mtop < 0) {
-                    element.translateTo(0,offsetY - y + mtop);
-                } else {
-                    element.translateTo(0,0);
-                }
-
-            }
-                break;
-            case Bottom:
-                float y = element.y();
-                float h = element.height();
-                float mbottom = element.margin.bottom.floatValue(0,0);
-                float pbottom = padding.bottom.floatValue(0,0);
-                float dy = contentOffsetY() + height() - h -mbottom - y;
-                if(dy > 0) {
-                    element.translateTo(0,Math.min(dy,pbottom));
-                } else {
-                    element.translateTo(0,0);
-                }
-
-        }
-
-        return super.isChildrenVisible(element);
-    }
 
     @Override
     protected void onLayout(View view){
         super.onLayout(view);
-        ScrollView v = scrollView();
+        ContainerView v = scrollView();
         if(v != null) {
 
             float width = contentWidth();

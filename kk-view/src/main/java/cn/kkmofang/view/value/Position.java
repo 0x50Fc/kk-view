@@ -5,7 +5,37 @@ package cn.kkmofang.view.value;
  */
 //位置
 public enum Position {
-    None,Top,Bottom,Left,Right;
+    None {
+        @Override
+        public int intValue() {
+            return 0;
+        }
+    },Top {
+        @Override
+        public int intValue() {
+            return 1;
+        }
+    },Bottom {
+        @Override
+        public int intValue() {
+            return 2;
+        }
+    },Left {
+        @Override
+        public int intValue() {
+            return 3;
+        }
+    },Right {
+        @Override
+        public int intValue() {
+            return 4;
+        }
+    },Pull {
+        @Override
+        public int intValue() {
+            return 5;
+        }
+    };
 
     public static Position valueOfString(String v) {
 
@@ -25,6 +55,12 @@ public enum Position {
             return Right;
         }
 
+        if("pull".equals(v)) {
+            return Pull;
+        }
+
         return None;
     }
+
+    public abstract int intValue();
 }

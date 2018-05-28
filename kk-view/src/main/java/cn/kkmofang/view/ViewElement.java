@@ -42,8 +42,6 @@ public class ViewElement extends Element implements Cloneable{
     private float _contentHeight;
     private float _contentOffsetX;
     private float _contentOffsetY;
-    private float _translateX;
-    private float _translateY;
     private Layout _layout = RelativeLayout;
 
     public IViewContext viewContext;
@@ -203,24 +201,6 @@ public class ViewElement extends Element implements Cloneable{
         _contentOffsetY = y;
     }
 
-    public float translateX() {
-        return _translateX;
-    }
-
-    public float translateY() {
-        return _translateY;
-    }
-
-    public void translateTo(float x, float y) {
-        _translateX = x;
-        _translateY = y;
-        View v = view();
-        if(v != null) {
-            v.setTranslationX(x);
-            v.setTranslationY(y);
-        }
-    }
-
     public Layout layout() {
         return _layout;
     }
@@ -275,9 +255,6 @@ public class ViewElement extends Element implements Cloneable{
 
         if (_view != null && _view.getParent() == view) {
 
-            _view.setTranslationX(_translateX);
-            _view.setTranslationY(_translateY);
-
             obtainChildrenView();
 
             return;
@@ -325,9 +302,6 @@ public class ViewElement extends Element implements Cloneable{
             ((ViewGroup) view).addView(vv);
             view.requestLayout();
         }
-
-        vv.setTranslationX(_translateX);
-        vv.setTranslationY(_translateY);
 
         onObtainView(vv);
         onLayout(vv);
@@ -471,10 +445,10 @@ public class ViewElement extends Element implements Cloneable{
             return true;
         }
 
-        int l = (int) Math.max(element.left() + element.translateX(), contentOffsetX());
-        int t = (int) Math.max(element.top() + element.translateY(), contentOffsetY());
-        int r = (int) Math.ceil(Math.min(element.right() + element.translateX(), contentOffsetX() + width()));
-        int b = (int) Math.ceil(Math.min(element.bottom() + element.translateY(), contentOffsetY() + height()));
+        int l = (int) Math.max(element.left(), contentOffsetX());
+        int t = (int) Math.max(element.top(), contentOffsetY());
+        int r = (int) Math.ceil(Math.min(element.right(), contentOffsetX() + width()));
+        int b = (int) Math.ceil(Math.min(element.bottom(), contentOffsetY() + height()));
 
         return r > l && b > t;
     }
