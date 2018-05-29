@@ -113,7 +113,7 @@ public class ScrollElement extends ViewElement {
                 ContainerView v = scrollView();
                 if(v != null) {
                     final WeakReference<ScrollElement> e = new WeakReference<>(this);
-                    @SuppressLint("ObjectAnimatorBinding") ObjectAnimator animator = ObjectAnimator.ofFloat(v, "scrollY", (int) contentOffsetY(), 0);
+                    @SuppressLint("ObjectAnimatorBinding") ObjectAnimator animator = ObjectAnimator.ofFloat(v.scrollView, "scrollY", (int) contentOffsetY(), 0);
                     animator.setDuration(300);
                     animator.addListener(new AnimatorListenerAdapter() {
                         @Override
@@ -132,7 +132,7 @@ public class ScrollElement extends ViewElement {
                 }
             } else if("anchor".equals(name)) {
 
-                View view = scrollView();
+                ContainerView view = scrollView();
 
                 ((Element.Event) event).setCancelBubble(true);
 
@@ -169,7 +169,7 @@ public class ScrollElement extends ViewElement {
                         float y = element.y() - margin.top.floatValue(0, 0);
                         final WeakReference<ScrollElement> e = new WeakReference<>(this);
                         if(x != contentOffsetX()) {
-                            @SuppressLint("ObjectAnimatorBinding") ObjectAnimator animator = ObjectAnimator.ofInt(view, "scrollX", (int) contentOffsetX(), (int) x);
+                            @SuppressLint("ObjectAnimatorBinding") ObjectAnimator animator = ObjectAnimator.ofInt(view.scrollView, "scrollX", (int) contentOffsetX(), (int) x);
                             animator.setDuration(300);
                             animator.addListener(new AnimatorListenerAdapter() {
                                 @Override
@@ -187,7 +187,7 @@ public class ScrollElement extends ViewElement {
                             animator.start();
                         }
                         if(y != contentOffsetY()) {
-                            @SuppressLint("ObjectAnimatorBinding") ObjectAnimator animator = ObjectAnimator.ofInt(view, "scrollY", (int) contentOffsetY(), (int) y);
+                            @SuppressLint("ObjectAnimatorBinding") ObjectAnimator animator = ObjectAnimator.ofInt(view.scrollView, "scrollY", (int) contentOffsetY(), (int) y);
                             animator.setDuration(300);
                             animator.addListener(new AnimatorListenerAdapter() {
                                 @Override
@@ -436,8 +436,10 @@ public class ScrollElement extends ViewElement {
     @Override
     protected void onLayout(View view){
         super.onLayout(view);
-        ContainerView v = scrollView();
-        if(v != null) {
+
+        if(view instanceof ContainerView) {
+
+            ContainerView v = (ContainerView) view;
 
             float width = contentWidth();
             float height = contentHeight();

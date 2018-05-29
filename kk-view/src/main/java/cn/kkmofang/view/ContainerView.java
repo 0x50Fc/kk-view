@@ -229,7 +229,7 @@ public class ContainerView extends ElementView {
 
     }
 
-    public static class PositionView  extends FrameLayout {
+    public static class PositionView  extends ElementView {
 
         public PositionView(Context context) {
             super(context);

@@ -300,12 +300,11 @@ public class ViewElement extends Element implements Cloneable{
             ((ViewElement) p).addSubview(vv, this, view);
         } else if (view instanceof ViewGroup) {
             ((ViewGroup) view).addView(vv);
-            view.requestLayout();
         }
 
+        setView(vv);
         onObtainView(vv);
         onLayout(vv);
-        setView(vv);
 
         for (String key : keys()) {
             String v = get(key);

@@ -64,6 +64,7 @@ public class ImageElement extends ViewElement {
         return _defaultImage;
     }
 
+
     public void loadImage(ImageCallback cb) {
         if(_image != null){
             cb.onImage(_image);
@@ -86,7 +87,6 @@ public class ImageElement extends ViewElement {
 
     @Override
     public void changedKey(String key) {
-        super.changedKey(key);
         if("src".equals(key)) {
             _image = null;
         } else if("border-radius".equals(key)) {
@@ -97,6 +97,7 @@ public class ImageElement extends ViewElement {
         } else if("default-src".equals(key)) {
             _defaultImage = null;
         }
+        super.changedKey(key);
     }
 
     public ImageView imageView() {
@@ -151,15 +152,19 @@ public class ImageElement extends ViewElement {
         _displaying = false;
     }
 
+    private long imageId = 0;
+
     @Override
     protected void onSetProperty(View view, String key, String value) {
         super.onSetProperty(view, key, value);
 
         if ("src".equals(key)){
 
-            _image = null;
-
             final WeakReference<ImageElement> v = new WeakReference<ImageElement>(this);
+
+            imageId ++;
+
+            final long id = imageId;
 
             loadImage(new ImageCallback() {
 
@@ -168,7 +173,7 @@ public class ImageElement extends ViewElement {
 
                     ImageElement e = v.get();
 
-                    if(e != null) {
+                    if(e != null && id == e.imageId) {
                         e.setImage(drawable);
                         e.display();
                     }
