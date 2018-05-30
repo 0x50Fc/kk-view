@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import java.lang.ref.WeakReference;
 import cn.kkmofang.unity.R;
+import cn.kkmofang.view.value.Pixel;
 
 
 /**
@@ -43,7 +44,38 @@ public class ElementView extends FrameLayout implements IElementView{
 
         setMeasuredDimension(width, height);
 
-        measureChildren(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST));
+        int parentWidthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST);
+        int parentheightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
+
+        int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View v = getChildAt(i);
+            if (v != null && v.getVisibility() != GONE){
+                WeakReference<ViewElement> childElement = (WeakReference<ViewElement>) v.getTag(R.id.kk_view_element);
+                if (childElement != null){
+                    ViewElement element = childElement.get();
+                    if (element != null){
+                        int childWidthSpec;
+                        int childHeightSpec;
+                        if (element.width() == Pixel.Auto){
+                            childWidthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST);
+                        }else {
+                            childWidthSpec = MeasureSpec.makeMeasureSpec((int) element.width(), MeasureSpec.EXACTLY);
+                        }
+
+                        if (element.height() == Pixel.Auto){
+                            childHeightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
+                        }else {
+                            childHeightSpec = MeasureSpec.makeMeasureSpec((int) element.height(), MeasureSpec.EXACTLY);
+                        }
+                        measureChild(v, childWidthSpec, childHeightSpec);
+                        continue;
+                    }
+                }
+                measureChild(v, parentWidthSpec, parentheightSpec);
+
+            }
+        }
 
     }
 
