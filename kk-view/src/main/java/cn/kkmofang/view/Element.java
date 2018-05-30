@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import cn.kkmofang.view.event.Event;
 import cn.kkmofang.view.event.EventEmitter;
 
 /**
@@ -528,6 +529,20 @@ public class Element extends EventEmitter {
             return p.hasBubbleEvent(name);
         }
         return false;
+    }
+
+    @Override
+    public void emit(String name, cn.kkmofang.view.event.Event event) {
+        super.emit(name,event);
+        if(event instanceof Event) {
+            Event e = (Event) event;
+            if(!e.isCancelBubble()) {
+                Element p = parent();
+                if(p != null) {
+                    p.emit(name,event);
+                }
+            }
+        }
     }
 
     public static class Event extends cn.kkmofang.view.event.Event {

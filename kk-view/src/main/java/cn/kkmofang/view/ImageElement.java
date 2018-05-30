@@ -37,7 +37,7 @@ public class ImageElement extends ViewElement {
 
         if(_imageStyle== null) {
             _imageStyle = new ImageStyle(viewContext.getContext());
-            _imageStyle.radius = borderRadius.floatValue(0,0);
+            _imageStyle.radius = borderRadius.floatValue(0,0) / Pixel.UnitPX;
         }
 
         return _imageStyle;
@@ -57,7 +57,7 @@ public class ImageElement extends ViewElement {
             String v = get("default-src");
             if(v != null) {
                 ImageStyle style = new ImageStyle(viewContext.getContext());
-                style.radius = borderRadius.floatValue(0,0);
+                style.radius = borderRadius.floatValue(0,0) / Pixel.UnitPX;
                 _defaultImage = viewContext.getImage(v,style);
             }
         }
@@ -92,7 +92,7 @@ public class ImageElement extends ViewElement {
         } else if("border-radius".equals(key)) {
             borderRadius.set(get(key));
             if(_imageStyle != null) {
-                _imageStyle.radius = borderRadius.floatValue(0,0);
+                _imageStyle.radius = borderRadius.floatValue(0,0) / Pixel.UnitPX;
             }
         } else if("default-src".equals(key)) {
             _defaultImage = null;
