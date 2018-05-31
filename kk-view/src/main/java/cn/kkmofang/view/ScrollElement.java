@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import cn.kkmofang.view.value.Edge;
+import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.Position;
 import cn.kkmofang.view.value.V;
 
@@ -24,6 +25,12 @@ import cn.kkmofang.view.value.V;
  */
 
 public class ScrollElement extends ViewElement {
+
+
+    protected static final int TAP_SCROLL_TYPE_NONE = 0;
+    protected static final int TAP_SCROLL_TYPE_TOP = 1;
+    protected static final int TAP_SCROLL_TYPE_BOTTOM = 2;
+
 
     public ScrollElement() {
         super();
@@ -36,6 +43,10 @@ public class ScrollElement extends ViewElement {
 
     private boolean _tracking = false;
 
+    private final Pixel _tapbottom = new Pixel();
+    private final Pixel _taptop = new Pixel();
+
+    private int _tapScrollType = TAP_SCROLL_TYPE_NONE;
 
     public void setView(View view) {
         ContainerView v = scrollView();
@@ -81,6 +92,18 @@ public class ScrollElement extends ViewElement {
             });
 
         }
+    }
+
+    @Override
+    public void changedKey(String key) {
+        super.changedKey(key);
+
+        if("taptop".equals(key)) {
+            _taptop.set(get(key));
+        } else if("tapbottom".equals(key)) {
+            _tapbottom.set(get(key));
+        }
+
     }
 
     public boolean isTracking() {
@@ -211,6 +234,8 @@ public class ScrollElement extends ViewElement {
         }
     }
 
+
+
     public ContainerView scrollView() {
         View v = view();
         if(v != null && v instanceof ContainerView) {
@@ -224,6 +249,46 @@ public class ScrollElement extends ViewElement {
     public void setContentOffset(float x, float y) {
         super.setContentOffset(x,y);
 
+        int tapScrollType = TAP_SCROLL_TYPE_NONE;
+
+        {
+            float v = _tapbottom.floatValue(0,0);
+
+            if(v > 0.0f
+                    && contentHeight() > height()
+                    && y > 0
+                    && contentHeight() - y - height() <= v) {
+                tapScrollType = TAP_SCROLL_TYPE_BOTTOM;
+            }
+        }
+
+        if(tapScrollType != _tapScrollType) {
+            _tapScrollType = tapScrollType;
+            if(_tapScrollType == TAP_SCROLL_TYPE_BOTTOM) {
+
+                final Element.Event e = new Element.Event(this);
+
+                e.setData(this.data());
+
+                if(hasEvent("tapbottoming")) {
+                    emit("tapbottoming",e);
+                }
+
+                if(hasEvent("tapbottom")) {
+                    View v = view();
+                    if (v != null) {
+
+                        v.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                emit("tapbottom", e);
+                            }
+                        });
+
+                    }
+                }
+            }
+        }
 
         if(hasEvent("scroll")) {
 

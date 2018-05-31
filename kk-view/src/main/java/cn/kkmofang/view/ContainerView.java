@@ -1,6 +1,8 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -8,6 +10,7 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.TreeMap;
 
+import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.Position;
 
 /**
@@ -27,6 +30,35 @@ public class ContainerView extends ElementView {
         contentView = new ContentView(context);
         scrollView.addView(contentView);
     }
+
+//    private int _pullScrollY = -1;
+//
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent ev) {
+//
+//        switch (ev.getAction() ) {
+//            case MotionEvent.ACTION_MOVE:
+//            {
+//                if(scrollView.getScrollY() ==0 ){
+//                    if(_pullScrollY == -1) {
+//                        _pullScrollY = (int) ev.getY();
+//                    }
+//                    contentView.setTranslationY(ev.getY() - _pullScrollY);
+//                } else {
+//                    contentView.setTranslationY(0);
+//                }
+//            }
+//                break;
+//            default:
+//            {
+//                _pullScrollY = -1;
+//                contentView.setTranslationY(0);
+//            }
+//                break;
+//        }
+//
+//        return super.dispatchTouchEvent(ev);
+//    }
 
     public void setContentSize(int width,int height) {
         contentView.setContentSize(width,height);
@@ -80,10 +112,10 @@ public class ContainerView extends ElementView {
                                     if(position == Position.Top.intValue()) {
                                         v.layout(0,0,width,height);
                                     } else if(position == Position.Bottom.intValue()) {
-                                        v.layout(0,b - t - height,width,height);
+                                        v.layout(0,b - t - height,width,b - t );
                                         break;
                                     } else if(position == Position.Pull.intValue()) {
-                                        v.layout(0,-height,width,height);
+                                        v.layout(0,-height,width,0);
                                         break;
                                     }
                                 }
@@ -119,6 +151,7 @@ public class ContainerView extends ElementView {
 
         public ContentView(Context context) {
             super(context);
+            setClipChildren(false);
         }
 
         public void setContentSize(int width,int height) {
@@ -252,7 +285,11 @@ public class ContainerView extends ElementView {
             if(_element != null) {
                 View v = _element.view();
                 if(v != null) {
-                    v.layout(l,t,r,b);
+                    int marginLeft = (int) _element.margin.left.floatValue(0,0);
+                    int marginRight = (int) Math.ceil( _element.margin.right.floatValue(0,0));
+                    int marginTop = (int) _element.margin.top.floatValue(0,0);
+                    int marginBottom = (int) Math.ceil( _element.margin.bottom.floatValue(0,0));
+                    v.layout(marginLeft,marginTop,r - l - marginRight,b -t - marginBottom);
                 }
             }
 
