@@ -253,8 +253,8 @@ public class ScrollElement extends ViewElement {
             ViewElement element = null;
             ViewElement vElement = null;
 
-            float width = contentWidth();
-            float height = contentHeight();
+            int width = (int) Math.ceil(contentWidth());
+            int height = (int) Math.ceil(contentHeight());
 
             while(p != null) {
 
@@ -262,23 +262,25 @@ public class ScrollElement extends ViewElement {
                     ViewElement e = (ViewElement) p;
                     anchor = p.get("anchor");
                     if(anchor != null) {
-                        float tx = e.x();
-                        float ty = e.y();
-                        float twidth = e.width();
-                        float theight = e.height();
-                        float l  = Math.max(x,tx);
-                        float r = Math.min(x + width,tx + twidth);
-                        float t = Math.max(y,ty);
-                        float b = Math.min(y + height,ty + theight);
+                        int tx = (int) e.x();
+                        int ty = (int) e.y();
+                        int twidth = (int) e.width();
+                        int theight = (int) e.height();
+                        float ts = twidth * theight;
+                        int l  = Math.max((int) x,tx);
+                        int r = Math.min((int) x + width,tx + twidth);
+                        int t = Math.max((int) y,ty);
+                        int b = Math.min((int) y + height,ty + theight);
+                        float s = (r - l) * (b - t);
                         if(vElement == null) {
                             if (r - l > 0.0f && b - t > 0.0f) {
                                 element = vElement = e;
                             }
-                            if (r - l >= twidth && b - t >= theight) {
+                            if (s > ts *0.7f) {
                                 break;
                             }
                         } else {
-                            if (r - l >= twidth && b - t >= theight) {
+                            if (s > ts *0.7f) {
                                 element = e;
                             }
                             break;

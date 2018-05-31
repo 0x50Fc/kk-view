@@ -2,6 +2,7 @@ package cn.kkmofang.view;
 
 import android.os.Handler;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
 import cn.kkmofang.view.value.Color;
@@ -13,50 +14,52 @@ import cn.kkmofang.view.value.TextAlign;
  * Created by zhanghailong on 2018/1/20.
  */
 
-public class TextElement extends ViewElement{
+public class TextElement extends ViewElement implements Text.TextContent{
 
     public final Pixel lineSpacing = new Pixel();
     public final Pixel letterSpacing = new Pixel();
-    private final Text _text = new Text();
+    private final Text _text = new Text(this);
+
+    private SpannableStringBuilder _string = null;
 
     private final Handler _handler;
 
-    public Text text() {
+    @Override
+    public CharSequence textContent() {
 
-        if(_text.isNeedDisplay()) {
+        if(_string == null) {
 
-            _text.string.clear();
+            _string = new SpannableStringBuilder();
 
             Element p = firstChild();
 
             if(p == null) {
                 String v = get("#text");
                 if (v != null) {
-                    _text.string.append(v);
+                    _string.append(v);
                 }
             } else {
                 while (p != null) {
                     if (p instanceof SpanElement) {
                         SpannableString ss = ((SpanElement) p).obtainContent();
                         if (ss != null)
-                            _text.string.append(ss);
+                            _string.append(ss);
                     }
 
                     if (p instanceof ImgElement) {
                         SpannableString ss = ((ImgElement) p).obtainContent();
                         if (ss != null) {
-                            _text.string.append(ss);
+                            _string.append(ss);
                         }
                     }
                     p = p.nextSibling();
                 }
             }
-            _text.build();
+
         }
 
-        return _text;
+        return _string;
     }
-
 
     private static final Layout TextLayout = new Layout(){
         @Override
@@ -84,11 +87,11 @@ public class TextElement extends ViewElement{
                 e._text.setMaxWidth((int) maxWidth);
 
                 if(width == Pixel.Auto) {
-                    width = e.text().width();
+                    width = e._text.width();
                 }
 
                 if(height == Pixel.Auto) {
-                    height = e.text().height();
+                    height = e._text.height();
                     if(height > maxHeight) {
                         height = maxHeight;
                     }
@@ -122,6 +125,7 @@ public class TextElement extends ViewElement{
 
     public void setNeedDisplay() {
 
+        _string = null;
         _text.setNeedDisplay();
 
         if(view() == null) {
@@ -139,13 +143,14 @@ public class TextElement extends ViewElement{
             public void run() {
                 TextView v = (TextView) view();
                 if(v != null) {
-                    v.setText(text());
+                    v.setText(_text);
                 }
                 _displaying = false;
             }
         });
 
     }
+
 
     @Override
     public void changedKey(String key) {
@@ -181,5 +186,6 @@ public class TextElement extends ViewElement{
         setNeedDisplay();
         super.onLayout(view);
     }
+
 
 }

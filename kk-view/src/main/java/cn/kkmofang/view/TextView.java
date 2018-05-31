@@ -3,8 +3,10 @@ package cn.kkmofang.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Layout;
 import android.text.StaticLayout;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,7 +17,6 @@ import android.view.ViewGroup;
 public class TextView extends View {
 
     private Text _text;
-
     public Text text() {
         return _text;
     }
@@ -27,7 +28,6 @@ public class TextView extends View {
 
     public TextView(Context context) {
         super(context);
-
     }
 
     @Override

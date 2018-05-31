@@ -7,6 +7,9 @@ import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.Log;
+
+import java.lang.ref.WeakReference;
 
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
@@ -22,10 +25,16 @@ public class Text {
     public float letterSpacing = 0;
     public TextAlign textAlign = TextAlign.Left;
     public final TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-    public final SpannableStringBuilder string = new SpannableStringBuilder();
+
+    public String vString;
 
     private StaticLayout _layout;
     private float _width;
+    private final WeakReference<TextContent> _textContent;
+
+    public Text(TextContent textContent) {
+        _textContent = new WeakReference<>(textContent);
+    }
 
     public void setNeedDisplay() {
         _layout = null;
@@ -71,10 +80,24 @@ public class Text {
     }
 
 
-    public void build() {
+    private void build() {
 
         if(_layout == null) {
 
+            CharSequence textContent = "";
+
+            TextContent vv = _textContent.get();
+
+            if(vv != null) {
+                textContent = vv.textContent();
+            }
+
+            if(vString != null && vString.contains("完成今日签到")){
+                Log.d("","");
+                if(!textContent.toString().contains("完成今日签到")) {
+                    Log.d("","");
+                }
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 paint.setLetterSpacing(letterSpacing);
@@ -93,9 +116,9 @@ public class Text {
             }
 
            _layout = new StaticLayout(
-                    string,
+                   textContent,
                     0,
-                    string.length(),
+                   textContent.length(),
                     paint,
                    (int) Math.ceil(maxWidth),
                     align,
@@ -126,4 +149,7 @@ public class Text {
         return _layout.getHeight();
     }
 
+    public static interface TextContent {
+        CharSequence textContent();
+    }
 }
