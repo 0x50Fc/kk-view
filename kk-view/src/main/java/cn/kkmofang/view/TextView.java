@@ -10,12 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import cn.kkmofang.view.value.Edge;
+
 /**
  * Created by zhanghailong on 2018/4/19.
  */
 
 public class TextView extends View {
 
+    public Edge padding;
     private Text _text;
     public Text text() {
         return _text;
@@ -34,6 +37,9 @@ public class TextView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if(_text != null) {
+            if(padding != null) {
+
+            }
             _text.draw(canvas,getWidth(),getHeight());
         }
     }

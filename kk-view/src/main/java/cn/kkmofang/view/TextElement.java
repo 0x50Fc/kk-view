@@ -5,6 +5,8 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+
 import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Font;
 import cn.kkmofang.view.value.Pixel;
@@ -91,7 +93,11 @@ public class TextElement extends ViewElement implements Text.TextContent{
                 }
 
                 if(height == Pixel.Auto) {
-                    height = e._text.height();
+
+                    height = e._text.height()
+                        + element.padding.top.floatValue(0,0)
+                        + element.padding.bottom.floatValue(0,0);
+
                     if(height > maxHeight) {
                         height = maxHeight;
                     }
@@ -185,6 +191,18 @@ public class TextElement extends ViewElement implements Text.TextContent{
     protected void onLayout(View view) {
         setNeedDisplay();
         super.onLayout(view);
+    }
+
+    @Override
+    protected void onSetProperty(View view, String key, String value) {
+        super.onSetProperty(view,key,value);
+
+        if("padding".equals(key)) {
+            view.setPadding((int) padding.left.floatValue(0,0),
+                    (int) padding.top.floatValue(0,0),
+                    (int) padding.right.floatValue(0,0),
+                    (int) padding.bottom.floatValue(0,0));
+        }
     }
 
 
