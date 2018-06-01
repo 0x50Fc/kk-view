@@ -3,13 +3,19 @@ package cn.kkmofang.view;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
+import java.util.TreeMap;
+
+import cn.kkmofang.view.event.EventEmitter;
 
 /**
  * Created by zhanghailong on 2018/4/19.
@@ -19,7 +25,12 @@ public class PagerElement extends ViewElement {
 
     private PagerElementAdapter _adapter;
     private final Handler _handler;
-
+    private int _pagerInterval=0;
+    private ViewPager _viewPager=null;
+    private boolean isLooping=false;
+    private boolean isLoop=true;
+    private  Runnable autoRunnable=null;
+    private int currentPosition;
     public PagerElement() {
         super();
         _handler = new Handler();
@@ -37,14 +48,14 @@ public class PagerElement extends ViewElement {
     private ViewPager.OnPageChangeListener _OnPageChangeListener;
 
     public void setView(View view) {
-        ViewPager v = viewPager();
-        if(v != null && _OnPageChangeListener != null) {
-            v.removeOnPageChangeListener(_OnPageChangeListener);
-            v.setAdapter(null);
+        _viewPager = viewPager();
+        if(_viewPager != null && _OnPageChangeListener != null) {
+            _viewPager.removeOnPageChangeListener(_OnPageChangeListener);
+            _viewPager.setAdapter(null);
         }
         super.setView(view);
-        v = viewPager();
-        if(v != null ) {
+        _viewPager = viewPager();
+        if(_viewPager != null ) {
             if(_OnPageChangeListener == null) {
 
                 _OnPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -55,23 +66,74 @@ public class PagerElement extends ViewElement {
 
                     @Override
                     public void onPageSelected(int position) {
+                        Map<String,Object> data =new TreeMap<>();
+                        if(isLoop) {
+                            pageSelected(position);
+                            data.put("pageIndex",currentPosition-1);
+                            data.put("pageCount",_adapter.getCount()-2);
+                        }else{
+                            data.put("pageIndex",position);
+                            data.put("pageCount",_adapter.getCount());
+                        }
+                        Element.Event e = new Event(PagerElement.this);
+                        e.setData(data);
 
+                        emit("pagechange",e);
                     }
 
                     @Override
                     public void onPageScrollStateChanged(int state) {
-
+                        if (state == ViewPager.SCROLL_STATE_IDLE && isLoop) {
+                            _viewPager.setCurrentItem(currentPosition, false);
+                        }
                     }
                 };
             }
-            v.addOnPageChangeListener(_OnPageChangeListener);
+            _viewPager.addOnPageChangeListener(_OnPageChangeListener);
 
             if(_adapter == null) {
                 _adapter = new PagerElementAdapter(this);
             }
+            _viewPager.setAdapter(_adapter);
 
-            v.setAdapter(_adapter);
         }
+    }
+
+    private void pageSelected(int position) {
+        if (position == 0) {    //判断当切换到第0个页面时把currentPosition设置为list.size(),即倒数第二个位置，小圆点位置为length-1
+            currentPosition = _adapter.getCount()-2;
+        } else if (position ==_adapter.getCount() -1) {    //当切换到最后一个页面时currentPosition设置为第一个位置，小圆点位置为0
+            currentPosition = 1;
+        } else {
+            currentPosition = position;
+        }
+
+
+    }
+
+
+    @Override
+    public void changedKey(String key) {
+        String v = get(key);
+        if("interval".equals(key)) {
+            if(v!=null && !TextUtils.isEmpty(v)){
+                try {
+                    _pagerInterval = Integer.parseInt(v);
+                }catch (Exception e){
+                    _pagerInterval =0;
+                }
+            }
+        }else if("loop".equals(key)){
+            if(v!=null && !TextUtils.isEmpty(v)){
+                try {
+                    isLoop = Boolean.valueOf(v);
+                }catch (Exception e){
+                    isLoop =true;
+                }
+            }
+        }
+
+        super.changedKey(key);
     }
 
     @Override
@@ -81,13 +143,12 @@ public class PagerElement extends ViewElement {
             _adapter.notifyDataSetChanged();
         }
     }
-
-
     @Override
     protected void onDidAddChildren(Element element) {
         super.onDidAddChildren(element);
         setNeedDisplay();
     }
+
 
     @Override
     protected void onWillRemoveChildren(Element element) {
@@ -130,9 +191,98 @@ public class PagerElement extends ViewElement {
     public void display() {
 
         _displaying = false;
-
         if(_adapter != null) {
-            _adapter.reloadElements();
+            if(isLoop) {
+                initAutoPlayPagerViewAndPlay();
+            }else {
+                _adapter.reloadElements();
+            }
+        }
+    }
+
+
+
+    private void startLoop() {
+        if(_viewPager==null){
+            return;
+        }
+        if (!isLooping){
+            // 每两秒执行一次runnable.
+            if(_handler==null){
+                return;
+            }
+            _handler.postDelayed(autoRunnable, _pagerInterval);
+            isLooping = true;
+        }
+    }
+    private void stopLoop() {
+        if (isLooping && _viewPager != null) {
+            if(_handler==null){
+                return;
+            }
+            _handler.removeCallbacks(autoRunnable);
+            isLooping = false;
+        }
+    }
+
+    /**
+     * 需要自动轮播时，初始化相应的事件
+     */
+    private void initAutoPlayPagerViewAndPlay(){
+        currentPosition=1;
+        if(_viewPager==null || _adapter==null){
+            return;
+        }
+        _adapter.resetElements();
+        List<ViewElement> _elements= _adapter.elements();
+        if (_elements==null || _elements.size()<=1){
+            return;
+        }
+//        ViewElement fe = _elements.get(_elements.size()-1);
+//        _elements.add(0,fe);
+//        _elements.add(_elements.get(1));
+
+        //需要自动轮播
+        if(_pagerInterval>0){
+            if(autoRunnable==null ) {
+                autoRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (_viewPager != null && _viewPager.getChildCount() > 1) {
+                            _handler.postDelayed(this, _pagerInterval);
+                            currentPosition++;
+                            _viewPager.setCurrentItem(currentPosition, true);
+                        }
+                    }
+                };
+                _viewPager.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        int action = event.getAction();
+                        switch (action) {
+                            case MotionEvent.ACTION_DOWN:
+                            case MotionEvent.ACTION_MOVE:
+                                isLooping = true;
+                                stopLoop();
+                                break;
+                            case MotionEvent.ACTION_UP:
+                            case MotionEvent.ACTION_CANCEL:
+                                isLooping = false;
+                                startLoop();
+                            default:
+                                break;
+                        }
+                        return false;
+                    }
+                });
+            }
+        }
+
+        _adapter.notifyDataSetChanged();
+        _viewPager.setCurrentItem(currentPosition);
+        if(_pagerInterval>0) {
+            stopLoop();
+            startLoop();
         }
     }
 
@@ -153,12 +303,14 @@ public class PagerElement extends ViewElement {
             return elements().size();
         }
 
+
         @Override
         public boolean isViewFromObject(View view, Object object) {
             ViewElement element = (ViewElement) object;
             return ((DocumentView) view).obtainElement() == element;
         }
 
+        @Override
         public Object instantiateItem(ViewGroup container, int position) {
 
             ViewElement element = elements().get(position);
@@ -177,6 +329,7 @@ public class PagerElement extends ViewElement {
             return element;
         }
 
+        @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
 
             ViewElement element = elements().get(position);
@@ -203,6 +356,9 @@ public class PagerElement extends ViewElement {
             _elements = null;
             notifyDataSetChanged();
         }
+        public void resetElements(){
+            _elements=null;
+        }
 
         protected List<ViewElement> elements() {
 
@@ -225,5 +381,11 @@ public class PagerElement extends ViewElement {
 
             return _elements;
         }
+    }
+
+    @Override
+    public void recycleView() {
+        stopLoop();
+        super.recycleView();
     }
 }
