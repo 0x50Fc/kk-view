@@ -404,11 +404,6 @@ public class Element extends EventEmitter {
 
     public void setStatus(String status) {
         set("status",status);
-        Element p = firstChild();
-        while(p != null) {
-            p.set("in-status",status);
-            p = p.nextSibling();
-        }
     }
 
     public Map<String,Object> data() {

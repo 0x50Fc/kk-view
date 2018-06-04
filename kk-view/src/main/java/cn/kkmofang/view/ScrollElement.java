@@ -68,26 +68,21 @@ public class ScrollElement extends ViewElement {
                         v.onScroll(x,y);
                     }
                 }
-            });
 
-            v.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
+                public void onStartTracking() {
                     ScrollElement v = e.get();
                     if(v != null) {
-                        switch (motionEvent.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                v.setTracking(true);
-                                break;
-                            case MotionEvent.ACTION_MOVE:
-                                break;
-                            default:
-                                v.setTracking(false);
-                                break;
-                        }
+                        v.onStartTracking();
                     }
+                }
 
-                    return false;
+                @Override
+                public void onStopTracking() {
+                    ScrollElement v = e.get();
+                    if(v != null) {
+                        v.onStopTracking();
+                    }
                 }
             });
 
@@ -262,6 +257,17 @@ public class ScrollElement extends ViewElement {
             }
         }
 
+        if(tapScrollType == TAP_SCROLL_TYPE_NONE) {
+
+            float v = _taptop.floatValue(0,0);
+
+            if(v > 0.0f
+                    && y < 0
+                    && -y >= v ) {
+                tapScrollType = TAP_SCROLL_TYPE_TOP;
+            }
+        }
+
         if(tapScrollType != _tapScrollType) {
             _tapScrollType = tapScrollType;
             if(_tapScrollType == TAP_SCROLL_TYPE_BOTTOM) {
@@ -396,6 +402,40 @@ public class ScrollElement extends ViewElement {
 
     }
 
+    protected void onStartTracking() {
+        _tracking = true;
+    }
+
+    protected void onStopTracking() {
+        _tracking = false;
+
+        if(_tapScrollType == TAP_SCROLL_TYPE_TOP) {
+
+            final Element.Event e = new Element.Event(this);
+
+            e.setData(this.data());
+
+            if(hasEvent("taptoping")) {
+                emit("taptoping",e);
+            }
+
+            if(hasEvent("taptop")) {
+                View v = view();
+                if (v != null) {
+                    v.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            emit("taptop", e);
+                        }
+                    });
+                }
+            }
+
+        }
+
+        _tapScrollType = TAP_SCROLL_TYPE_NONE;
+    }
+
     protected void onScroll(int x,int y) {
         setContentOffset(x,y);
         setNeedObtainChildrening();
@@ -467,12 +507,10 @@ public class ScrollElement extends ViewElement {
                             continue;
                         }
                     } else if(e.position == Position.Pull) {
-                        if(contentOffsetY() < 0) {
-                            v.setPosition(e,Position.Pull);
-                            positions.remove(Position.Pull);
-                            p = p.nextSibling();
-                            continue;
-                        }
+                        v.setPosition(e,Position.Pull);
+                        positions.remove(Position.Pull);
+                        p = p.nextSibling();
+                        continue;
                     }
 
                     if (isChildrenVisible(e)) {

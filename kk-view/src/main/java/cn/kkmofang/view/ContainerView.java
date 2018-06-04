@@ -31,34 +31,79 @@ public class ContainerView extends ElementView {
         scrollView.addView(contentView);
     }
 
-//    private int _pullScrollY = -1;
-//
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent ev) {
-//
-//        switch (ev.getAction() ) {
-//            case MotionEvent.ACTION_MOVE:
-//            {
-//                if(scrollView.getScrollY() ==0 ){
-//                    if(_pullScrollY == -1) {
-//                        _pullScrollY = (int) ev.getY();
-//                    }
-//                    contentView.setTranslationY(ev.getY() - _pullScrollY);
-//                } else {
-//                    contentView.setTranslationY(0);
-//                }
-//            }
-//                break;
-//            default:
-//            {
-//                _pullScrollY = -1;
-//                contentView.setTranslationY(0);
-//            }
-//                break;
-//        }
-//
-//        return super.dispatchTouchEvent(ev);
-//    }
+    private int _pullScrollY = -1;
+
+    protected View positionPullView() {
+        if(_positions != null && _positions.containsKey(Position.Pull.intValue()))  {
+            return _positions.get(Position.Pull.intValue());
+        }
+        return null;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+
+        if(scrollView instanceof android.widget.ScrollView) {
+
+            switch (ev.getAction() ) {
+                case MotionEvent.ACTION_DOWN:
+                {
+                    if(_OnScrollListener != null) {
+                        _OnScrollListener.onStartTracking();
+                    }
+                }
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                {
+                    if(scrollView.getScrollY() ==0 ){
+                        if(_pullScrollY == -1) {
+                            _pullScrollY = (int) ev.getY();
+                        }
+                        int y = (int) Math.ceil( _pullScrollY - ev.getY());
+                        contentView.setTranslationY(- y);
+                        onScrollChanged(0,y,0,0);
+                        View v= positionPullView();
+                        if(v != null) {
+                            v.setTranslationY(-y);
+                        }
+                        if(y <0 ){
+                            return false;
+                        }
+                    } else if(_pullScrollY != -1) {
+                        contentView.setTranslationY(0);
+                        View v= positionPullView();
+                        if(v != null) {
+                            v.setTranslationY(0);
+                        }
+                        onScrollChanged(0,0,0,0);
+                    }
+                }
+                break;
+                default:
+                {
+                    if(_OnScrollListener != null) {
+                        _OnScrollListener.onStopTracking();
+                    }
+
+                    if(_pullScrollY != -1) {
+                        _pullScrollY = -1;
+                        contentView.setTranslationY(0);
+                        View v = positionPullView();
+                        if (v != null) {
+                            v.setTranslationY(0);
+                        }
+                        onScrollChanged(0,0,0,0);
+                        return false;
+                    }
+
+                }
+                break;
+            }
+
+        }
+
+        return super.dispatchTouchEvent(ev);
+    }
 
     public void setContentSize(int width,int height) {
         contentView.setContentSize(width,height);
@@ -187,6 +232,12 @@ public class ContainerView extends ElementView {
 
                 if(e != null) {
                     e.obtainView(contentView);
+                    if(position == Position.Pull) {
+                        View vv = e.view();
+                        if(vv != null) {
+                            vv.setTranslationY(0);
+                        }
+                    }
                 }
 
                 v.setElement(null);
@@ -240,6 +291,8 @@ public class ContainerView extends ElementView {
 
     public static interface OnScrollListener {
         void onScroll(int x,int y);
+        void onStartTracking();
+        void onStopTracking();
     }
 
     public static class ScrollView extends android.widget.ScrollView {
