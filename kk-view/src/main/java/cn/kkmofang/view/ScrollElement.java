@@ -321,14 +321,12 @@ public class ScrollElement extends ViewElement {
 
         if(!_anchorScrolling && hasEvent("anchor")) {
 
-            Element p = firstChild();
+            Element p = lastChild();
 
             String anchor = null;
             ViewElement element = null;
-            ViewElement vElement = null;
 
-            int width = (int) Math.ceil(contentWidth());
-            int height = (int) Math.ceil(contentHeight());
+            Edge margin = new Edge();
 
             while(p != null) {
 
@@ -336,37 +334,20 @@ public class ScrollElement extends ViewElement {
                     ViewElement e = (ViewElement) p;
                     anchor = p.get("anchor");
                     if(anchor != null) {
-                        int tx = (int) e.x();
-                        int ty = (int) e.y();
-                        int twidth = (int) e.width();
-                        int theight = (int) e.height();
-                        float ts = twidth * theight;
-                        int l  = Math.max((int) x,tx);
-                        int r = Math.min((int) x + width,tx + twidth);
-                        int t = Math.max((int) y,ty);
-                        int b = Math.min((int) y + height,ty + theight);
-                        float s = (r - l) * (b - t);
-                        if(vElement == null) {
-                            if (r - l > 0.0f && b - t > 0.0f) {
-                                element = vElement = e;
-                            }
-                            if (s > ts *0.7f) {
-                                break;
-                            }
-                        } else {
-                            if (s > ts *0.7f) {
-                                element = e;
-                            }
+                        margin.set(p.get("anchor-margin"));
+                        int ty = (int) e.y() - (int) margin.top.floatValue(0,0);
+                        if(y >= ty) {
+                            element = e;
                             break;
                         }
+
                     }
                 }
 
-                p = p.nextSibling();
+                p = p.prevSibling();
             }
 
             if(element != null) {
-                anchor = element.get("anchor");
 
                 if(anchor != null && !anchor.equals(_anchor)) {
                     _anchor = anchor;

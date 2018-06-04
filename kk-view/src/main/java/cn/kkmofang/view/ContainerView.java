@@ -367,6 +367,7 @@ public class ContainerView extends ElementView {
         public ScrollView(Context context,ContainerView containerView) {
             super(context);
             _containerView = new WeakReference<>(containerView);
+            setVerticalFadingEdgeEnabled(false);
         }
 
         @Override
@@ -387,6 +388,8 @@ public class ContainerView extends ElementView {
         public HScrollView(Context context,ContainerView containerView) {
             super(context);
             _containerView = new WeakReference<>(containerView);
+            setHorizontalScrollBarEnabled(false);
+            setHorizontalFadingEdgeEnabled(false);
         }
 
         @Override
