@@ -41,6 +41,7 @@ public class ContainerView extends ElementView {
     }
 
     private int _pullScrollY = -1;
+    private boolean _pulling = false;
 
     protected View positionPullView() {
         if(_positions != null && _positions.containsKey(Position.Pull.intValue()))  {
@@ -66,21 +67,33 @@ public class ContainerView extends ElementView {
                 case MotionEvent.ACTION_MOVE:
                 {
                     if(scrollView.getScrollY() ==0 ){
+
                         int dy = (int) ev.getY();
+
                         if(_pullScrollY == -1) {
                             _pullScrollY = dy;
                         }
-                        int y = (int) ((_pullScrollY - dy ) * 0.8f);
-                        contentView.setTranslationY(- y);
-                        onScrollChanged(0,y,0,0);
-                        View v= positionPullView();
-                        if(v != null) {
-                            v.setTranslationY(-y);
+
+                        int y = (int) ((_pullScrollY - dy ) * 0.5f);
+
+                        if(!_pulling && y < 0 ){
+                            _pulling = true;
                         }
-                        if(y < 0 ){
+
+                        if(_pulling) {
+
+                            contentView.setTranslationY(-y);
+                            onScrollChanged(0, y, 0, 0);
+                            View v = positionPullView();
+                            if (v != null) {
+                                v.setTranslationY(-y);
+                            }
+
                             return false;
+
                         }
-                    } else if(_pullScrollY != -1) {
+
+                    } else if(_pulling) {
                         contentView.setTranslationY(0);
                         View v= positionPullView();
                         if(v != null) {
@@ -96,8 +109,9 @@ public class ContainerView extends ElementView {
                         _OnScrollListener.onStopTracking();
                     }
 
-                    if(_pullScrollY != -1) {
+                    if(_pulling) {
                         _pullScrollY = -1;
+                        _pulling = false;
                         contentView.setTranslationY(0);
                         View v = positionPullView();
                         if (v != null) {
