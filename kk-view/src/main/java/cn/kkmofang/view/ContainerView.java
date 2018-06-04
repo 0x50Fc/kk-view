@@ -46,6 +46,7 @@ public class ContainerView extends ElementView {
         if(_positions != null && _positions.containsKey(Position.Pull.intValue()))  {
             return _positions.get(Position.Pull.intValue());
         }
+
         return null;
     }
 
@@ -65,17 +66,18 @@ public class ContainerView extends ElementView {
                 case MotionEvent.ACTION_MOVE:
                 {
                     if(scrollView.getScrollY() ==0 ){
+                        int dy = (int) ev.getY();
                         if(_pullScrollY == -1) {
-                            _pullScrollY = (int) ev.getY();
+                            _pullScrollY = dy;
                         }
-                        int y = (int) Math.ceil( _pullScrollY - ev.getY());
+                        int y = (int) ((_pullScrollY - dy ) * 0.8f);
                         contentView.setTranslationY(- y);
                         onScrollChanged(0,y,0,0);
                         View v= positionPullView();
                         if(v != null) {
                             v.setTranslationY(-y);
                         }
-                        if(y <0 ){
+                        if(y < 0 ){
                             return false;
                         }
                     } else if(_pullScrollY != -1) {
