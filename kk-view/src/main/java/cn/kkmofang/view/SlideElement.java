@@ -119,6 +119,16 @@ public class SlideElement extends ScrollElement {
             }
         }
 
+        if(element != null) {
+
+            ContainerView pv = scrollView();
+
+            if(pv != null) {
+                pv.scrollToVisible((int) element.left(), (int) element.top()
+                        , (int) Math.ceil( element.right()), (int) Math.ceil(element.bottom()),animated);
+            }
+        }
+
     }
 
     public static class CurElement extends Element {

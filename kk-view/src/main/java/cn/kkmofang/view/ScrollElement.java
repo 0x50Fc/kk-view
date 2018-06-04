@@ -37,8 +37,11 @@ public class ScrollElement extends ViewElement {
     }
 
     @Override
-    public Class<?> viewClass() {
-        return ContainerView.class;
+    protected View createView() {
+        if(layout() == HorizontalLayout) {
+            return new ContainerView(viewContext.getContext(),true);
+        }
+        return new ContainerView(viewContext.getContext(),false);
     }
 
     private boolean _tracking = false;

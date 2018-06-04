@@ -250,6 +250,21 @@ public class ViewElement extends Element implements Cloneable{
         return ElementView.class;
     }
 
+    protected View createView() {
+
+        View vv = null;
+
+        Class<?> viewClass = viewClass();
+        if (viewClass != null) {
+            try {
+                vv = (View) viewClass.getConstructor(Context.class).newInstance(viewContext.getContext());
+            } catch (Throwable e) {
+                Log.d(Tag.Tag, Log.getStackTraceString(e));
+            }
+        }
+
+        return vv;
+    }
 
     public void obtainView(View view) {
 
@@ -280,14 +295,7 @@ public class ViewElement extends Element implements Cloneable{
         }
 
         if (vv == null) {
-            Class<?> viewClass = viewClass();
-            if (viewClass != null) {
-                try {
-                    vv = (View) viewClass.getConstructor(Context.class).newInstance(viewContext.getContext());
-                } catch (Throwable e) {
-                    Log.d(Tag.Tag, Log.getStackTraceString(e));
-                }
-            }
+            vv = createView();
         }
 
         if (vv == null) {

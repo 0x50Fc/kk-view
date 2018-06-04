@@ -1,10 +1,15 @@
 package cn.kkmofang.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
@@ -21,11 +26,15 @@ public class ContainerView extends ElementView {
 
 
     public final ContentView contentView;
-    public final ScrollView scrollView;
+    public final FrameLayout scrollView;
 
-    public ContainerView(Context context) {
+    public ContainerView(Context context, boolean horizontal ) {
         super(context);
-        scrollView = new ScrollView(context,this);
+        if(horizontal) {
+            scrollView = new HScrollView(context, this);
+        } else {
+            scrollView = new ScrollView(context, this);
+        }
         addView(scrollView);
         contentView = new ContentView(context);
         scrollView.addView(contentView);
@@ -107,6 +116,46 @@ public class ContainerView extends ElementView {
 
     public void setContentSize(int width,int height) {
         contentView.setContentSize(width,height);
+    }
+
+    public void scrollToVisible(int l,int t,int r,int b,boolean animated) {
+        int tx = scrollView.getScrollX();
+        int ty = scrollView.getScrollY();
+        int v_l = Math.max(l, tx);
+        int v_t = Math.max(t, ty);
+        int v_r = Math.min(r, tx + getWidth());
+        int v_b = Math.min(b, ty + getHeight());
+
+        if(v_r - v_l < r -  l) {
+            if(l < tx) {
+                tx = l;
+            } else {
+                tx = tx + getWidth() - (r - l);
+            }
+        }
+
+        if(v_b - v_t < b -  t) {
+            if(t < ty) {
+                ty = t;
+            } else {
+                ty = ty + getHeight() - (b - t);
+            }
+        }
+
+        if(animated) {
+            {
+                @SuppressLint("ObjectAnimatorBinding") ObjectAnimator animator = ObjectAnimator.ofInt(scrollView, "scrollX", scrollView.getScrollX(), tx);
+                animator.setDuration(300);
+                animator.start();
+            }
+            {
+                @SuppressLint("ObjectAnimatorBinding") ObjectAnimator animator = ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getScrollY(), ty);
+                animator.setDuration(300);
+                animator.start();
+            }
+        } else {
+            scrollView.scrollTo(tx, ty);
+        }
     }
 
     @Override
@@ -300,6 +349,26 @@ public class ContainerView extends ElementView {
         private WeakReference<ContainerView> _containerView;
 
         public ScrollView(Context context,ContainerView containerView) {
+            super(context);
+            _containerView = new WeakReference<>(containerView);
+        }
+
+        @Override
+        protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+            super.onScrollChanged(l,t,oldl,oldt);
+            ContainerView v = _containerView.get();
+            if(v != null ){
+                v.onScrollChanged(l,t,oldl,oldt);
+            }
+        }
+
+    }
+
+    public static class HScrollView extends android.widget.HorizontalScrollView {
+
+        private WeakReference<ContainerView> _containerView;
+
+        public HScrollView(Context context,ContainerView containerView) {
             super(context);
             _containerView = new WeakReference<>(containerView);
         }
