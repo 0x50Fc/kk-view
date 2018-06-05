@@ -296,9 +296,6 @@ public class PagerElement extends ViewElement {
         if (_elements==null || _elements.size()<=1){
             return;
         }
-//        ViewElement fe = _elements.get(_elements.size()-1);
-//        _elements.add(0,fe);
-//        _elements.add(_elements.get(1));
 
         //需要自动轮播
         if(_pagerInterval>0){
@@ -408,6 +405,11 @@ public class PagerElement extends ViewElement {
             }
 
 
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         public void reloadElements() {
