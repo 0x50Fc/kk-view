@@ -117,6 +117,8 @@ public class ContainerView extends ElementView {
                 break;
                 default:
                 {
+                    _cancelPullScrolling = false;
+
                     if(_OnScrollListener != null) {
                         _OnScrollListener.onStopTracking();
                     }
