@@ -60,6 +60,10 @@ public class ContainerView extends ElementView {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
 
+        if(positionPullView() == null){
+            return super.dispatchTouchEvent(ev);
+        }
+
         if(_cancelPullScrolling && ev.getAction() == MotionEvent.ACTION_MOVE) {
             return super.dispatchTouchEvent(ev);
         }
