@@ -115,20 +115,20 @@ public class PagerElement extends ViewElement {
 
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        View view = this.view();
-
-        if(view != null) {
-
-            ViewParent p = view.getParent();
-
-            while (p != null) {
-                if (p instanceof ContainerView) {
-                    ContainerView v = (ContainerView) p;
-                    v.setCancelPullScrolling(true);
-                }
-                p = p.getParent();
-            }
-        }
+//        View view = this.view();
+//
+//        if(view != null) {
+//
+//            ViewParent p = view.getParent();
+//
+//            while (p != null) {
+//                if (p instanceof ContainerView) {
+//                    ContainerView v = (ContainerView) p;
+//                    v.setCancelPullScrolling(true);
+//                }
+//                p = p.getParent();
+//            }
+//        }
 
     }
 
