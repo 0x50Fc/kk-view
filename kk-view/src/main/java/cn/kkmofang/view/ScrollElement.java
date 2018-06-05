@@ -491,8 +491,10 @@ public class ScrollElement extends ViewElement {
                             continue;
                         }
                     } else if(e.position == Position.Pull) {
-                        v.setPosition(e,Position.Pull);
-                        positions.remove(Position.Pull);
+                        if(get("taptop") != null) {
+                            v.setPosition(e, Position.Pull);
+                            positions.remove(Position.Pull);
+                        }
                         p = p.nextSibling();
                         continue;
                     }
