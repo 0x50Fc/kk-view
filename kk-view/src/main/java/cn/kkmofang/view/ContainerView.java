@@ -8,6 +8,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -42,6 +43,11 @@ public class ContainerView extends ElementView {
 
     private int _pullScrollY = -1;
     private boolean _pulling = false;
+    private boolean _cancelPullScrolling = false;
+
+    public void setCancelPullScrolling(boolean v) {
+        _cancelPullScrolling = v;
+    }
 
     protected View positionPullView() {
         if(_positions != null && _positions.containsKey(Position.Pull.intValue()))  {
@@ -54,11 +60,17 @@ public class ContainerView extends ElementView {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
 
+        if(_cancelPullScrolling && ev.getAction() == MotionEvent.ACTION_MOVE) {
+            return super.dispatchTouchEvent(ev);
+        }
+
         if(scrollView instanceof android.widget.ScrollView) {
 
             switch (ev.getAction() ) {
                 case MotionEvent.ACTION_DOWN:
                 {
+                    _cancelPullScrolling = false;
+
                     if(_OnScrollListener != null) {
                         _OnScrollListener.onStartTracking();
                     }
@@ -118,7 +130,7 @@ public class ContainerView extends ElementView {
                             v.setTranslationY(0);
                         }
                         onScrollChanged(0,0,0,0);
-                        return false;
+                        ev.setAction(MotionEvent.ACTION_CANCEL);
                     }
 
                 }
@@ -249,6 +261,17 @@ public class ContainerView extends ElementView {
 
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
 
+
+        ViewParent p = getParent();
+
+        while(p != null) {
+            if(p instanceof ContainerView) {
+                ContainerView v = (ContainerView) p;
+                v.setCancelPullScrolling(true);
+            }
+            p = p.getParent();
+        }
+
         if(_OnScrollListener != null) {
             _OnScrollListener.onScroll(l,t);
         }
@@ -368,6 +391,7 @@ public class ContainerView extends ElementView {
             super(context);
             _containerView = new WeakReference<>(containerView);
             setVerticalFadingEdgeEnabled(false);
+            setOverScrollMode(OVER_SCROLL_NEVER);
         }
 
         @Override
@@ -390,6 +414,7 @@ public class ContainerView extends ElementView {
             _containerView = new WeakReference<>(containerView);
             setHorizontalScrollBarEnabled(false);
             setHorizontalFadingEdgeEnabled(false);
+            setOverScrollMode(OVER_SCROLL_NEVER);
         }
 
         @Override

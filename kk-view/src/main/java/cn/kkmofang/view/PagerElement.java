@@ -7,6 +7,8 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -58,56 +60,99 @@ public class PagerElement extends ViewElement {
         if(_viewPager != null ) {
             if(_OnPageChangeListener == null) {
 
+                final WeakReference<PagerElement> e = new WeakReference<>(this);
+
                 _OnPageChangeListener = new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                        PagerElement v = e.get();
+                        if(v != null) {
+                            v.onPageScrolled(position,positionOffset,positionOffsetPixels);
+                        }
                     }
 
                     @Override
                     public void onPageSelected(int position) {
-                        Map<String,Object> data =new TreeMap<>();
-                        if(isLoop) {
-                            pageSelected(position);
-                            data.put("pageIndex",currentPosition-1);
-                            data.put("pageCount",_adapter.getCount()-2);
-                        }else{
-                            data.put("pageIndex",position);
-                            data.put("pageCount",_adapter.getCount());
+                        PagerElement v = e.get();
+                        if(v != null) {
+                            v.onPageSelected(position);
                         }
-                        Element.Event e = new Event(PagerElement.this);
-                        e.setData(data);
-
-                        emit("pagechange",e);
                     }
 
                     @Override
                     public void onPageScrollStateChanged(int state) {
-                        if (state == ViewPager.SCROLL_STATE_IDLE && isLoop) {
-                            _viewPager.setCurrentItem(currentPosition, false);
+                        PagerElement v = e.get();
+                        if(v != null) {
+                            v.onPageScrollStateChanged(state);
                         }
                     }
                 };
             }
+
             _viewPager.addOnPageChangeListener(_OnPageChangeListener);
 
             if(_adapter == null) {
                 _adapter = new PagerElementAdapter(this);
             }
+
             _viewPager.setAdapter(_adapter);
 
         }
     }
 
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        View view = this.view();
+
+        if(view != null) {
+
+            ViewParent p = view.getParent();
+
+            while (p != null) {
+                if (p instanceof ContainerView) {
+                    ContainerView v = (ContainerView) p;
+                    v.setCancelPullScrolling(true);
+                }
+                p = p.getParent();
+            }
+        }
+
+    }
+
+    public void onPageSelected(int position) {
+        Map<String,Object> data =new TreeMap<>();
+        if(isLoop) {
+            pageSelected(position);
+            data.put("pageIndex",currentPosition-1);
+            data.put("pageCount",_adapter.getCount()-2);
+        }else{
+            data.put("pageIndex",position);
+            data.put("pageCount",_adapter.getCount());
+        }
+        Element.Event e = new Event(PagerElement.this);
+        e.setData(data);
+
+        emit("pagechange",e);
+    }
+
+    public void onPageScrollStateChanged(int state) {
+        if (state == ViewPager.SCROLL_STATE_IDLE && isLoop) {
+            _viewPager.setCurrentItem(currentPosition, false);
+        }
+    }
+
     private void pageSelected(int position) {
-        if (position == 0) {    //判断当切换到第0个页面时把currentPosition设置为list.size(),即倒数第二个位置，小圆点位置为length-1
-            currentPosition = _adapter.getCount()-2;
-        } else if (position ==_adapter.getCount() -1) {    //当切换到最后一个页面时currentPosition设置为第一个位置，小圆点位置为0
-            currentPosition = 1;
+        if(isLoop) {
+            if (position == 0) {    //判断当切换到第0个页面时把currentPosition设置为list.size(),即倒数第二个位置，小圆点位置为length-1
+                currentPosition = _adapter.getCount() - 2;
+            } else if (position == _adapter.getCount() - 1) {    //当切换到最后一个页面时currentPosition设置为第一个位置，小圆点位置为0
+                currentPosition = 1;
+            } else {
+                currentPosition = position;
+            }
         } else {
             currentPosition = position;
         }
-
 
     }
 
