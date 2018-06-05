@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ public class PagerElement extends ViewElement {
     private PagerElementAdapter _adapter;
     private final Handler _handler;
     private int _pagerInterval=0;
-    private ViewPager _viewPager=null;
+    private KKViewPager _viewPager=null;
     private boolean isLooping=false;
     private boolean isLoop=true;
     private  Runnable autoRunnable=null;
@@ -36,13 +37,13 @@ public class PagerElement extends ViewElement {
     public PagerElement() {
         super();
         _handler = new Handler();
-        set("#view",ViewPager.class.getName());
+        set("#view",KKViewPager.class.getName());
     }
 
-    public ViewPager viewPager() {
+    public KKViewPager viewPager() {
         View v = view();
-        if(v != null && v instanceof ViewPager){
-            return (ViewPager) v;
+        if(v != null && v instanceof KKViewPager){
+            return (KKViewPager) v;
         }
         return null;
     }
@@ -52,12 +53,24 @@ public class PagerElement extends ViewElement {
     public void setView(View view) {
         _viewPager = viewPager();
         if(_viewPager != null && _OnPageChangeListener != null) {
+            _viewPager.setListener(null);
             _viewPager.removeOnPageChangeListener(_OnPageChangeListener);
             _viewPager.setAdapter(null);
         }
         super.setView(view);
         _viewPager = viewPager();
         if(_viewPager != null ) {
+            _viewPager.setListener(new KKViewPager.OnPageLoopChangeListener() {
+                @Override
+                public void onStopLoop() {
+                    stopLoop();
+                }
+
+                @Override
+                public void onStartLoop() {
+                    startLoop();
+                }
+            });
             if(_OnPageChangeListener == null) {
 
                 final WeakReference<PagerElement> e = new WeakReference<>(this);
@@ -376,7 +389,7 @@ public class PagerElement extends ViewElement {
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-
+            Log.d("PagerElement", "destroyItem: " + position);
             ViewElement element = elements().get(position);
 
             View  view = element.view();

@@ -55,7 +55,7 @@ public class ScrollElement extends ViewElement {
         ContainerView v = scrollView();
         if(v != null) {
             v.setOnTouchListener(null);
-            v.setOnScrollListener(null);
+            v.removeScrollListeners();
         }
         super.setView(view);
         v = scrollView();
@@ -63,7 +63,7 @@ public class ScrollElement extends ViewElement {
 
             final WeakReference<ScrollElement> e = new WeakReference<ScrollElement>(this);
 
-            v.setOnScrollListener(new ContainerView.OnScrollListener() {
+            v.setScrollListener(new ContainerView.OnScrollListener() {
                 @Override
                 public void onScroll(int x, int y) {
                     ScrollElement v = e.get();

@@ -13,7 +13,11 @@ import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import cn.kkmofang.view.value.Pixel;
@@ -75,9 +79,7 @@ public class ContainerView extends ElementView {
                 {
                     _cancelPullScrolling = false;
 
-                    if(_OnScrollListener != null) {
-                        _OnScrollListener.onStartTracking();
-                    }
+                    onStartTracking();
                 }
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -123,9 +125,7 @@ public class ContainerView extends ElementView {
                 {
                     _cancelPullScrolling = false;
 
-                    if(_OnScrollListener != null) {
-                        _OnScrollListener.onStopTracking();
-                    }
+                    onStopTracking();
 
                     if(_pulling) {
                         _pullScrollY = -1;
@@ -278,9 +278,7 @@ public class ContainerView extends ElementView {
             p = p.getParent();
         }
 
-        if(_OnScrollListener != null) {
-            _OnScrollListener.onScroll(l,t);
-        }
+        onScroll(l, t);
     }
 
     public static class ContentView extends ElementView {
@@ -372,16 +370,57 @@ public class ContainerView extends ElementView {
         }
     }
 
-
-    private OnScrollListener _OnScrollListener;
-
-    public void setOnScrollListener(OnScrollListener v) {
-        _OnScrollListener = v;
+    private void onScroll(int x, int y){
+        if (_scrollListeners != null){
+            for (OnScrollListener listener : _scrollListeners) {
+                listener.onScroll(x , y);
+            }
+        }
     }
 
-    public OnScrollListener getOnScrollListener() {
-        return _OnScrollListener;
+    private void onStartTracking(){
+        if (_scrollListeners != null){
+            for (OnScrollListener listener : _scrollListeners) {
+                listener.onStartTracking();
+            }
+        }
     }
+
+    private void onStopTracking(){
+        if (_scrollListeners != null){
+            for (OnScrollListener listener : _scrollListeners) {
+                listener.onStopTracking();
+            }
+        }
+    }
+
+    private Set<OnScrollListener> _scrollListeners = new HashSet<>();
+    public void setScrollListener(OnScrollListener listener){
+        if (_scrollListeners != null){
+            _scrollListeners.add(listener);
+        }
+    }
+
+    public void removeScrollListener(OnScrollListener listener){
+        if (_scrollListeners != null){
+            _scrollListeners.remove(listener);
+        }
+    }
+
+    public void removeScrollListeners(){
+        if (_scrollListeners != null){
+            _scrollListeners.clear();
+        }
+    }
+//    private OnScrollListener _OnScrollListener;
+//
+//    public void setOnScrollListener(OnScrollListener v) {
+//        _OnScrollListener = v;
+//    }
+//
+//    public OnScrollListener getOnScrollListener() {
+//        return _OnScrollListener;
+//    }
 
     public static interface OnScrollListener {
         void onScroll(int x,int y);
@@ -432,6 +471,38 @@ public class ContainerView extends ElementView {
             }
         }
 
+        public ContainerView getParentView(){
+            ViewParent parent = getParent();
+            while (parent != null){
+                if (parent instanceof ContainerView){
+                    return (ContainerView) parent;
+                }
+                parent = parent.getParent();
+            }
+            return null;
+        }
+
+        @Override
+        public boolean dispatchTouchEvent(MotionEvent ev) {
+            ContainerView parent = getParentView();
+            switch (ev.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    if (parent != null){
+                        parent.setCancelPullScrolling(true);
+                    }
+                    break;
+                case MotionEvent.ACTION_MOVE:
+
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                case MotionEvent.ACTION_UP:
+                    if (parent != null){
+                        parent.setCancelPullScrolling(false);
+                    }
+                    break;
+            }
+            return super.dispatchTouchEvent(ev);
+        }
     }
 
     public static class PositionView  extends ElementView {
