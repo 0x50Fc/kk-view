@@ -1,15 +1,12 @@
 package cn.kkmofang.view;
 
-import android.content.Context;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -17,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
+
+import cn.kkmofang.view.event.EventEmitter;
 
 /**
  * Created by zhanghailong on 2018/4/19.
@@ -27,7 +26,7 @@ public class PagerElement extends ViewElement {
     private PagerElementAdapter _adapter;
     private final Handler _handler;
     private int _pagerInterval=0;
-    private KKViewPager _viewPager=null;
+    private ViewPager _viewPager=null;
     private boolean isLooping=false;
     private boolean isLoop=true;
     private  Runnable autoRunnable=null;
@@ -35,24 +34,18 @@ public class PagerElement extends ViewElement {
     public PagerElement() {
         super();
         _handler = new Handler();
-        set("#view",KKViewPager.class.getName());
+        set("#view",ViewPager.class.getName());
     }
 
-
-    @Override
-    public Class<?> viewClass() {
-        return super.viewClass();
-    }
-
-    public KKViewPager viewPager() {
+    public ViewPager viewPager() {
         View v = view();
-        if(v != null && v instanceof KKViewPager){
-            return (KKViewPager) v;
+        if(v != null && v instanceof ViewPager){
+            return (ViewPager) v;
         }
         return null;
     }
 
-    private KKViewPager.OnPageChangeListener _OnPageChangeListener;
+    private ViewPager.OnPageChangeListener _OnPageChangeListener;
 
     public void setView(View view) {
         _viewPager = viewPager();
@@ -65,7 +58,7 @@ public class PagerElement extends ViewElement {
         if(_viewPager != null ) {
             if(_OnPageChangeListener == null) {
 
-                _OnPageChangeListener = new KKViewPager.OnPageChangeListener() {
+                _OnPageChangeListener = new ViewPager.OnPageChangeListener() {
                     @Override
                     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -90,7 +83,7 @@ public class PagerElement extends ViewElement {
 
                     @Override
                     public void onPageScrollStateChanged(int state) {
-                        if (state == KKViewPager.SCROLL_STATE_IDLE && isLoop) {
+                        if (state == ViewPager.SCROLL_STATE_IDLE && isLoop) {
                             _viewPager.setCurrentItem(currentPosition, false);
                         }
                     }
@@ -114,6 +107,8 @@ public class PagerElement extends ViewElement {
         } else {
             currentPosition = position;
         }
+
+
     }
 
 
@@ -246,12 +241,9 @@ public class PagerElement extends ViewElement {
 //        ViewElement fe = _elements.get(_elements.size()-1);
 //        _elements.add(0,fe);
 //        _elements.add(_elements.get(1));
+
         //需要自动轮播
         if(_pagerInterval>0){
-            View pview = getParentView();
-            if(pview!=null && pview instanceof ViewGroup){
-                _viewPager.setParentView((ViewGroup) pview);
-            }
             if(autoRunnable==null ) {
                 autoRunnable = new Runnable() {
                     @Override
@@ -285,6 +277,7 @@ public class PagerElement extends ViewElement {
                 });
             }
         }
+
         _adapter.notifyDataSetChanged();
         _viewPager.setCurrentItem(currentPosition);
         if(_pagerInterval>0) {
@@ -293,43 +286,6 @@ public class PagerElement extends ViewElement {
         }
     }
 
-    /**
-     * 回去viewpager的下拉滚动父view
-     * @return
-     */
-    private View getParentView(){
-        if(_viewPager==null){
-            return null;
-        }
-        View parent= (View) _viewPager.getParent();
-        do {
-            if (parent != null) {
-                if (parent instanceof ContainerView) {
-                    ((ContainerView) parent).setOnScrollListener(new ContainerView.OnScrollListener() {
-                        @Override
-                        public void onScroll(int x, int y) {
-
-                        }
-
-                        @Override
-                        public void onStartTracking() {
-                            stopLoop();
-                        }
-
-                        @Override
-                        public void onStopTracking() {
-                            startLoop();
-                        }
-                    });
-                    break;
-                } else {//TODO 这里可以拓展其他的父view的设置
-
-                }
-                parent = (View) parent.getParent();
-            }
-        }while (parent!=null);
-        return parent;
-    }
     private static class PagerElementAdapter extends PagerAdapter {
 
         private final WeakReference<PagerElement> _element;
@@ -363,7 +319,7 @@ public class PagerElement extends ViewElement {
 
             if(documentView == null) {
                 documentView = new DocumentView(container.getContext());
-                documentView.setLayoutParams(new KKViewPager.LayoutParams());
+                documentView.setLayoutParams(new ViewPager.LayoutParams());
             }
 
             documentView.setObtainElement(element);
@@ -432,5 +388,4 @@ public class PagerElement extends ViewElement {
         stopLoop();
         super.recycleView();
     }
-
 }

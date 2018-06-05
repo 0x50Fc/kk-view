@@ -1,16 +1,21 @@
 package cn.kkmofang.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.TreeMap;
 
+import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.Position;
 
 /**
@@ -37,7 +42,6 @@ public class ContainerView extends ElementView {
 
     private int _pullScrollY = -1;
     private boolean _pulling = false;
-    private boolean disallowInterceptTouchEvent=false;
 
     protected View positionPullView() {
         if(_positions != null && _positions.containsKey(Position.Pull.intValue()))  {
@@ -47,15 +51,9 @@ public class ContainerView extends ElementView {
         return null;
     }
 
-    public void disallowInterceptTouchEvent(boolean disallowIntercept) {
-        disallowInterceptTouchEvent = disallowIntercept;
-    }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (disallowInterceptTouchEvent) {
-            return super.dispatchTouchEvent(ev);
-        }
+
         if(scrollView instanceof android.widget.ScrollView) {
 
             switch (ev.getAction() ) {
@@ -107,7 +105,6 @@ public class ContainerView extends ElementView {
                 break;
                 default:
                 {
-                    this.disallowInterceptTouchEvent(false);
                     if(_OnScrollListener != null) {
                         _OnScrollListener.onStopTracking();
                     }
