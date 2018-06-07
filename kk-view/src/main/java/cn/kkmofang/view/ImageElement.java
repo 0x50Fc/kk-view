@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
 import cn.kkmofang.image.Image;
+import cn.kkmofang.image.ImageGravity;
 import cn.kkmofang.image.ImageStyle;
 import cn.kkmofang.view.value.Pixel;
 
@@ -186,6 +187,8 @@ public class ImageElement extends ViewElement {
             });
         } else if("overflow".equals(key)) {
             view.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else if ("gravity".equals(key)){
+            imageStyle().gravity = ImageGravity.valueOfString(get(key));
         }
     }
 
