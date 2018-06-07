@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
 
+import cn.kkmofang.image.ImageGravity;
 import cn.kkmofang.unity.R;
 import cn.kkmofang.image.ImageStyle;
 import cn.kkmofang.view.layout.FlexLayout;
@@ -576,7 +577,9 @@ public class ViewElement extends Element implements Cloneable{
         if (background == null || gradientDrawable == null){
             gradientDrawable = new GradientDrawable();
 
-            Drawable imgDrawable = viewContext.getImage(get("background-image"), new ImageStyle(viewContext.getContext()));
+            ImageStyle style = new ImageStyle(viewContext.getContext());
+            style.gravity = ImageGravity.RESIZE;
+            Drawable imgDrawable = viewContext.getImage(get("background-image"), style);
             if (imgDrawable == null){
                 background = new LayerDrawable(new Drawable[]{gradientDrawable});
             }else {
