@@ -7,6 +7,7 @@ import android.view.View;
 
 import java.lang.ref.WeakReference;
 
+import cn.kkmofang.view.utils.Utils;
 import cn.kkmofang.view.value.V;
 
 /**
@@ -70,7 +71,7 @@ public class ButtonElement extends ViewElement {
             v.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    if (enabled){
+                    if (enabled && !Utils.isFastDoubleClick()){
                         ButtonElement e = element.get();
                         if(e != null) {
                             Element.Event event = new Element.Event(e);
@@ -115,5 +116,7 @@ public class ButtonElement extends ViewElement {
             });
         }
     }
+
+
 
 }
