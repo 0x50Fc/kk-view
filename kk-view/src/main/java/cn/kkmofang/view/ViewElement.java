@@ -8,6 +8,8 @@ import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.Map;
@@ -498,14 +500,36 @@ public class ViewElement extends Element implements Cloneable{
         } else if("hidden".equals(key)) {
             setVisible(!V.booleanValue(value, true), view);
         } else if("overflow".equals(key)) {
-            if("hidden".equals(value)) {
-                if(_viewLayer != View.LAYER_TYPE_HARDWARE) {
-                    if(view instanceof ViewGroup) {
+            if ("hidden".equals(value)) {
+                if (_viewLayer != View.LAYER_TYPE_HARDWARE) {
+                    if (view instanceof ViewGroup) {
                         ((ViewGroup) view).setClipChildren(true);
-                        view.setLayerType(View.LAYER_TYPE_SOFTWARE,null);
+                        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
                     }
                 }
             }
+        } else if("animation".equals(key)) {
+
+            view.clearAnimation();
+
+            if(value != null) {
+
+                Element p = firstChild();
+
+                while (p != null) {
+                    if (p instanceof AnimationElement) {
+                        if (value.equals(p.get("name"))) {
+                            Animation anim = ((AnimationElement) p).getAnimation();
+                            if(anim != null) {
+                                view.startAnimation(anim);
+                            }
+                            break;
+                        }
+                    }
+                    p = p.nextSibling();
+                }
+            }
+
         } else if(key.startsWith("border") || key.startsWith("background")) {
             setBackground(key, value, view);
         }

@@ -43,6 +43,27 @@ public final class V {
         return defaultValue;
     }
 
+    public final static long longValue(Object v,long defaultValue) {
+        if(v == null) {
+            return defaultValue;
+        }
+        if(v instanceof Long) {
+            return (Long) v;
+        }
+        if(v instanceof Number) {
+            return ((Number) v).longValue();
+        }
+        if(v instanceof String) {
+            try {
+                return Long.parseLong((String)v);
+            }
+            catch(Throwable e) {
+                Log.d(Tag.Tag,Log.getStackTraceString(e));
+            }
+        }
+        return defaultValue;
+    }
+
     public final static String stringValue(Object v,String defaultValue) {
 
         if(v == null){
