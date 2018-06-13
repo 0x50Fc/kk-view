@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.app.Activity;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -420,6 +421,50 @@ public class Element extends EventEmitter {
         }
 
         return data;
+    }
+
+    public void onPause(Activity activity) {
+
+        Element e = firstChild();
+        while(e != null) {
+            e.onPause(activity);
+            e = e.nextSibling();
+        }
+    }
+
+    public void onResume(Activity activity) {
+
+        Element e = firstChild();
+        while(e != null) {
+            e.onResume(activity);
+            e = e.nextSibling();
+        }
+    }
+
+    public void onStart(Activity activity) {
+
+        Element e = firstChild();
+        while(e != null) {
+            e.onStart(activity);
+            e = e.nextSibling();
+        }
+    }
+
+    public void onStop(Activity activity) {
+
+        Element e = firstChild();
+        while(e != null) {
+            e.onStop(activity);
+            e = e.nextSibling();
+        }
+    }
+
+    public void onDestroy(Activity activity){
+        Element e = firstChild();
+        while(e != null) {
+            e.onDestroy(activity);
+            e = e.nextSibling();
+        }
     }
 
     @Override
