@@ -51,39 +51,4 @@ public class KKViewPager extends ViewPager {
         return super.dispatchTouchEvent(ev);
     }
 
-
-    public void setListener(final OnPageLoopChangeListener listener) {
-        this.listener = listener;
-        ContainerView parent = getParentView();
-        if (parent != null){
-            parent.setScrollListener(new ContainerView.OnScrollListener() {
-                @Override
-                public void onScroll(int x, int y) {
-
-                }
-
-                @Override
-                public void onStartTracking() {
-                    if (listener != null){
-                        listener.onStopLoop();
-                    }
-                }
-
-                @Override
-                public void onStopTracking() {
-                    if (listener != null){
-                        listener.onStartLoop();
-                    }
-                }
-            });
-        }
-    }
-
-    private OnPageLoopChangeListener listener;
-    public interface OnPageLoopChangeListener{
-        void onStopLoop();
-
-        void onStartLoop();
-    }
-
 }

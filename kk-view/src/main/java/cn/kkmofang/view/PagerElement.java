@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -19,6 +20,7 @@ import java.util.Queue;
 import java.util.TreeMap;
 
 import cn.kkmofang.view.event.EventEmitter;
+import cn.kkmofang.view.value.V;
 
 /**
  * Created by zhanghailong on 2018/4/19.
@@ -28,11 +30,10 @@ public class PagerElement extends ViewElement {
 
     private PagerElementAdapter _adapter;
     private final Handler _handler;
-    private int _pagerInterval=0;
-    private KKViewPager _viewPager=null;
-    private boolean isLooping=false;
-    private boolean isLoop=true;
-    private  Runnable autoRunnable=null;
+    private long _pagerInterval;
+    private boolean isLooping;
+    private boolean isLoop = true;
+    private  Runnable autoRunnable;
     private int currentPosition;
     public PagerElement() {
         super();
@@ -51,28 +52,17 @@ public class PagerElement extends ViewElement {
     private ViewPager.OnPageChangeListener _OnPageChangeListener;
 
     public void setView(View view) {
-        _viewPager = viewPager();
+
+        KKViewPager _viewPager = viewPager();
         if(_viewPager != null && _OnPageChangeListener != null) {
-            _viewPager.setListener(null);
             _viewPager.removeOnPageChangeListener(_OnPageChangeListener);
             _viewPager.setAdapter(null);
         }
         super.setView(view);
         _viewPager = viewPager();
         if(_viewPager != null ) {
-            _viewPager.setListener(new KKViewPager.OnPageLoopChangeListener() {
-                @Override
-                public void onStopLoop() {
-                    stopLoop();
-                }
 
-                @Override
-                public void onStartLoop() {
-                    startLoop();
-                }
-            });
             if(_OnPageChangeListener == null) {
-
                 final WeakReference<PagerElement> e = new WeakReference<>(this);
 
                 _OnPageChangeListener = new ViewPager.OnPageChangeListener() {
@@ -115,21 +105,6 @@ public class PagerElement extends ViewElement {
 
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-//        View view = this.view();
-//
-//        if(view != null) {
-//
-//            ViewParent p = view.getParent();
-//
-//            while (p != null) {
-//                if (p instanceof ContainerView) {
-//                    ContainerView v = (ContainerView) p;
-//                    v.setCancelPullScrolling(true);
-//                }
-//                p = p.getParent();
-//            }
-//        }
-
     }
 
     public void onPageSelected(int position) {
@@ -150,7 +125,10 @@ public class PagerElement extends ViewElement {
 
     public void onPageScrollStateChanged(int state) {
         if (state == ViewPager.SCROLL_STATE_IDLE && isLoop) {
-            _viewPager.setCurrentItem(currentPosition, false);
+            KKViewPager _viewPager = viewPager();
+            if (_viewPager != null){
+                _viewPager.setCurrentItem(currentPosition, false);
+            }
         }
     }
 
@@ -172,26 +150,12 @@ public class PagerElement extends ViewElement {
 
     @Override
     public void changedKey(String key) {
-        String v = get(key);
-        if("interval".equals(key)) {
-            if(v!=null && !TextUtils.isEmpty(v)){
-                try {
-                    _pagerInterval = Integer.parseInt(v);
-                }catch (Exception e){
-                    _pagerInterval =0;
-                }
-            }
-        }else if("loop".equals(key)){
-            if(v!=null && !TextUtils.isEmpty(v)){
-                try {
-                    isLoop = Boolean.valueOf(v);
-                }catch (Exception e){
-                    isLoop =true;
-                }
-            }
-        }
-
         super.changedKey(key);
+        if("interval".equals(key)) {
+            _pagerInterval = V.longValue(get(key), 0);
+        }else if("loop".equals(key)){
+            isLoop = V.booleanValue(get(key), true);
+        }
     }
 
     @Override
@@ -201,6 +165,7 @@ public class PagerElement extends ViewElement {
             _adapter.notifyDataSetChanged();
         }
     }
+
     @Override
     protected void onDidAddChildren(Element element) {
         super.onDidAddChildren(element);
@@ -253,7 +218,7 @@ public class PagerElement extends ViewElement {
             if(isLoop) {
                 initAutoPlayPagerViewAndPlay();
             }else {
-                _adapter.reloadElements();
+                _adapter.notifyDataSetChanged();
             }
         }
     }
@@ -261,6 +226,7 @@ public class PagerElement extends ViewElement {
 
 
     private void startLoop() {
+        KKViewPager _viewPager = viewPager();
         if(_viewPager==null){
             return;
         }
@@ -273,7 +239,9 @@ public class PagerElement extends ViewElement {
             isLooping = true;
         }
     }
+
     private void stopLoop() {
+        KKViewPager _viewPager = viewPager();
         if (isLooping && _viewPager != null) {
             if(_handler==null){
                 return;
@@ -286,59 +254,67 @@ public class PagerElement extends ViewElement {
     /**
      * 需要自动轮播时，初始化相应的事件
      */
+    @SuppressLint("ClickableViewAccessibility")
     private void initAutoPlayPagerViewAndPlay(){
         currentPosition=1;
+        KKViewPager _viewPager = viewPager();
+
         if(_viewPager==null || _adapter==null){
-            return;
-        }
-        _adapter.resetElements();
-        List<ViewElement> _elements= _adapter.elements();
-        if (_elements==null || _elements.size()<=1){
             return;
         }
 
         //需要自动轮播
         if(_pagerInterval>0){
             if(autoRunnable==null ) {
+                final WeakReference<PagerElement> e = new WeakReference<>(this);
                 autoRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        if (_viewPager != null && _viewPager.getChildCount() > 1) {
-                            _handler.postDelayed(this, _pagerInterval);
-                            currentPosition++;
-                            _viewPager.setCurrentItem(currentPosition, true);
+                        PagerElement v = e.get();
+                        if (v != null){
+                            KKViewPager view = v.viewPager();
+                            if (view != null && view.getChildCount() > 1) {
+                                v._handler.postDelayed(this, v._pagerInterval);
+                                v.currentPosition++;
+                                view.setCurrentItem(v.currentPosition, true);
+                            }
                         }
                     }
                 };
                 _viewPager.setOnTouchListener(new View.OnTouchListener() {
                     @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        int action = event.getAction();
-                        switch (action) {
-                            case MotionEvent.ACTION_DOWN:
-                            case MotionEvent.ACTION_MOVE:
-                                isLooping = true;
-                                stopLoop();
-                                break;
-                            case MotionEvent.ACTION_UP:
-                            case MotionEvent.ACTION_CANCEL:
-                                isLooping = false;
-                                startLoop();
-                            default:
-                                break;
+                    public boolean onTouch(View view, MotionEvent event) {
+                        PagerElement v = e.get();
+                        if (v != null){
+                            int action = event.getAction();
+                            switch (action) {
+                                case MotionEvent.ACTION_DOWN:
+                                case MotionEvent.ACTION_MOVE:
+                                    v.isLooping = true;
+                                    v.stopLoop();
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                case MotionEvent.ACTION_CANCEL:
+                                    v.isLooping = false;
+                                    v.startLoop();
+                                default:
+                                    break;
+                            }
                         }
                         return false;
                     }
                 });
             }
+            stopLoop();
+            startLoop();
+        }else {
+            _viewPager.setOnTouchListener(null);
+            stopLoop();
         }
 
         _adapter.notifyDataSetChanged();
         _viewPager.setCurrentItem(currentPosition);
-        if(_pagerInterval>0) {
-            stopLoop();
-            startLoop();
-        }
+
     }
 
     private static class PagerElementAdapter extends PagerAdapter {
@@ -386,7 +362,6 @@ public class PagerElement extends ViewElement {
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            Log.d("PagerElement", "destroyItem: " + position);
             ViewElement element = elements().get(position);
 
             View  view = element.view();
@@ -412,12 +387,10 @@ public class PagerElement extends ViewElement {
             return POSITION_NONE;
         }
 
-        public void reloadElements() {
+        @Override
+        public void notifyDataSetChanged() {
             _elements = null;
-            notifyDataSetChanged();
-        }
-        public void resetElements(){
-            _elements=null;
+            super.notifyDataSetChanged();
         }
 
         protected List<ViewElement> elements() {
