@@ -512,7 +512,7 @@ public class ViewElement extends Element implements Cloneable{
 
             view.clearAnimation();
 
-            if(value != null) {
+            if (value != null) {
 
                 Element p = firstChild();
 
@@ -520,7 +520,7 @@ public class ViewElement extends Element implements Cloneable{
                     if (p instanceof AnimationElement) {
                         if (value.equals(p.get("name"))) {
                             Animation anim = ((AnimationElement) p).getAnimation();
-                            if(anim != null) {
+                            if (anim != null) {
                                 view.startAnimation(anim);
                             }
                             break;
@@ -529,7 +529,8 @@ public class ViewElement extends Element implements Cloneable{
                     p = p.nextSibling();
                 }
             }
-
+        } else if("transform".equals(key)) {
+            AnimationElement.Transform.valueOf(view.getMatrix(),value);
         } else if(key.startsWith("border") || key.startsWith("background")) {
             setBackground(key, value, view);
         }
