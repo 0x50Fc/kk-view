@@ -2,6 +2,9 @@ package cn.kkmofang.view;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
+import java.io.File;
+
 import cn.kkmofang.image.ImageStyle;
 
 /**
@@ -16,4 +19,5 @@ public interface IViewContext {
 
     Drawable getImage(String url, ImageStyle style);
 
+    AudioTask downLoadFile(String url, AudioElement.IAudioLoadCallback callback);
 }
