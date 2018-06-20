@@ -25,8 +25,8 @@ public class Text {
     public float letterSpacing = 0;
     public TextAlign textAlign = TextAlign.Left;
     public final TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-
-    public String vString;
+    public float paddingLeft = 0;
+    public float paddingTop = 0;
 
     private StaticLayout _layout;
     private float _width;
@@ -75,7 +75,7 @@ public class Text {
 
     public void draw(Canvas canvas,int width,int height) {
         build();
-        canvas.translate(0,(height - _layout.getHeight()) * 0.5f);
+        canvas.translate(paddingLeft,paddingTop + (height - _layout.getHeight()) * 0.5f);
         _layout.draw(canvas);
     }
 
@@ -92,15 +92,11 @@ public class Text {
                 textContent = vv.textContent();
             }
 
-            if(vString != null && vString.contains("完成今日签到")){
-                Log.d("","");
-                if(!textContent.toString().contains("完成今日签到")) {
-                    Log.d("","");
-                }
-            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                paint.setLetterSpacing(letterSpacing);
+                if(paint.getTextSize() != 0.0f) {
+                    paint.setLetterSpacing((letterSpacing + 1.3f) / paint.getTextSize());
+                }
             }
 
             Layout.Alignment align = Layout.Alignment.ALIGN_NORMAL;

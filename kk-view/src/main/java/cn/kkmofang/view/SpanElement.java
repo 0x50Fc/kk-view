@@ -9,6 +9,7 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 
+import cn.kkmofang.view.value.TextDecoration;
 import cn.kkmofang.view.value.TextPaint;
 
 /**
@@ -44,6 +45,8 @@ public class SpanElement extends Element {
             if(p instanceof TextElement) {
                 ((TextElement) p).setNeedDisplay();
             }
+        } else if("text-decoration".equals(key)) {
+            TextDecoration.valueOf(get(key),paint.getPaint());
         }
 
     }

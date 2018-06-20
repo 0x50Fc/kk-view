@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.graphics.Paint;
 import android.os.Handler;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -11,6 +12,7 @@ import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Font;
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
+import cn.kkmofang.view.value.TextDecoration;
 
 /**
  * Created by zhanghailong on 2018/1/20.
@@ -77,10 +79,14 @@ public class TextElement extends ViewElement implements Text.TextContent{
 
                 float paddingLeft = element.padding.left.floatValue(width,0);
                 float paddingRight = element.padding.right.floatValue(width,0);
+                float paddingTop = element.padding.top.floatValue(width,0);
+                float paddingBottom = element.padding.bottom.floatValue(width,0);
 
                 float maxWidth = width;
                 float maxHeight = height;
 
+                e._text.paddingLeft = paddingLeft;
+                e._text.paddingTop = paddingTop;
 
                 if(width != Pixel.Auto) {
                     maxWidth = width - paddingLeft - paddingRight;
@@ -89,14 +95,14 @@ public class TextElement extends ViewElement implements Text.TextContent{
                 e._text.setMaxWidth((int) maxWidth);
 
                 if(width == Pixel.Auto) {
-                    width = e._text.width();
+                    width = e._text.width() + paddingLeft + paddingRight;
                 }
 
                 if(height == Pixel.Auto) {
 
                     height = e._text.height()
-                        + element.padding.top.floatValue(0,0)
-                        + element.padding.bottom.floatValue(0,0);
+                        + paddingTop
+                        + paddingBottom;
 
                     if(height > maxHeight) {
                         height = maxHeight;
@@ -177,12 +183,14 @@ public class TextElement extends ViewElement implements Text.TextContent{
             setNeedDisplay();
         } else if("letter-spacing".equals(key)) {
             letterSpacing.set(get(key));
-            _text.setLineSpacing((int) lineSpacing.floatValue(0,0));
+            _text.setLetterSpacing((int) lineSpacing.floatValue(0,0));
             setNeedDisplay();
         } else if("text-align".equals(key)) {
             String v = get(key);
             _text.setTextAlign(TextAlign.valueOfString(v));
             setNeedDisplay();
+        } else if("text-decoration".equals(key)) {
+            TextDecoration.valueOf(get(key),_text.paint);
         }
 
     }
