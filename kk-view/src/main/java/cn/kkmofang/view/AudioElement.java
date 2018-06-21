@@ -17,21 +17,14 @@ import cn.kkmofang.view.value.V;
  */
 
 public class AudioElement extends Element {
-
-    private boolean _loading = false;
-    private boolean _loaded = false;
     private boolean _playing = false;
     private boolean _loop = false;
     private boolean _autopaly = false;
     private String _src;
-    private String _source;
     private MediaPlayer _player;
-    private AudioTask _audioTask;
-    private IViewContext viewContext;
 
     public AudioElement() {
         super();
-        viewContext = ViewContext.current();
     }
 
 
@@ -41,8 +34,9 @@ public class AudioElement extends Element {
         if("src".equals(key)) {
             _src = get(key);
             stopPlaying();
-            stopLoading();
-            startLoading();
+            if (_autopaly){
+                startPlaying();
+            }
         } else if("loop".equals(key)) {
             _loop = V.booleanValue(get(key),false);
         } else if("autoplay".equals(key)) {
@@ -53,63 +47,19 @@ public class AudioElement extends Element {
         }
     }
 
-    private void startLoading() {
-        final WeakReference<AudioElement> a = new WeakReference<>(this);
-        _audioTask = viewContext.downLoadFile(_src,
-                new IAudioLoadCallback() {
-                    @Override
-                    public void onStart() {
-                        AudioElement e = a.get();
-                        if (e != null){
-                            _loading = true;
-                            _loaded = false;
-                        }
-                    }
-
-                    @Override
-                    public void onFinish(String src, Exception error) {
-                        AudioElement e = a.get();
-                        if (e != null){
-                            _source = src;
-                            e._loading = false;
-                            e._loaded = error == null;
-                            if (e._autopaly){
-                                e.startPlaying();
-                            }
-                        }
-
-                    }
-                });
-    }
-
-    private void stopLoading() {
-        if (_audioTask != null){
-            _audioTask.cancel();
-        }
-        _loaded = false;
-        _loading = false;
-    }
-
     private void startPlaying() {
+
 
         if(_playing) {
             return;
         }
 
-        if(_loading) {
-            return;
-        }
-
-        if(!_loaded) {
-            startLoading();
-            return;
-        }
         if (_player == null){
             _player = new MediaPlayer();
         }
         try {
-            if (!TextUtils.isEmpty(_source)){
-                _player.setDataSource(_source);
+            if (!TextUtils.isEmpty(_src)){
+                _player.setDataSource(_src);
                 final WeakReference<AudioElement> p = new WeakReference<>(this);
                 _player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -134,6 +84,8 @@ public class AudioElement extends Element {
                         }
                     }
                 });
+
+
                 _player.prepareAsync();
             }
         } catch (IOException e) {
@@ -151,7 +103,6 @@ public class AudioElement extends Element {
             _player = null;
         }
         _playing = false;
-        _loaded = false;
     }
 
     private void pausePlaying(){
@@ -164,7 +115,7 @@ public class AudioElement extends Element {
     }
 
     private void resumePlaying(){
-        if (_player != null && _loaded){
+        if (_player != null){
             if (!_player.isPlaying()){
                 _playing = true;
                 _player.start();
