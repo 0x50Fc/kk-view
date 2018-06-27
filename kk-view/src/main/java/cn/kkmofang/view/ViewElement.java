@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -280,6 +281,8 @@ public class ViewElement extends Element implements Cloneable{
 
         recycleView();
 
+        Class<?> viewClass = this.viewClass();
+
         View vv = null;
 
         String reuse = reuse();
@@ -290,8 +293,11 @@ public class ViewElement extends Element implements Cloneable{
 
             if (dequeue != null && dequeue.containsKey(reuse)) {
                 Queue<View> queue = dequeue.get(reuse);
-                if (!queue.isEmpty()) {
+                while (!queue.isEmpty()) {
                     vv = queue.poll();
+                    if(viewClass.isAssignableFrom(vv.getClass())) {
+                        break;
+                    }
                 }
             }
 
@@ -335,7 +341,7 @@ public class ViewElement extends Element implements Cloneable{
 
                 String reuse = reuse();
 
-                if (reuse != null && !"".equals(reuse)) {
+                if (reuse != null && !"".equals(reuse) && !(_view instanceof SurfaceView)) {
 
                     Map<String, Queue<View>> dequeue = (Map<String, Queue<View>>) p.getTag(R.id.kk_view_dequeue);
 
