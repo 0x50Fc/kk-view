@@ -10,6 +10,8 @@ import android.view.animation.AnimationSet;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 
+import java.lang.ref.WeakReference;
+
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.V;
 
@@ -24,9 +26,9 @@ public class AnimationElement extends Element {
     public boolean autoreverses;
     public long delay;
 
-    public Animation getAnimation() {
+    public void startAnimation(View view, Animation.AnimationListener listener) {
 
-        AnimationSet anim = new AnimationSet(true);
+        AnimationSet anim = new AnimationSet(false);
 
         valueOf(anim);
 
@@ -34,12 +36,14 @@ public class AnimationElement extends Element {
 
         while(e != null) {
             if(e instanceof Item) {
-                ((Item) e).addAnimation(anim);
+                ((Item) e).addAnimation(anim,view);
             }
             e = e.nextSibling();
         }
 
-        return anim;
+        anim.setAnimationListener(listener);
+
+        view.startAnimation(anim);
     }
 
     public void valueOf(Animation anim) {
@@ -74,7 +78,7 @@ public class AnimationElement extends Element {
 
     public static abstract class Item extends Element {
 
-       public abstract void addAnimation(AnimationSet animSet);
+       public abstract void addAnimation(AnimationSet animSet,View view);
 
     }
 
@@ -161,13 +165,44 @@ public class AnimationElement extends Element {
                 fromValue.reset();
                 valueOf(fromValue,get(key));
             } else if("to".equals(key)) {
-                valueOf(fromValue,get(key));
+                toValue.reset();
+                valueOf(toValue,get(key));
             }
         }
 
         @Override
-        public void addAnimation(AnimationSet animSet) {
-            animSet.addAnimation(new TransformAnimation(fromValue,toValue));
+        public void addAnimation(AnimationSet animSet, View view) {
+
+            final WeakReference<View> v = new WeakReference<>(view);
+
+            TransformAnimation anim = new TransformAnimation(fromValue,toValue);
+
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    View view = v.get();
+                    if(view != null) {
+                        view.setTranslationX(0);
+                        view.setTranslationY(0);
+                        view.setScaleX(1.0f);
+                        view.setScaleY(1.0f);
+                        view.setRotation(0.0f);
+                        view.setRotationX(0.0f);
+                        view.setRotationY(0.0f);
+                    }
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            animSet.addAnimation(anim);
         }
     }
 
@@ -187,8 +222,30 @@ public class AnimationElement extends Element {
         }
 
         @Override
-        public void addAnimation(AnimationSet animSet) {
-            animSet.addAnimation(new AlphaAnimation(fromValue,toValue));
+        public void addAnimation(AnimationSet animSet,View view) {
+            final WeakReference<View> v = new WeakReference<>(view);
+
+            AlphaAnimation anim = new AlphaAnimation(fromValue,toValue);
+            anim.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                    View view = v.get();
+                    if(view != null) {
+                        view.setAlpha(1.0f);
+                    }
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            animSet.addAnimation(anim);
         }
     }
 
