@@ -1,6 +1,7 @@
 package cn.kkmofang.view;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.text.Layout;
@@ -27,6 +28,7 @@ public class Text {
     public final TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     public float paddingLeft = 0;
     public float paddingTop = 0;
+    public TextStyle _textStyle = new TextStyle();
 
     private StaticLayout _layout;
     private float _width;
@@ -65,6 +67,9 @@ public class Text {
         }
     }
 
+    public void setTextStyle(TextStyle style){
+        _textStyle = style;
+    }
 
     public void setTextAlign(TextAlign v) {
         if(textAlign != v) {
@@ -77,6 +82,15 @@ public class Text {
         build();
         canvas.translate(paddingLeft,paddingTop + (height - _layout.getHeight()) * 0.5f);
         _layout.draw(canvas);
+
+
+        if (_textStyle.hasStroke){
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(_textStyle.color);
+            paint.setAlpha(_textStyle.alpha);
+            _layout.draw(canvas);
+        }
+
     }
 
 
@@ -109,6 +123,18 @@ public class Text {
 
             if(maxWidth == Pixel.Auto) {
                 align =  Layout.Alignment.ALIGN_NORMAL;
+            }
+
+
+
+            if (_textStyle.hasStroke){
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(_textStyle.strokeWidth.floatValue(0, 0));
+                paint.setColor(_textStyle.strokeColor);
+                paint.setAlpha(_textStyle.strokeAlpha);
+            }else {
+                paint.setColor(_textStyle.color);
+                paint.setAlpha(_textStyle.alpha);
             }
 
            _layout = new StaticLayout(

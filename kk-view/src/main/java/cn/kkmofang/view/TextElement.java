@@ -173,9 +173,7 @@ public class TextElement extends ViewElement implements Text.TextContent{
             Font.valueOf(get(key),_text.paint);
             setNeedDisplay();
         } else if("color".equals(key)) {
-            int v = Color.valueOf(get(key),0xff000000);
-            _text.paint.setColor(v);
-            _text.paint.setAlpha(0x0ff & (v >> 24));
+            _text._textStyle.setColor(get(key));
             setNeedDisplay();
         } else if("line-spacing".equals(key)) {
             lineSpacing.set(get(key));
@@ -191,6 +189,9 @@ public class TextElement extends ViewElement implements Text.TextContent{
             setNeedDisplay();
         } else if("text-decoration".equals(key)) {
             TextDecoration.valueOf(get(key),_text.paint);
+        } else if ("text-stroke".equals(key)){
+            _text._textStyle.setStroke(get(key));
+            setNeedDisplay();
         }
 
     }
