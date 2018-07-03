@@ -9,9 +9,11 @@ import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 
 import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Font;
+import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextDecoration;
 
 /**
@@ -84,8 +86,16 @@ public class SpanElement extends Element {
 
         int length = text.length();
 
-        span.setSpan(new ForegroundColorSpan(paint.getColor()), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         span.setSpan(new AbsoluteSizeSpan((int) Math.ceil( paint.getTextSize())), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+        StrokeSpanColor stroke = new StrokeSpanColor();
+        stroke.setAlpha(paint.getAlpha());
+        stroke.setColor(paint.getColor());
+
+        stroke.setStroke(get("text-stroke"));
+
+        span.setSpan(stroke, 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 
         if(paint.isFakeBoldText()) {

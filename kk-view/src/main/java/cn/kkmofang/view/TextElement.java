@@ -4,6 +4,9 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -38,9 +41,23 @@ public class TextElement extends ViewElement implements Text.TextContent{
             Element p = firstChild();
 
             if(p == null) {
+
                 String v = get("#text");
-                if (v != null) {
-                    _string.append(v);
+                if (!TextUtils.isEmpty(v)){
+                    int lenght = v.length();
+                    SpannableString span = new SpannableString(v);
+                    span.setSpan(new AbsoluteSizeSpan((int) Math.ceil( _text.paint.getTextSize())), 0, lenght, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                    StrokeSpanColor stroke = new StrokeSpanColor();
+                    stroke.setAlpha(_text.paint.getAlpha());
+                    stroke.setColor(_text.paint.getColor());
+
+                    stroke.setStroke(get("text-stroke"));
+
+                    span.setSpan(stroke, 0, lenght, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+                    _string.append(span);
+
                 }
             } else {
                 while (p != null) {
@@ -173,8 +190,13 @@ public class TextElement extends ViewElement implements Text.TextContent{
             Font.valueOf(get(key),_text.paint);
             setNeedDisplay();
         } else if("color".equals(key)) {
-            _text._textStyle.setColor(get(key));
-            setNeedDisplay();
+            String value = get(key);
+            if (!TextUtils.isEmpty(value)){
+                int color = Color.valueOf(value, 0xff000000);
+                _text.paint.setColor(color);
+                _text.paint.setAlpha(0x0ff & (color >> 24));
+                setNeedDisplay();
+            }
         } else if("line-spacing".equals(key)) {
             lineSpacing.set(get(key));
             _text.setLineSpacing((int) lineSpacing.floatValue(0,0));
@@ -190,7 +212,6 @@ public class TextElement extends ViewElement implements Text.TextContent{
         } else if("text-decoration".equals(key)) {
             TextDecoration.valueOf(get(key),_text.paint);
         } else if ("text-stroke".equals(key)){
-            _text._textStyle.setStroke(get(key));
             setNeedDisplay();
         }
 
