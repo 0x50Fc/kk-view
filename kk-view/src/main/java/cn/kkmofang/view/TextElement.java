@@ -2,14 +2,19 @@ package cn.kkmofang.view;
 
 import android.graphics.Paint;
 import android.os.Handler;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.CharacterStyle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Font;
@@ -26,14 +31,15 @@ public class TextElement extends ViewElement implements Text.TextContent{
     public final Pixel lineSpacing = new Pixel();
     public final Pixel letterSpacing = new Pixel();
     private final Text _text = new Text(this);
+    private StrokeSpan _styleSpan;
 
     private SpannableStringBuilder _string = null;
+
 
     private final Handler _handler;
 
     @Override
     public CharSequence textContent() {
-
         if(_string == null) {
 
             _string = new SpannableStringBuilder();
@@ -44,17 +50,18 @@ public class TextElement extends ViewElement implements Text.TextContent{
 
                 String v = get("#text");
                 if (!TextUtils.isEmpty(v)){
-                    int lenght = v.length();
+                    int length = v.length();
                     SpannableString span = new SpannableString(v);
-                    span.setSpan(new AbsoluteSizeSpan((int) Math.ceil( _text.paint.getTextSize())), 0, lenght, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    span.setSpan(new AbsoluteSizeSpan((int) Math.ceil( _text.paint.getTextSize())), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                    StrokeSpanColor stroke = new StrokeSpanColor();
-                    stroke.setAlpha(_text.paint.getAlpha());
-                    stroke.setColor(_text.paint.getColor());
-
-                    stroke.setStroke(get("text-stroke"));
-
-                    span.setSpan(stroke, 0, lenght, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                    String vStroke = get("text-stroke");
+                    if (!TextUtils.isEmpty(vStroke)){
+                        _styleSpan = new StrokeSpan();
+                        _styleSpan.setAlpha(_text.paint.getAlpha());
+                        _styleSpan.setColor(_text.paint.getColor());
+                        _styleSpan.setStroke(vStroke);
+                        span.setSpan(_styleSpan, 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
 
                     _string.append(span);
 
@@ -63,8 +70,9 @@ public class TextElement extends ViewElement implements Text.TextContent{
                 while (p != null) {
                     if (p instanceof SpanElement) {
                         SpannableString ss = ((SpanElement) p).obtainContent();
-                        if (ss != null)
+                        if (ss != null){
                             _string.append(ss);
+                        }
                     }
 
                     if (p instanceof ImgElement) {
@@ -80,6 +88,33 @@ public class TextElement extends ViewElement implements Text.TextContent{
         }
 
         return _string;
+    }
+
+    @Override
+    public boolean updateTextStyles() {
+        boolean update = false;
+        if (_string != null){
+            Element p = firstChild();
+            if (p == null){
+                if (_styleSpan != null){
+                    _styleSpan.setUpdate(true);
+                    update = true;
+                }
+
+            }else {
+                while (p != null){
+                    if (p instanceof SpanElement) {
+                        StrokeSpan _style = ((SpanElement) p).obtainStyle();
+                        if (_style != null){
+                            _style.setUpdate(true);
+                            update = true;
+                        }
+                    }
+                    p = p.nextSibling();
+                }
+            }
+        }
+        return update;
     }
 
     private static final Layout TextLayout = new Layout(){

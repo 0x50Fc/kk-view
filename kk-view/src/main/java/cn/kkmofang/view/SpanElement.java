@@ -7,6 +7,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.CharacterStyle;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -23,6 +24,7 @@ import cn.kkmofang.view.value.TextDecoration;
 public class SpanElement extends Element {
 
     public final TextPaint paint = new TextPaint();
+    private StrokeSpan _styleSpan;
 
     public SpanElement() {
         super();
@@ -57,7 +59,7 @@ public class SpanElement extends Element {
 
     }
 
-    private Paint getPaint(){
+    public Paint getPaint(){
         Element p = parent();
         if (p instanceof TextElement){
             if (TextUtils.isEmpty(get("color"))){
@@ -75,6 +77,10 @@ public class SpanElement extends Element {
         return paint;
     }
 
+    public StrokeSpan obtainStyle(){
+        return _styleSpan;
+    }
+
     public SpannableString obtainContent(){
         Paint paint = getPaint();
 
@@ -89,14 +95,15 @@ public class SpanElement extends Element {
         span.setSpan(new AbsoluteSizeSpan((int) Math.ceil( paint.getTextSize())), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 
-        StrokeSpanColor stroke = new StrokeSpanColor();
-        stroke.setAlpha(paint.getAlpha());
-        stroke.setColor(paint.getColor());
+        String v = get("text-stroke");
+        if (!TextUtils.isEmpty(v)){
+            _styleSpan = new StrokeSpan();
+            _styleSpan.setAlpha(paint.getAlpha());
+            _styleSpan.setColor(paint.getColor());
+            _styleSpan.setStroke(v);
+            span.setSpan(_styleSpan, 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        stroke.setStroke(get("text-stroke"));
-
-        span.setSpan(stroke, 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+        }
 
         if(paint.isFakeBoldText()) {
             span.setSpan(new StyleSpan(Typeface.BOLD), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

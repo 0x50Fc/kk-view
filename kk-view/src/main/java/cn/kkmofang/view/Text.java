@@ -5,12 +5,16 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.text.Layout;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.text.style.CharacterStyle;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
@@ -79,6 +83,15 @@ public class Text {
         build();
         canvas.translate(paddingLeft,paddingTop + (height - _layout.getHeight()) * 0.5f);
         _layout.draw(canvas);
+        drawStyles(canvas);
+
+    }
+
+    public void drawStyles(Canvas canvas){
+        TextContent vv = _textContent.get();
+        if (vv != null && vv.updateTextStyles()){
+            _layout.draw(canvas);
+        }
     }
 
 
@@ -151,5 +164,7 @@ public class Text {
 
     public static interface TextContent {
         CharSequence textContent();
+
+        boolean updateTextStyles();
     }
 }
