@@ -91,13 +91,13 @@ public class TextElement extends ViewElement implements Text.TextContent{
     }
 
     @Override
-    public boolean updateTextStyles() {
+    public boolean updateTextStyles(boolean bg) {
         boolean update = false;
         if (_string != null){
             Element p = firstChild();
             if (p == null){
                 if (_styleSpan != null){
-                    _styleSpan.setUpdate(true);
+                    _styleSpan.setUpdate(bg);
                     update = true;
                 }
 
@@ -106,7 +106,7 @@ public class TextElement extends ViewElement implements Text.TextContent{
                     if (p instanceof SpanElement) {
                         StrokeSpan _style = ((SpanElement) p).obtainStyle();
                         if (_style != null){
-                            _style.setUpdate(true);
+                            _style.setUpdate(bg);
                             update = true;
                         }
                     }

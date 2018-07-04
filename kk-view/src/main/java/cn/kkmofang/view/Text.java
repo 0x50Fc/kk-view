@@ -82,15 +82,19 @@ public class Text {
 
         build();
         canvas.translate(paddingLeft,paddingTop + (height - _layout.getHeight()) * 0.5f);
-        _layout.draw(canvas);
         drawStyles(canvas);
+        _layout.draw(canvas);
 
     }
 
-    public void drawStyles(Canvas canvas){
+    private void drawStyles(Canvas canvas){
         TextContent vv = _textContent.get();
-        if (vv != null && vv.updateTextStyles()){
-            _layout.draw(canvas);
+        if (vv != null){
+            boolean update = vv.updateTextStyles(true);
+            if (update){
+                _layout.draw(canvas);
+                vv.updateTextStyles(false);
+            }
         }
     }
 
@@ -165,6 +169,6 @@ public class Text {
     public static interface TextContent {
         CharSequence textContent();
 
-        boolean updateTextStyles();
+        boolean updateTextStyles(boolean bg);
     }
 }
