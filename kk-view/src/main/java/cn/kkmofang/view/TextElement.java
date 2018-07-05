@@ -31,7 +31,6 @@ public class TextElement extends ViewElement implements Text.TextContent{
     public final Pixel lineSpacing = new Pixel();
     public final Pixel letterSpacing = new Pixel();
     private final Text _text = new Text(this);
-    private StrokeSpan _styleSpan;
 
     private SpannableStringBuilder _string = null;
 
@@ -56,7 +55,7 @@ public class TextElement extends ViewElement implements Text.TextContent{
 
                     String vStroke = get("text-stroke");
                     if (!TextUtils.isEmpty(vStroke)){
-                        _styleSpan = new StrokeSpan();
+                        StrokeSpan _styleSpan = new StrokeSpan();
                         _styleSpan.setAlpha(_text.paint.getAlpha());
                         _styleSpan.setColor(_text.paint.getColor());
                         _styleSpan.setStroke(vStroke);
@@ -88,33 +87,6 @@ public class TextElement extends ViewElement implements Text.TextContent{
         }
 
         return _string;
-    }
-
-    @Override
-    public boolean updateTextStyles(boolean bg) {
-        boolean update = false;
-        if (_string != null){
-            Element p = firstChild();
-            if (p == null){
-                if (_styleSpan != null){
-                    _styleSpan.setUpdate(bg);
-                    update = true;
-                }
-
-            }else {
-                while (p != null){
-                    if (p instanceof SpanElement) {
-                        StrokeSpan _style = ((SpanElement) p).obtainStyle();
-                        if (_style != null){
-                            _style.setUpdate(bg);
-                            update = true;
-                        }
-                    }
-                    p = p.nextSibling();
-                }
-            }
-        }
-        return update;
     }
 
     private static final Layout TextLayout = new Layout(){

@@ -87,15 +87,23 @@ public class Text {
 
     }
 
+    private static final String TAG = "Text";
     private void drawStyles(Canvas canvas){
         TextContent vv = _textContent.get();
-        if (vv != null){
-            boolean update = vv.updateTextStyles(true);
-            if (update){
+        if (vv != null) {
+            CharSequence charSequence = vv.textContent();
+            if (charSequence instanceof Spannable) {
+                StrokeSpan[] spans = ((Spannable) charSequence).getSpans(0, charSequence.length(), StrokeSpan.class);
+                for (StrokeSpan span : spans) {
+                    span.setUpdate(true);
+                }
                 _layout.draw(canvas);
-                vv.updateTextStyles(false);
+                for (StrokeSpan span : spans) {
+                    span.setUpdate(false);
+                }
             }
         }
+
     }
 
 
@@ -168,7 +176,5 @@ public class Text {
 
     public static interface TextContent {
         CharSequence textContent();
-
-        boolean updateTextStyles(boolean bg);
     }
 }

@@ -24,7 +24,6 @@ import cn.kkmofang.view.value.TextDecoration;
 public class SpanElement extends Element {
 
     public final TextPaint paint = new TextPaint();
-    private StrokeSpan _styleSpan;
 
     public SpanElement() {
         super();
@@ -77,10 +76,6 @@ public class SpanElement extends Element {
         return paint;
     }
 
-    public StrokeSpan obtainStyle(){
-        return _styleSpan;
-    }
-
     public SpannableString obtainContent(){
         Paint paint = getPaint();
 
@@ -97,12 +92,11 @@ public class SpanElement extends Element {
 
         String v = get("text-stroke");
         if (!TextUtils.isEmpty(v)){
-            _styleSpan = new StrokeSpan();
+            StrokeSpan _styleSpan = new StrokeSpan();
             _styleSpan.setAlpha(paint.getAlpha());
             _styleSpan.setColor(paint.getColor());
             _styleSpan.setStroke(v);
             span.setSpan(_styleSpan, 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
         }
 
         if(paint.isFakeBoldText()) {
