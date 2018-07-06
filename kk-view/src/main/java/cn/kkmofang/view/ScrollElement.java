@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -441,13 +442,16 @@ public class ScrollElement extends ViewElement {
 
         _obtainChildrening = true;
 
-        v.getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                obtainChildrenView();
-                _obtainChildrening = false;
-            }
-        });
+        Handler handler = v.getHandler();
+        if (handler != null){
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    obtainChildrenView();
+                    _obtainChildrening = false;
+                }
+            });
+        }
     }
 
     @Override
