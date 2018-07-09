@@ -694,7 +694,7 @@ public class ViewElement extends Element implements Cloneable{
 
             while(p != null && p instanceof ViewElement) {
 
-                ((ViewElement) p).setViewLayer(viewLayer);
+                ((ViewElement) p).setViewLayer(View.LAYER_TYPE_NONE);
 
                 p = p.parent();
             }
