@@ -650,15 +650,6 @@ public class ViewElement extends Element implements Cloneable{
             setOnChangedKeys(view,key);
         } else if("hidden".equals(key)) {
             setVisible(!V.booleanValue(value, true), view);
-        } else if("overflow".equals(key)) {
-            if ("hidden".equals(value)) {
-                if (_viewLayer != View.LAYER_TYPE_HARDWARE) {
-                    if (view instanceof ViewGroup) {
-                        ((ViewGroup) view).setClipChildren(true);
-                        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-                    }
-                }
-            }
         } else if("animation".equals(key)) {
             setOnChangedKeys(view,key);
         } else if("transform".equals(key)) {
@@ -692,11 +683,8 @@ public class ViewElement extends Element implements Cloneable{
 
             Element p = parent();
 
-            while(p != null && p instanceof ViewElement) {
-
+            if(p != null && p instanceof ViewElement) {
                 ((ViewElement) p).setViewLayer(View.LAYER_TYPE_NONE);
-
-                p = p.parent();
             }
         }
     }
