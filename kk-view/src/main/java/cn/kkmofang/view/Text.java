@@ -32,6 +32,8 @@ public class Text {
     public final TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     public float paddingLeft = 0;
     public float paddingTop = 0;
+    public float strokeWidth = 0;
+    public int strokeColor;
 
     private StaticLayout _layout;
     private float _width;
@@ -82,12 +84,29 @@ public class Text {
 
         build();
         canvas.translate(paddingLeft,paddingTop + (height - _layout.getHeight()) * 0.5f);
-        drawStyles(canvas);
+
+        if(strokeWidth > 0) {
+
+            int c = paint.getColor();
+            int a = paint.getAlpha();
+
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+            paint.setStrokeWidth(strokeWidth);
+            paint.setColor(strokeColor & 0x0ffffff);
+            paint.setAlpha((strokeColor >> 24) & 0x0ff);
+            _layout.draw(canvas);
+
+            paint.setStrokeWidth(0);
+            paint.setColor(c);
+            paint.setAlpha(a);
+        }
+
         _layout.draw(canvas);
 
     }
 
     private static final String TAG = "Text";
+
     private void drawStyles(Canvas canvas){
         TextContent vv = _textContent.get();
         if (vv != null) {
