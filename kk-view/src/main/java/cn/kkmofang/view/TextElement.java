@@ -49,8 +49,7 @@ public class TextElement extends ViewElement implements Text.TextContent{
 
                 String v = get("#text");
                 if (!TextUtils.isEmpty(v)){
-                    _string.append(v);
-                    /*
+
                     int length = v.length();
                     SpannableString span = new SpannableString(v);
                     span.setSpan(new AbsoluteSizeSpan((int) Math.ceil( _text.paint.getTextSize())), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -65,7 +64,6 @@ public class TextElement extends ViewElement implements Text.TextContent{
                     }
 
                     _string.append(span);
-                    */
 
                 }
             } else {
@@ -222,21 +220,6 @@ public class TextElement extends ViewElement implements Text.TextContent{
         } else if("text-decoration".equals(key)) {
             TextDecoration.valueOf(get(key),_text.paint);
         } else if ("text-stroke".equals(key)){
-            String v = get(key);
-            if(v == null || "".equals(v)) {
-                _text.strokeWidth = 0;
-            } else {
-                String[] vs = v.split(" ");
-                Pixel size = new Pixel();
-                for(String vv : vs) {
-                    if(Pixel.is(vv)) {
-                       size.set(vv);
-                    } else {
-                        _text.strokeColor = Color.valueOf(vv,0xff000000);
-                    }
-                }
-                _text.strokeWidth = size.floatValue(0,0);
-             }
             setNeedDisplay();
         }
 
