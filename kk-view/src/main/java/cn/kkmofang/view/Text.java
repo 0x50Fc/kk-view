@@ -88,14 +88,13 @@ public class Text {
 
     }
 
-    private static final String TAG = "Text";
-
     private void drawStyles(Canvas canvas){
         TextContent vv = _textContent.get();
         if (vv != null) {
             CharSequence charSequence = vv.textContent();
             if (charSequence instanceof Spannable) {
                 StrokeSpan[] spans = ((Spannable) charSequence).getSpans(0, charSequence.length(), StrokeSpan.class);
+                if (spans == null || spans.length <= 0)return;
                 for (StrokeSpan span : spans) {
                     span.setUpdate(true);
                 }
