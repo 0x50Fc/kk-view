@@ -557,7 +557,6 @@ public class ScrollElement extends ViewElement {
             } else {
                 p.addView(view,0);
             }
-            p.requestLayout();
         }
     }
 

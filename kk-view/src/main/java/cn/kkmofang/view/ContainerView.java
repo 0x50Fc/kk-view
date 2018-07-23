@@ -294,7 +294,6 @@ public class ContainerView extends ElementView {
         public void setContentSize(int width,int height) {
             _contentWidth = width;
             _contentHeight = height;
-            requestLayout();
         }
 
         @Override

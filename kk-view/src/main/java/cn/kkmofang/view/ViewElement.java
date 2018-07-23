@@ -389,7 +389,6 @@ public class ViewElement extends Element implements Cloneable{
             } else {
                 p.addView(view);
             }
-            p.requestLayout();
         }
     }
 
