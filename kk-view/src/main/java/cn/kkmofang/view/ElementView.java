@@ -1,6 +1,7 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -125,16 +126,19 @@ public class ElementView extends FrameLayout implements IElementView{
 
         final WeakReference<ElementView> v = new WeakReference<>(this);
 
-        getHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                ElementView vv = v.get();
-                if(vv != null) {
-                    vv._layouting = false;
-                    vv.requestLayout();
+        Handler handler = getHandler();
+        if (handler != null){
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ElementView vv = v.get();
+                    if(vv != null) {
+                        vv._layouting = false;
+                        vv.requestLayout();
+                    }
                 }
-            }
-        });
+            });
+        }
 
     }
 

@@ -1,5 +1,6 @@
 package cn.kkmofang.view;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Matrix;
@@ -600,14 +601,14 @@ public class ViewElement extends Element implements Cloneable{
                             if (name.equals(p.get("name"))) {
                                 final WeakReference<ViewElement> e = new WeakReference<>(this);
 
-                                ((AnimationElement) p).startAnimation(view, new Animation.AnimationListener() {
+                                ((AnimationElement) p).startAnimation(view, new Animator.AnimatorListener() {
                                     @Override
-                                    public void onAnimationStart(Animation animation) {
+                                    public void onAnimationStart(Animator animation) {
 
                                     }
 
                                     @Override
-                                    public void onAnimationEnd(Animation animation) {
+                                    public void onAnimationEnd(Animator animation) {
                                         ViewElement element = e.get();
                                         if(element != null) {
                                             View view = element.view();
@@ -618,7 +619,12 @@ public class ViewElement extends Element implements Cloneable{
                                     }
 
                                     @Override
-                                    public void onAnimationRepeat(Animation animation) {
+                                    public void onAnimationCancel(Animator animation) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationRepeat(Animator animation) {
 
                                     }
                                 });
