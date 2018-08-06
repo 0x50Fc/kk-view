@@ -18,11 +18,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.kk.view.R;
+import cn.kkmofang.unity.R;
 
 import java.lang.ref.WeakReference;
 
-public class LoadingView extends ImageView {
+public class LoadingView extends android.support.v7.widget.AppCompatImageView {
     private LoadingDrawable _drawable;
 
     public LoadingView(Context context) {
