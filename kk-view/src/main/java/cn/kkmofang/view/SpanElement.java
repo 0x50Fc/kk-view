@@ -88,7 +88,7 @@ public class SpanElement extends Element {
         int length = text.length();
 
         span.setSpan(new AbsoluteSizeSpan((int) Math.ceil( paint.getTextSize())), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+        span.setSpan(new ForegroundColorSpan(paint.getColor()), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         String v = get("text-stroke");
         if (!TextUtils.isEmpty(v)){
