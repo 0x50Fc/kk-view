@@ -3,6 +3,8 @@ package cn.kkmofang.view;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import java.lang.ref.WeakReference;
+
 import cn.kkmofang.image.ImageStyle;
 
 /**
@@ -11,10 +13,24 @@ import cn.kkmofang.image.ImageStyle;
 
 public abstract class AbstractViewContext implements IViewContext {
 
-    private final Context _context;
+    protected final Context _context;
+    private WeakReference<IViewApplication> _app;
+
 
     public AbstractViewContext(Context context) {
         _context = context;
+    }
+
+    public IViewApplication getViewApplication() {
+        return _app != null ? _app.get() : null;
+    }
+
+    public void setViewApplication(IViewApplication app) {
+        if(app == null) {
+            _app = null;
+        } else {
+            _app = new WeakReference<>(app);
+        }
     }
 
     @Override

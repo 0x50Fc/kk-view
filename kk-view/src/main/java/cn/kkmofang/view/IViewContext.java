@@ -23,4 +23,8 @@ public interface IViewContext {
 
     String getAbsolutePath(String path);
 
+    IViewApplication getViewApplication();
+
+    void setViewApplication(IViewApplication app);
+
 }
