@@ -189,6 +189,13 @@ public class AnimationElement extends Element {
                 }
 
                 final WeakReference<View> v = new WeakReference<>(view);
+                final float translationY = view.getTranslationY();
+                final float translationX = view.getTranslationX();
+                final float scaleX = view.getScaleX();
+                final float scaleY = view.getScaleY();
+                final float rotation = view.getRotation();
+                final float rotationX = view.getRotationX();
+                final float rotationY = view.getRotationY();
                 animator.addListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {
@@ -206,7 +213,16 @@ public class AnimationElement extends Element {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-
+                        View view = v.get();
+                        if (view != null){
+                            view.setTranslationX(translationX);
+                            view.setTranslationY(translationY);
+                            view.setScaleX(scaleX);
+                            view.setScaleY(scaleY);
+                            view.setRotation(rotation);
+                            view.setRotationX(rotationX);
+                            view.setRotationY(rotationY);
+                        }
                     }
 
                     @Override
@@ -242,6 +258,7 @@ public class AnimationElement extends Element {
         public void ofAnimation(ObjectAnimator animator, View view, List<PropertyValuesHolder> holders) {
             holders.add(PropertyValuesHolder.ofFloat("alpha", fromValue, toValue));
             final WeakReference<View> v = new WeakReference<>(view);
+            final float alpha = view.getAlpha();
             animator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -253,7 +270,10 @@ public class AnimationElement extends Element {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-
+                    View view = v.get();
+                    if (view != null){
+                        view.setAlpha(alpha);
+                    }
                 }
 
                 @Override
