@@ -12,6 +12,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 
@@ -63,6 +64,7 @@ public class AnimationElement extends Element {
         anim.setStartDelay(delay);
         anim.setDuration(duration);
         anim.setRepeatCount((int) repeatCount);
+        anim.setInterpolator(new LinearInterpolator());
 
         if(autoreverses) {
             anim.setRepeatMode(ObjectAnimator.REVERSE);
@@ -196,6 +198,7 @@ public class AnimationElement extends Element {
                 final float rotation = view.getRotation();
                 final float rotationX = view.getRotationX();
                 final float rotationY = view.getRotationY();
+                animator.setInterpolator(new LinearInterpolator());
                 animator.addListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {
@@ -259,6 +262,7 @@ public class AnimationElement extends Element {
             holders.add(PropertyValuesHolder.ofFloat("alpha", fromValue, toValue));
             final WeakReference<View> v = new WeakReference<>(view);
             final float alpha = view.getAlpha();
+            animator.setInterpolator(new LinearInterpolator());
             animator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
