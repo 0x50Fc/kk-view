@@ -22,7 +22,7 @@ import cn.kkmofang.unity.R;
 
 import java.lang.ref.WeakReference;
 
-public class LoadingView extends android.support.v7.widget.AppCompatImageView {
+public class LoadingView extends ImageView {
     private LoadingDrawable _drawable;
 
     public LoadingView(Context context) {
