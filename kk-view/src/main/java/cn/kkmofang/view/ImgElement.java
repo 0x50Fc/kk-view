@@ -67,17 +67,20 @@ public class ImgElement extends Element {
         span.setSpan(new DynamicDrawableSpan(DynamicDrawableSpan.ALIGN_BOTTOM) {
             @Override
             public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
-                int sc = canvas.save();
-                canvas.translate((int) Math.ceil(_margin.left.floatValue(0, 0)), (int) Math.ceil(_margin.top.floatValue(0, 0)));
+                ImgElement e = v.get();
+                if (e != null){
+                    int sc = canvas.save();
+                    canvas.translate((int) Math.ceil(e._margin.left.floatValue(0, 0)), (int) Math.ceil(e._margin.top.floatValue(0, 0)));
 
-                Drawable b = getCachedDrawable();
+                    Drawable b = getCachedDrawable();
 
-                int transY = ((bottom - top) - b.getBounds().bottom) / 2 + top ;
+                    int transY = ((bottom - top) - b.getBounds().bottom) / 2 + top ;
 
-                canvas.translate(x, transY);
-                b.draw(canvas);
+                    canvas.translate(x, transY);
+                    b.draw(canvas);
 
-                canvas.restoreToCount(sc);
+                    canvas.restoreToCount(sc);
+                }
             }
 
             int initialDescent = 0;
