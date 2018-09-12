@@ -20,4 +20,11 @@ public interface IViewContext {
     Drawable getImage(String url, ImageStyle style);
 
     AudioTask downLoadFile(String url, AudioElement.IAudioLoadCallback callback);
+
+    String getAbsolutePath(String path);
+
+    IViewApplication getViewApplication();
+
+    void setViewApplication(IViewApplication app);
+
 }

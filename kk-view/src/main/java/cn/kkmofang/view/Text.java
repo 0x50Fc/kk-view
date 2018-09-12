@@ -1,15 +1,20 @@
 package cn.kkmofang.view;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
 import android.text.Layout;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.text.style.CharacterStyle;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.TextAlign;
@@ -74,9 +79,32 @@ public class Text {
     }
 
     public void draw(Canvas canvas,int width,int height) {
+
         build();
         canvas.translate(paddingLeft,paddingTop + (height - _layout.getHeight()) * 0.5f);
+
+        drawStyles(canvas);
         _layout.draw(canvas);
+
+    }
+
+    private void drawStyles(Canvas canvas){
+        TextContent vv = _textContent.get();
+        if (vv != null) {
+            CharSequence charSequence = vv.textContent();
+            if (charSequence instanceof Spannable) {
+                StrokeSpan[] spans = ((Spannable) charSequence).getSpans(0, charSequence.length(), StrokeSpan.class);
+                if (spans == null || spans.length <= 0)return;
+                for (StrokeSpan span : spans) {
+                    span.setUpdate(true);
+                }
+                _layout.draw(canvas);
+                for (StrokeSpan span : spans) {
+                    span.setUpdate(false);
+                }
+            }
+        }
+
     }
 
 
@@ -88,9 +116,11 @@ public class Text {
 
             TextContent vv = _textContent.get();
 
+
             if(vv != null) {
                 textContent = vv.textContent();
             }
+
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -111,7 +141,7 @@ public class Text {
                 align =  Layout.Alignment.ALIGN_NORMAL;
             }
 
-           _layout = new StaticLayout(
+            _layout = new StaticLayout(
                    textContent,
                     0,
                    textContent.length(),

@@ -30,7 +30,6 @@ public class ImageElement extends ViewElement {
         super();
         set("#view", ImageView.class.getName());
         setLayout(ImageLayout);
-        setViewLayer(View.LAYER_TYPE_HARDWARE);
         _handler = new Handler();
     }
 
@@ -84,7 +83,7 @@ public class ImageElement extends ViewElement {
                 emit("layout",new Event(this));
             }
         }
-    }
+}
 
     @Override
     public void changedKey(String key) {
@@ -112,6 +111,7 @@ public class ImageElement extends ViewElement {
     @Override
     public void setView(View view) {
         super.setView(view);
+        setViewLayer(View.LAYER_TYPE_HARDWARE);
         setNeedDisplay();
     }
 

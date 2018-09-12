@@ -1,11 +1,14 @@
 package cn.kkmofang.view;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -14,7 +17,9 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import cn.kkmofang.image.ImageGravity;
 import cn.kkmofang.unity.R;
@@ -27,6 +32,7 @@ import cn.kkmofang.view.value.Edge;
 import cn.kkmofang.view.value.Pixel;
 import cn.kkmofang.view.value.Position;
 import cn.kkmofang.view.value.Shadow;
+import cn.kkmofang.view.value.Transform;
 import cn.kkmofang.view.value.V;
 import cn.kkmofang.view.value.VerticalAlign;
 
@@ -280,6 +286,8 @@ public class ViewElement extends Element implements Cloneable{
 
         recycleView();
 
+        Class<?> viewClass = this.viewClass();
+
         View vv = null;
 
         String reuse = reuse();
@@ -290,8 +298,11 @@ public class ViewElement extends Element implements Cloneable{
 
             if (dequeue != null && dequeue.containsKey(reuse)) {
                 Queue<View> queue = dequeue.get(reuse);
-                if (!queue.isEmpty()) {
+                while (!queue.isEmpty()) {
                     vv = queue.poll();
+                    if(viewClass.isAssignableFrom(vv.getClass())) {
+                        break;
+                    }
                 }
             }
 
@@ -329,40 +340,8 @@ public class ViewElement extends Element implements Cloneable{
 
         if (_view != null) {
 
-            ViewGroup p = (ViewGroup) _view.getParent();
+            recycleView(this);
 
-            if (p != null) {
-
-                String reuse = reuse();
-
-                if (reuse != null && !"".equals(reuse)) {
-
-                    Map<String, Queue<View>> dequeue = (Map<String, Queue<View>>) p.getTag(R.id.kk_view_dequeue);
-
-                    if (dequeue == null) {
-                        dequeue = new TreeMap<>();
-                        p.setTag(R.id.kk_view_dequeue, dequeue);
-                    }
-
-                    Queue<View> queue;
-
-                    if (dequeue.containsKey(reuse)) {
-                        queue = dequeue.get(reuse);
-                    } else {
-                        queue = new LinkedList<>();
-                        dequeue.put(reuse, queue);
-                    }
-
-                    queue.add(_view);
-
-                }
-
-                p.removeView(_view);
-            }
-
-            onRecycleView(_view);
-
-            setView(null);
 
             Element e = firstChild();
 
@@ -372,6 +351,7 @@ public class ViewElement extends Element implements Cloneable{
                 }
                 e = e.nextSibling();
             }
+
 
         }
     }
@@ -410,7 +390,6 @@ public class ViewElement extends Element implements Cloneable{
             } else {
                 p.addView(view);
             }
-            p.requestLayout();
         }
     }
 
@@ -442,11 +421,60 @@ public class ViewElement extends Element implements Cloneable{
         super.finalize();
     }
 
+    public static void recycleView(ViewElement element) {
+
+        View view = element.view();
+
+        if(view == null) {
+            return;
+        }
+
+        ViewGroup p = (ViewGroup) view.getParent();
+
+        if (p != null) {
+
+            String reuse = element.reuse();
+
+            if (reuse != null && !"".equals(reuse) && !(view instanceof SurfaceView)) {
+
+                Map<String, Queue<View>> dequeue = (Map<String, Queue<View>>) p.getTag(R.id.kk_view_dequeue);
+
+                if (dequeue == null) {
+                    dequeue = new TreeMap<>();
+                    p.setTag(R.id.kk_view_dequeue, dequeue);
+                }
+
+                Queue<View> queue;
+
+                if (dequeue.containsKey(reuse)) {
+                    queue = dequeue.get(reuse);
+                } else {
+                    queue = new LinkedList<>();
+                    dequeue.put(reuse, queue);
+                }
+
+                queue.add(view);
+
+            }
+
+            p.removeView(view);
+        }
+
+        element.onRecycleView(view);
+
+        element.setView(null);
+    }
 
     @Override
     public void remove() {
         recycleView();
         super.remove();
+    }
+
+    @Override
+    public void recycle() {
+        recycleView(this);
+        super.recycle();
     }
 
     public boolean isChildrenVisible(ViewElement element) {
@@ -492,45 +520,161 @@ public class ViewElement extends Element implements Cloneable{
         onLayout();
     }
 
+    private Set<String> _changedKeys = null;
+
+    private void setOnChangedKeys(View view,String key) {
+
+        boolean v = _changedKeys == null;
+
+        if(_changedKeys == null) {
+            _changedKeys = new TreeSet<>();
+        }
+
+        _changedKeys.add(key);
+
+        if(v) {
+
+            final WeakReference<ViewElement> e = new WeakReference<>(this);
+
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    ViewElement element = e.get();
+                    if(element != null) {
+                        Set<String> keys = element._changedKeys;
+                        if(keys != null) {
+                            element._changedKeys = null;
+                            element.onChangedKeys(keys);
+                        }
+                    }
+                }
+            });
+
+        }
+    }
+
+    protected void updateAnimKeys(View view,Set<String> keys) {
+
+        if(keys.contains("opacity")) {
+            float v = V.floatValue(get("opacity"),1.0f);
+            if(v > 1.0f) {
+                v = 1.0f;
+            } else if(v < 0.0f) {
+                v = 0.0f;
+            }
+            view.setAlpha(v);
+        }
+
+        if(keys.contains("transform")) {
+            Transform.valueOf(view,get("transform"));
+        }
+//
+//        if (keys.contains("animation")){
+//            TreeSet<String> ks = new TreeSet<>();
+//            ks.add("opacity");
+//            ks.add("transform");
+//            updateAnimKeys(view, ks);
+//        }
+    }
+
+    private String _animatingName = null;
+
+    protected void onChangedKeys(final Set<String> keys) {
+
+        View view = this.view();
+
+        if(view ==null) {
+            return;
+        }
+
+        if(keys.contains("animation")) {
+
+            String name = get("animation");
+
+            boolean hasAnimating = false;
+
+            if(_animatingName == null || !_animatingName.equals(name)) {
+
+                _animatingName = name;
+
+                view.clearAnimation();
+
+                if (name != null) {
+
+                    Element p = firstChild();
+
+                    while (p != null) {
+                        if (p instanceof AnimationElement) {
+                            if (name.equals(p.get("name"))) {
+                                final WeakReference<ViewElement> e = new WeakReference<>(this);
+
+                                ((AnimationElement) p).startAnimation(view, new Animator.AnimatorListener() {
+                                    @Override
+                                    public void onAnimationStart(Animator animation) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        ViewElement element = e.get();
+                                        if(element != null) {
+                                            View view = element.view();
+                                            if(view != null) {
+                                                element.updateAnimKeys(view,keys);
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onAnimationCancel(Animator animation) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationRepeat(Animator animation) {
+
+                                    }
+                                });
+                                hasAnimating = true;
+                                break;
+                            }
+                        }
+                        p = p.nextSibling();
+                    }
+                }
+
+            }
+
+            if(!hasAnimating) {
+                updateAnimKeys(view,keys);
+            }
+
+        } else {
+            updateAnimKeys(view,keys);
+        }
+
+    }
+
+
     protected void onSetProperty(View view, String key, String value) {
 
         if("opacity".equals(key)) {
-            setAlpha(value, view);
-            view.setAlpha(V.floatValue(value,1.0f));
+            setOnChangedKeys(view,key);
         } else if("hidden".equals(key)) {
             setVisible(!V.booleanValue(value, true), view);
         } else if("overflow".equals(key)) {
             if ("hidden".equals(value)) {
-                if (_viewLayer != View.LAYER_TYPE_HARDWARE) {
+//                if (_viewLayer != View.LAYER_TYPE_HARDWARE) {
                     if (view instanceof ViewGroup) {
                         ((ViewGroup) view).setClipChildren(true);
-                        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+//                        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
                     }
-                }
+//                }
             }
         } else if("animation".equals(key)) {
-
-            view.clearAnimation();
-
-            if (value != null) {
-
-                Element p = firstChild();
-
-                while (p != null) {
-                    if (p instanceof AnimationElement) {
-                        if (value.equals(p.get("name"))) {
-                            Animation anim = ((AnimationElement) p).getAnimation();
-                            if (anim != null) {
-                                view.startAnimation(anim);
-                            }
-                            break;
-                        }
-                    }
-                    p = p.nextSibling();
-                }
-            }
+            setOnChangedKeys(view,key);
         } else if("transform".equals(key)) {
-            AnimationElement.Transform.valueOf(view.getMatrix(),value);
+            setOnChangedKeys(view,key);
         } else if(key.startsWith("border") || key.startsWith("background")) {
             setBackground(key, value, view);
         }
@@ -557,15 +701,6 @@ public class ViewElement extends Element implements Cloneable{
             if(v != null) {
                 v.setLayerType(_viewLayer,null);
             }
-
-            Element p = parent();
-
-            while(p != null && p instanceof ViewElement) {
-
-                ((ViewElement) p).setViewLayer(viewLayer);
-
-                p = p.parent();
-            }
         }
     }
 
@@ -577,18 +712,6 @@ public class ViewElement extends Element implements Cloneable{
         view.setVisibility(visible?View.VISIBLE:View.GONE);
     }
 
-
-    /**
-     * 设置alpha
-     * @param value
-     * @param view
-     */
-    private void setAlpha(String value, View view){
-        float alpha = V.floatValue(value, 1.0f);
-        if (alpha > 1.0f)alpha = 1.0f;
-        if (alpha <= 0)alpha = 0;
-        view.setAlpha(alpha);
-    }
 
     /**
      * 设置view背景

@@ -1,6 +1,7 @@
 package cn.kkmofang.view;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -220,6 +221,7 @@ public class Element extends EventEmitter {
         }
 
     }
+
 
     public void changedKey(String key) {
 
@@ -582,6 +584,16 @@ public class Element extends EventEmitter {
                     p.emit(name,event);
                 }
             }
+        }
+    }
+
+    public void recycle() {
+
+        Element e = firstChild();
+
+        while(e != null) {
+            e.recycle();
+            e = e.nextSibling();
         }
     }
 

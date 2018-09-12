@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -294,7 +295,6 @@ public class ContainerView extends ElementView {
         public void setContentSize(int width,int height) {
             _contentWidth = width;
             _contentHeight = height;
-            requestLayout();
         }
 
         @Override
@@ -428,7 +428,7 @@ public class ContainerView extends ElementView {
         void onStopTracking();
     }
 
-    public static class ScrollView extends android.widget.ScrollView {
+    public static class ScrollView extends NestedScrollView {
 
         private WeakReference<ContainerView> _containerView;
 

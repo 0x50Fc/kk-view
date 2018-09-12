@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -527,6 +528,30 @@ public class ScrollElement extends ViewElement {
         }
     }
 
+    @Override
+    public boolean isChildrenVisible(ViewElement element) {
+        Element pre = element.prevSibling();
+        Element next = element.nextSibling();
+        while (pre != null){
+            if (pre instanceof ViewElement){
+                break;
+            }
+            pre = pre.prevSibling();
+        }
+
+        while (next != null){
+            if (next instanceof ViewElement){
+                break;
+            }
+            next = next.nextSibling();
+        }
+
+        return  (super.isChildrenVisible(element)) ||
+                (pre != null && super.isChildrenVisible((ViewElement) pre)) ||
+                (next != null && super.isChildrenVisible((ViewElement) next));
+
+
+    }
 
     @Override
     protected void onLayout(View view){
@@ -561,7 +586,6 @@ public class ScrollElement extends ViewElement {
             } else {
                 p.addView(view,0);
             }
-            p.requestLayout();
         }
     }
 

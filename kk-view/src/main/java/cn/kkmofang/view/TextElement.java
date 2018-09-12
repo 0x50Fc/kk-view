@@ -2,11 +2,19 @@ package cn.kkmofang.view;
 
 import android.graphics.Paint;
 import android.os.Handler;
+import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.CharacterStyle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Font;
@@ -26,11 +34,11 @@ public class TextElement extends ViewElement implements Text.TextContent{
 
     private SpannableStringBuilder _string = null;
 
+
     private final Handler _handler;
 
     @Override
     public CharSequence textContent() {
-
         if(_string == null) {
 
             _string = new SpannableStringBuilder();
@@ -38,16 +46,33 @@ public class TextElement extends ViewElement implements Text.TextContent{
             Element p = firstChild();
 
             if(p == null) {
+
                 String v = get("#text");
-                if (v != null) {
-                    _string.append(v);
+                if (!TextUtils.isEmpty(v)){
+
+                    int length = v.length();
+                    SpannableString span = new SpannableString(v);
+                    span.setSpan(new AbsoluteSizeSpan((int) Math.ceil( _text.paint.getTextSize())), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                    String vStroke = get("text-stroke");
+                    if (!TextUtils.isEmpty(vStroke)){
+                        StrokeSpan _styleSpan = new StrokeSpan();
+                        _styleSpan.setAlpha(_text.paint.getAlpha());
+                        _styleSpan.setColor(_text.paint.getColor());
+                        _styleSpan.setStroke(vStroke);
+                        span.setSpan(_styleSpan, 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+
+                    _string.append(span);
+
                 }
             } else {
                 while (p != null) {
                     if (p instanceof SpanElement) {
                         SpannableString ss = ((SpanElement) p).obtainContent();
-                        if (ss != null)
+                        if (ss != null){
                             _string.append(ss);
+                        }
                     }
 
                     if (p instanceof ImgElement) {
@@ -173,10 +198,13 @@ public class TextElement extends ViewElement implements Text.TextContent{
             Font.valueOf(get(key),_text.paint);
             setNeedDisplay();
         } else if("color".equals(key)) {
-            int v = Color.valueOf(get(key),0xff000000);
-            _text.paint.setColor(v);
-            _text.paint.setAlpha(0x0ff & (v >> 24));
-            setNeedDisplay();
+            String value = get(key);
+            if (!TextUtils.isEmpty(value)){
+                int color = Color.valueOf(value, 0xff000000);
+                _text.paint.setColor(color);
+                _text.paint.setAlpha(0x0ff & (color >> 24));
+                setNeedDisplay();
+            }
         } else if("line-spacing".equals(key)) {
             lineSpacing.set(get(key));
             _text.setLineSpacing((int) lineSpacing.floatValue(0,0));
@@ -191,6 +219,8 @@ public class TextElement extends ViewElement implements Text.TextContent{
             setNeedDisplay();
         } else if("text-decoration".equals(key)) {
             TextDecoration.valueOf(get(key),_text.paint);
+        } else if ("text-stroke".equals(key)){
+            setNeedDisplay();
         }
 
     }
