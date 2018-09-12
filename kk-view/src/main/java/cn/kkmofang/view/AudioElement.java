@@ -3,6 +3,7 @@ package cn.kkmofang.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -59,21 +60,10 @@ public class AudioElement extends Element {
         }
         try {
             if (!TextUtils.isEmpty(_src)){
+                _player.reset();
                 _player.setDataSource(_src);
+                _player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 final WeakReference<AudioElement> p = new WeakReference<>(this);
-                _player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        AudioElement e = p.get();
-                        if (e != null){
-                            if (e._loop && e._player != null){
-                                e._player.start();
-                                e._player.setLooping(true);
-                            }
-
-                        }
-                    }
-                });
                 _player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
@@ -84,6 +74,7 @@ public class AudioElement extends Element {
                         }
                     }
                 });
+                _player.setLooping(_loop);
                 _player.prepareAsync();
             }
         } catch (Exception e) {
@@ -94,10 +85,12 @@ public class AudioElement extends Element {
 
     private void stopPlaying() {
         if (_player != null){
-            _player.stop();
+            if (_player.isPlaying()){
+                _player.stop();
+                _player.reset();
+            }
             _player.release();
             _player.setOnPreparedListener(null);
-            _player.setOnCompletionListener(null);
             _player = null;
         }
         _playing = false;
@@ -106,10 +99,10 @@ public class AudioElement extends Element {
     private void pausePlaying(){
         if (_player != null){
             if (_player.isPlaying()){
-                _playing = false;
                 _player.pause();
             }
         }
+        _playing = false;
     }
 
     private void resumePlaying(){
