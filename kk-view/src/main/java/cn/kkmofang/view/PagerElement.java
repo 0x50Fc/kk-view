@@ -344,41 +344,62 @@ public class PagerElement extends ViewElement {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
 
-            ViewElement element = elements().get(position);
+            List<ViewElement> elements = elements();
+            ViewElement element = null;
+            if (elements.size() > position){
 
-            DocumentView documentView = _documentViews.size() > 0 ? _documentViews.poll() : null;
+                element = elements.get(position);
 
-            if(documentView == null) {
-                documentView = new DocumentView(container.getContext());
-                documentView.setLayoutParams(new ViewPager.LayoutParams());
+                DocumentView documentView = _documentViews.size() > 0 ? _documentViews.poll() : null;
+
+                if(documentView == null) {
+                    documentView = new DocumentView(container.getContext());
+                    documentView.setLayoutParams(new ViewPager.LayoutParams());
+                }
+
+                documentView.setObtainElement(element);
+
+                container.addView(documentView);
             }
-
-            documentView.setObtainElement(element);
-
-            container.addView(documentView);
 
             return element;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            ViewElement element = elements().get(position);
+            List<ViewElement> elements = elements();
+            if (elements.size() > position){
 
-            View  view = element.view();
+                ViewElement element = elements.get(position);
 
-            if(view != null) {
+                View  view = element.view();
 
-                DocumentView documentView = (DocumentView) view.getParent();
+                if(view != null) {
 
-                if(documentView != null) {
-                    documentView.setObtainElement(null);
-                    _documentViews.add(documentView);
-                    container.removeView(documentView);
-                } else {
-                    element.recycleView();
+                    DocumentView documentView = (DocumentView) view.getParent();
+
+                    if(documentView != null) {
+                        documentView.setObtainElement(null);
+                        _documentViews.add(documentView);
+                        container.removeView(documentView);
+                    } else {
+                        element.recycleView();
+                    }
+                }
+
+            }
+            else {
+                View doucumentView = container.getChildAt(position);
+                if (doucumentView != null && doucumentView instanceof DocumentView){
+                    ((DocumentView) doucumentView).setObtainElement(null);
+                    _documentViews.add((DocumentView) doucumentView);
+                    container.removeView(doucumentView);
+                }else {
+                    if (object instanceof ViewElement){
+                        ((ViewElement) object).recycleView();
+                    }
                 }
             }
-
 
         }
 
