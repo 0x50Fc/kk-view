@@ -39,10 +39,8 @@ public class Transform {
             } else if(v.startsWith("scale(") && v.endsWith(")")) {
                 String[] vv = v.substring(6,v.length() - 1).split(",");
                 if(vv.length >1) {
-                    x.set(vv[0]);
-                    y.set(vv[1]);
-                    view.setScaleX(x.floatValue(0,0));
-                    view.setScaleY(y.floatValue(0,0));
+                    view.setScaleX(V.floatValue(vv[0], 0));
+                    view.setScaleY(V.floatValue(vv[1], 0));
                 }
             } else if(v.startsWith("rotateX(") && v.endsWith(")")) {
                 float vv = V.floatValue(v.substring(8,v.length() - 1).split(","),0);

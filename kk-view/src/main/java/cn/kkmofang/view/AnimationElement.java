@@ -146,58 +146,41 @@ public class AnimationElement extends Element {
 
                 } else if (fromItem.startsWith("scale(") && fromItem.endsWith(")")){
 
-                    String[] from = fromItem.substring(6, fromItem.length() - 1).split(",");
-                    if (from.length > 1){
-                        pFrom.set(from[0]);
-                        pTo.set(from[1]);
-                        PropertyValuesHolder holderX = PropertyValuesHolder.ofFloat("scaleX", pFrom.floatValue(0, 0), pTo.floatValue(0, 0));
+                    String[] fromValue = fromItem.substring(6, fromItem.length() - 1).split(",");
+                    String[] toValue = toItem.substring(6, toItem.length() - 1).split(",");
+                    if (fromValue.length > 1 && toValue.length > 1){
+                        PropertyValuesHolder holderX = PropertyValuesHolder.ofFloat("scaleX", V.floatValue(fromValue[0], 0), V.floatValue(toValue[0], 0));
                         holders.add(holderX);
 
-                        PropertyValuesHolder holderY = PropertyValuesHolder.ofFloat("scaleY", pFrom.floatValue(0, 0), pTo.floatValue(0, 0));
+                        PropertyValuesHolder holderY = PropertyValuesHolder.ofFloat("scaleY", V.floatValue(fromValue[1], 0), V.floatValue(toValue[1], 0));
                         holders.add(holderY);
 
                     }
 
                 } else if (fromItem.startsWith("rotateX(") && fromItem.endsWith(")")){
+                    float fromValue = V.floatValue(fromItem.substring(8, fromItem.length() - 1).split(","),0);
+                    float toValue = V.floatValue(toItem.substring(8, toItem.length() - 1).split(","), 0);
 
-                    String[] from = fromItem.substring(8, fromItem.length() - 1).split(",");
-                    if (from.length > 1){
-                        pFrom.set(from[0]);
-                        pFrom.set(from[1]);
-                        PropertyValuesHolder holder = PropertyValuesHolder.ofFloat("rotationX", pFrom.floatValue(0, 0), pTo.floatValue(0, 0));
-                        holders.add(holder);
-                    }
+                    PropertyValuesHolder holder = PropertyValuesHolder.ofFloat("rotationX", (float)( fromValue * Math.PI / 180f), (float)( toValue * Math.PI / 180f));
+                    holders.add(holder);
 
                 } else if (fromItem.startsWith("rotateY(") && fromItem.endsWith(")")){
 
-                    String[] from = fromItem.substring(8, fromItem.length() - 1).split(",");
-                    if (from.length > 1){
-                        pFrom.set(from[0]);
-                        pFrom.set(from[1]);
-                        PropertyValuesHolder holder = PropertyValuesHolder.ofFloat("rotationY", pFrom.floatValue(0, 0), pTo.floatValue(0, 0));
-                        holders.add(holder);
-                    }
+                    float fromValue = V.floatValue(fromItem.substring(8, fromItem.length() - 1).split(","),0);
+                    float toValue = V.floatValue(toItem.substring(8, toItem.length() - 1).split(","), 0);
+
+                    PropertyValuesHolder holder = PropertyValuesHolder.ofFloat("rotationY", (float)( fromValue * Math.PI / 180f), (float)( toValue * Math.PI / 180f));
+                    holders.add(holder);
 
                 } else if (fromItem.startsWith("rotate(") && fromItem.endsWith(")")){
+                    float fromValue = V.floatValue(fromItem.substring(7, fromItem.length() - 1).split(","),0);
+                    float toValue = V.floatValue(toItem.substring(7, toItem.length() - 1).split(","), 0);
 
-                    String[] from = fromItem.substring(7, fromItem.length() - 1).split(",");
-                    if (from.length > 1){
-                        pFrom.set(from[0]);
-                        pFrom.set(from[1]);
-                        PropertyValuesHolder holder = PropertyValuesHolder.ofFloat("rotation", pFrom.floatValue(0, 0), pTo.floatValue(0, 0));
-                        holders.add(holder);
-                    }
-
+                    PropertyValuesHolder holder = PropertyValuesHolder.ofFloat("rotation", (float)( fromValue * Math.PI / 180f), (float)( toValue * Math.PI / 180f));
+                    holders.add(holder);
                 }
 
                 final WeakReference<View> v = new WeakReference<>(view);
-                final float translationY = view.getTranslationY();
-                final float translationX = view.getTranslationX();
-                final float scaleX = view.getScaleX();
-                final float scaleY = view.getScaleY();
-                final float rotation = view.getRotation();
-                final float rotationX = view.getRotationX();
-                final float rotationY = view.getRotationY();
                 animator.setInterpolator(new LinearInterpolator());
                 animator.addListener(new Animator.AnimatorListener() {
                     @Override
@@ -216,16 +199,7 @@ public class AnimationElement extends Element {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        View view = v.get();
-                        if (view != null){
-                            view.setTranslationX(translationX);
-                            view.setTranslationY(translationY);
-                            view.setScaleX(scaleX);
-                            view.setScaleY(scaleY);
-                            view.setRotation(rotation);
-                            view.setRotationX(rotationX);
-                            view.setRotationY(rotationY);
-                        }
+
                     }
 
                     @Override
@@ -261,7 +235,6 @@ public class AnimationElement extends Element {
         public void ofAnimation(ObjectAnimator animator, View view, List<PropertyValuesHolder> holders) {
             holders.add(PropertyValuesHolder.ofFloat("alpha", fromValue, toValue));
             final WeakReference<View> v = new WeakReference<>(view);
-            final float alpha = view.getAlpha();
             animator.setInterpolator(new LinearInterpolator());
             animator.addListener(new Animator.AnimatorListener() {
                 @Override
@@ -274,10 +247,7 @@ public class AnimationElement extends Element {
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    View view = v.get();
-                    if (view != null){
-                        view.setAlpha(alpha);
-                    }
+
                 }
 
                 @Override
