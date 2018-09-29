@@ -88,19 +88,22 @@ public class ImgElement extends Element {
             @Override
             public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
                 Drawable d = getCachedDrawable();
-                Rect rect = d.getBounds();
-                if (fm != null){
-                    if (rect.bottom - (fm.descent - fm.ascent) >= 0){
-                        initialDescent = fm.descent;
-                        extraspace = rect.bottom - (fm.descent - fm.ascent);
-                    }
-                    fm.descent = extraspace / 2 + initialDescent;
-                    fm.bottom = fm.descent;
+                if(d != null){
+                    Rect rect = d.getBounds();
+                    if (fm != null){
+                        if (rect.bottom - (fm.descent - fm.ascent) >= 0){
+                            initialDescent = fm.descent;
+                            extraspace = rect.bottom - (fm.descent - fm.ascent);
+                        }
+                        fm.descent = extraspace / 2 + initialDescent;
+                        fm.bottom = fm.descent;
 
-                    fm.ascent = -rect.bottom + fm.descent;
-                    fm.top = fm.ascent;
+                        fm.ascent = -rect.bottom + fm.descent;
+                        fm.top = fm.ascent;
+                    }
+                    return rect.right;
                 }
-                return rect.right;
+                return 0;
             }
 
 

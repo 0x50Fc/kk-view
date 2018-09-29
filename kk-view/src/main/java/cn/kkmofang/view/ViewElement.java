@@ -14,7 +14,9 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -568,17 +570,9 @@ public class ViewElement extends Element implements Cloneable{
         if(keys.contains("transform")) {
             Transform.valueOf(view,get("transform"));
         }
-//
-//        if (keys.contains("animation")){
-//            TreeSet<String> ks = new TreeSet<>();
-//            ks.add("opacity");
-//            ks.add("transform");
-//            updateAnimKeys(view, ks);
-//        }
     }
 
-    private String _animatingName = null;
-
+    private List<String> _animatingList = null;
     protected void onChangedKeys(final Set<String> keys) {
 
         View view = this.view();
@@ -589,13 +583,15 @@ public class ViewElement extends Element implements Cloneable{
 
         if(keys.contains("animation")) {
 
-            String name = get("animation");
+            final String name = get("animation");
 
             boolean hasAnimating = false;
 
-            if(_animatingName == null || !_animatingName.equals(name)) {
+            if(_animatingList == null || !_animatingList.contains(name)) {
 
-                _animatingName = name;
+                if (_animatingList == null){
+                    _animatingList  = new ArrayList<>();
+                }
 
                 view.clearAnimation();
 
@@ -611,12 +607,13 @@ public class ViewElement extends Element implements Cloneable{
                                 ((AnimationElement) p).startAnimation(view, new Animator.AnimatorListener() {
                                     @Override
                                     public void onAnimationStart(Animator animation) {
-
+                                        _animatingList.add(name);
                                     }
 
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         ViewElement element = e.get();
+                                        _animatingList.remove(name);
                                         if(element != null) {
                                             View view = element.view();
                                             if(view != null) {
