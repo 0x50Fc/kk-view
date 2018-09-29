@@ -603,7 +603,7 @@ public class ViewElement extends Element implements Cloneable{
                         if (p instanceof AnimationElement) {
                             if (name.equals(p.get("name"))) {
                                 final WeakReference<ViewElement> e = new WeakReference<>(this);
-
+                                final WeakReference<AnimationElement> anims = new WeakReference<>((AnimationElement) p);
                                 ((AnimationElement) p).startAnimation(view, new Animator.AnimatorListener() {
                                     @Override
                                     public void onAnimationStart(Animator animation) {
@@ -617,6 +617,18 @@ public class ViewElement extends Element implements Cloneable{
                                         if(element != null) {
                                             View view = element.view();
                                             if(view != null) {
+                                                AnimationElement p = anims.get();
+                                                if (p != null){
+                                                    Element e = p.firstChild();
+                                                    while (e != null){
+                                                        if (e instanceof AnimationElement.Transform){
+                                                            keys.add("transform");
+                                                        } else if (e instanceof AnimationElement.Opacity){
+                                                            keys.add("opacity");
+                                                        }
+                                                        e = e.nextSibling();
+                                                    }
+                                                }
                                                 element.updateAnimKeys(view,keys);
                                             }
                                         }
