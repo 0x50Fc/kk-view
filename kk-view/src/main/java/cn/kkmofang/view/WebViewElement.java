@@ -169,11 +169,13 @@ public class WebViewElement extends ViewElement {
 
     }
 
-    protected void onAction(String name,String url) {
+    protected void onAction(String name,String url,Map<String,Object> actionData) {
 
         Element.Event event = new Element.Event(this);
 
         Map<String,Object> data = this.data();
+
+        data.putAll(actionData);
 
         data.put("url",url);
 
@@ -233,7 +235,7 @@ public class WebViewElement extends ViewElement {
                     name = "action";
                 }
 
-                WebViewElement.this.onAction(name,url);
+                WebViewElement.this.onAction(name,url,p.data());
 
                 if("allow".equals(p.get("policy"))) {
                     return true;
