@@ -1,7 +1,15 @@
 package cn.kkmofang.view;
 
+import android.graphics.Bitmap;
+import android.net.http.SslError;
+import android.os.Build;
+import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -32,6 +40,7 @@ public class WebViewElement extends ViewElement {
     }
 
     private WebViewClient _webViewClient = null;
+    private WebChromeClient _webChromeClient = null;
 
     @Override
     public void setView(View view) {
@@ -48,7 +57,11 @@ public class WebViewElement extends ViewElement {
             if (_webViewClient == null){
                 _webViewClient = new Client();
             }
+            if (_webChromeClient == null){
+                _webChromeClient = new ChromeClient();
+            }
             v.setWebViewClient(_webViewClient);
+            v.setWebChromeClient(_webChromeClient);
             setNeedDisplay();
         }
     }
@@ -99,6 +112,17 @@ public class WebViewElement extends ViewElement {
                 }
             }
         });
+    }
+
+
+    @Override
+    public void recycleView() {
+        View v =  view();
+        if (v != null && v instanceof WebView){
+            ((WebView) v).clearHistory();
+            ((WebView) v).destroy();
+        }
+        super.recycleView();
     }
 
     /**
@@ -246,6 +270,42 @@ public class WebViewElement extends ViewElement {
 
             return super.shouldOverrideUrlLoading(view,url);
         }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            WebViewElement.this.onLoading();
+            super.onPageStarted(view, url, favicon);
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            WebViewElement.this.onLoad();
+            super.onPageFinished(view, url);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                WebViewElement.this.onError(error.getDescription().toString());
+            }
+            super.onReceivedError(view, request, error);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+                WebViewElement.this.onError(description);
+            }
+            super.onReceivedError(view, errorCode, description, failingUrl);
+        }
+    }
+
+    private class ChromeClient extends WebChromeClient{
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            WebViewElement.this.onProgress(newProgress);
+        }
+
     }
 
 }
