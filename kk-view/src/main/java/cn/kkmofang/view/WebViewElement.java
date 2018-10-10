@@ -181,94 +181,91 @@ public class WebViewElement extends ViewElement {
 
     }
 
-    protected void onClose() {
+    protected boolean onAction(String url) {
 
-        Element.Event event = new Element.Event(this);
+        Element p = WebViewElement.this.firstChild();
 
-        Map<String,Object> data = this.data();
+        while(p != null) {
 
-        event.setData(data);
+            if("action".equals(p.get("#name"))) {
 
-        emit("close",event);
+                {
+                    String v = p.get("prefix");
+                    if(v != null && url.startsWith(v)) {
+                        break;
+                    }
+                }
 
-    }
+                {
+                    String v = p.get("suffix");
+                    if(v != null && url.endsWith(v)) {
+                        break;
+                    }
+                }
 
-    protected void onAction(String name,String url,Map<String,Object> actionData) {
+                {
+                    String v = p.get("pattern");
 
-        Element.Event event = new Element.Event(this);
+                    if(v != null) {
+                        Pattern pattern = Pattern.compile(v);
 
-        Map<String,Object> data = this.data();
+                        if(pattern.matcher(url).find()) {
+                            break;
+                        }
 
-        data.putAll(actionData);
+                    }
+                }
+            }
 
-        data.put("url",url);
+            p = p.nextSibling();
+        }
 
-        event.setData(data);
+        if(p != null) {
 
-        emit(name,event);
+            String name = p.get("name");
 
+            if(name == null || "".equals(name)) {
+                name = "action";
+            }
+
+            Element.Event event = new Element.Event(this);
+
+            Map<String,Object> data = this.data();
+
+            data.putAll(p.data());
+
+            data.put("url",url);
+
+            event.setData(data);
+
+            emit(name,event);
+
+            if("allow".equals(p.get("policy"))) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     private class Client extends WebViewClient {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
-            Element p = WebViewElement.this.firstChild();
-
-            while(p != null) {
-
-                if("action".equals(p.get("#name"))) {
-
-                    {
-                        String v = p.get("prefix");
-                        if(v != null && url.startsWith(v)) {
-                            break;
-                        }
-                    }
-
-                    {
-                        String v = p.get("suffix");
-                        if(v != null && url.endsWith(v)) {
-                            break;
-                        }
-                    }
-
-                    {
-                        String v = p.get("pattern");
-
-                        if(v != null) {
-                            Pattern pattern = Pattern.compile(v);
-
-                            if(pattern.matcher(url).find()) {
-                                break;
-                            }
-
-                        }
-                    }
-                }
-
-                p = p.nextSibling();
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                return WebViewElement.this.onAction(url);
             }
-
-            if(p != null) {
-
-                String name = p.get("name");
-
-                if(name == null || "".equals(name)) {
-                    name = "action";
-                }
-
-                WebViewElement.this.onAction(name,url,p.data());
-
-                if("allow".equals(p.get("policy"))) {
-                    return true;
-                }
-
-                return false;
-            }
-
             return super.shouldOverrideUrlLoading(view,url);
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                return WebViewElement.this.onAction(request.getUrl().toString());
+            }
+            return super.shouldOverrideUrlLoading(view,request);
         }
 
         @Override
