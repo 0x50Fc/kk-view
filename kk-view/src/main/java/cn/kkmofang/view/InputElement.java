@@ -1,13 +1,17 @@
 package cn.kkmofang.view;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.*;
+import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
@@ -35,7 +39,7 @@ public class InputElement extends ViewElement {
             if("value".equals(key)) {
                 v.setText(value);
             } else if("placeholder".equals(key)) {
-                v.setText(value);
+                v.setHint(value);
             } else if("placeholder-color".equals(key)) {
                 v.setHintTextColor(Color.valueOf(value,0xff999999));
             } else if("color".equals(key)) {
@@ -43,6 +47,10 @@ public class InputElement extends ViewElement {
             } else if("autofocus".equals(key)) {
                 if(V.booleanValue(value,false)) {
                     v.requestFocus();
+                    try {
+                        InputMethodManager im = (InputMethodManager) viewContext.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        im.showSoftInput(v,0);
+                    } catch(Throwable ex){}
                 }
             } else if("text-align".equals(key)) {
                 if("right".equals(value)) {
@@ -59,9 +67,9 @@ public class InputElement extends ViewElement {
                 v.setTypeface(paint.getTypeface());
             } else if("type".equals(key)) {
                 if("password".equals(value)) {
-                    v.setInputType(EditorInfo.TYPE_TEXT_VARIATION_PASSWORD);
+                    v.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_PASSWORD);
                 } else if("email".equals(value)) {
-                    v.setInputType(EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    v.setInputType(EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 } else if("phone".equals(value)) {
                     v.setInputType(EditorInfo.TYPE_CLASS_PHONE);
                 } else if("number".equals(value)) {
@@ -88,6 +96,7 @@ public class InputElement extends ViewElement {
         if(view instanceof EditText) {
             EditText text = (EditText) view;
 
+            text.setSingleLine(true);
             text.setFocusable(true);
             text.setFocusableInTouchMode(true);
             text.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -134,7 +143,7 @@ public class InputElement extends ViewElement {
 
                             Map<String,Object> data = element.data();
 
-                            data.put("value",s);
+                            data.put("value",s.toString());
 
                             event.setData(data);
 
@@ -153,8 +162,24 @@ public class InputElement extends ViewElement {
             }
 
             text.addTextChangedListener(_textWatcher);
+            text.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
+                @Override
+                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
 
+                    InputElement element = e.get();
+
+                    if(element != null) {
+
+                        Element.Event event = new Element.Event(element);
+                        event.setData(element.data());
+                        element.emit("done",event);
+
+                    }
+
+                    return false;
+                }
+            });
         }
     }
 }
