@@ -6,9 +6,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
- * Created by hailong11 on 2018/7/3.
+ * Created by zhanghailong on 2018/7/3.
  */
 
 public class WebViewElement extends ViewElement {
@@ -30,6 +32,7 @@ public class WebViewElement extends ViewElement {
     }
 
     private WebViewClient _webViewClient = null;
+
     @Override
     public void setView(View view) {
         View webView = view();
@@ -43,7 +46,7 @@ public class WebViewElement extends ViewElement {
             v.getSettings().setDefaultTextEncodingName("utf-8");
             v.setBackgroundColor(0);
             if (_webViewClient == null){
-                _webViewClient = new WebViewClient();
+                _webViewClient = new Client();
             }
             v.setWebViewClient(_webViewClient);
             setNeedDisplay();
@@ -96,6 +99,151 @@ public class WebViewElement extends ViewElement {
                 }
             }
         });
+    }
+
+    /**
+     *
+     * @param value 0~1
+     */
+    protected void onProgress(double value) {
+
+        Element.Event event = new Element.Event(this);
+
+        Map<String,Object> data = this.data();
+
+        data.put("value",value);
+
+        event.setData(data);
+
+        emit("progress",event);
+
+    }
+
+    protected void onLoad() {
+
+        Element.Event event = new Element.Event(this);
+
+        Map<String,Object> data = this.data();
+
+        event.setData(data);
+
+        emit("load",event);
+
+    }
+
+    protected void onError(String errmsg) {
+
+        Element.Event event = new Element.Event(this);
+
+        Map<String,Object> data = this.data();
+
+        data.put("errmsg",errmsg);
+
+        event.setData(data);
+
+        emit("error",event);
+
+    }
+
+    protected void onLoading() {
+
+        Element.Event event = new Element.Event(this);
+
+        Map<String,Object> data = this.data();
+
+        event.setData(data);
+
+        emit("loading",event);
+
+    }
+
+    protected void onClose() {
+
+        Element.Event event = new Element.Event(this);
+
+        Map<String,Object> data = this.data();
+
+        event.setData(data);
+
+        emit("close",event);
+
+    }
+
+    protected void onAction(String name,String url) {
+
+        Element.Event event = new Element.Event(this);
+
+        Map<String,Object> data = this.data();
+
+        data.put("url",url);
+
+        event.setData(data);
+
+        emit(name,event);
+
+    }
+
+    private class Client extends WebViewClient {
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            Element p = WebViewElement.this.firstChild();
+
+            while(p != null) {
+
+                if("action".equals(p.get("#name"))) {
+
+                    {
+                        String v = p.get("prefix");
+                        if(v != null && url.startsWith(v)) {
+                            break;
+                        }
+                    }
+
+                    {
+                        String v = p.get("suffix");
+                        if(v != null && url.endsWith(v)) {
+                            break;
+                        }
+                    }
+
+                    {
+                        String v = p.get("pattern");
+
+                        if(v != null) {
+                            Pattern pattern = Pattern.compile(v);
+
+                            if(pattern.matcher(url).find()) {
+                                break;
+                            }
+
+                        }
+                    }
+                }
+
+                p = p.nextSibling();
+            }
+
+            if(p != null) {
+
+                String name = p.get("name");
+
+                if(name == null || "".equals(name)) {
+                    name = "action";
+                }
+
+                WebViewElement.this.onAction(name,url);
+
+                if("allow".equals(p.get("policy"))) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            return super.shouldOverrideUrlLoading(view,url);
+        }
     }
 
 }
