@@ -247,7 +247,7 @@ public class WebViewElement extends ViewElement {
             return false;
         }
 
-        return true;
+        return false;
     }
 
     private class Client extends WebViewClient {
