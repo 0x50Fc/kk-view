@@ -241,10 +241,10 @@ public class WebViewElement extends ViewElement {
             emit(name,event);
 
             if("allow".equals(p.get("policy"))) {
-                return true;
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         return false;
