@@ -254,10 +254,7 @@ public class WebViewElement extends ViewElement {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                return WebViewElement.this.onAction(url);
-            }
-            return super.shouldOverrideUrlLoading(view,url);
+            return WebViewElement.this.onAction(url);
         }
 
         @Override
@@ -290,9 +287,7 @@ public class WebViewElement extends ViewElement {
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
-                WebViewElement.this.onError(description);
-            }
+            WebViewElement.this.onError(description);
             super.onReceivedError(view, errorCode, description, failingUrl);
         }
     }
