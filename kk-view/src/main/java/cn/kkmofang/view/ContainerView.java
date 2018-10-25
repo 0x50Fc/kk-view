@@ -355,10 +355,6 @@ public class ContainerView extends ElementView {
 
             ViewElement e = v.element();
 
-            if(e == element) {
-                return;
-            }
-
             if(e != null) {
                 e.obtainView(contentView);
             }
