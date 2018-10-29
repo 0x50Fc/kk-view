@@ -7,7 +7,9 @@ import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -673,19 +675,25 @@ public class ViewElement extends Element implements Cloneable{
             setVisible(!V.booleanValue(value, true), view);
         } else if("overflow".equals(key)) {
             if ("hidden".equals(value)) {
-//                if (_viewLayer != View.LAYER_TYPE_HARDWARE) {
-                    if (view instanceof ViewGroup) {
-                        ((ViewGroup) view).setClipChildren(true);
-//                        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-                    }
-//                }
+                if (view instanceof ViewGroup) {
+                    ((ViewGroup) view).setClipChildren(true);
+                }
             }
         } else if("animation".equals(key)) {
             setOnChangedKeys(view,key);
         } else if("transform".equals(key)) {
             setOnChangedKeys(view,key);
-        } else if(key.startsWith("border") || key.startsWith("background")) {
-            setBackground(key, value, view);
+        } else if(key.startsWith("border")) {
+            drawBorder();
+        } else if ("background-color".equals(key)){
+            view.setBackgroundColor(Color.valueOf(value, 0));
+        } else if ("background-image".equals(key)){
+            if (viewContext != null){
+                ImageStyle style = new ImageStyle(viewContext.getContext());
+                style.gravity = ImageGravity.RESIZE;
+                Drawable background = viewContext.getImage(get("background-image"), style);
+                view.setBackground(background);
+            }
         }
 
         if (view instanceof IElementView) {
@@ -722,45 +730,28 @@ public class ViewElement extends Element implements Cloneable{
     }
 
 
-    /**
-     * 设置view背景
-     * @param key 属性
-     * @param value 属性值
-     * @param view
-     */
-    protected void setBackground(String key, String value, View view){
-        Drawable background = view.getBackground();
-
-        if (background == null || gradientDrawable == null){
-            gradientDrawable = new GradientDrawable();
-
-            ImageStyle style = new ImageStyle(viewContext.getContext());
-            style.gravity = ImageGravity.RESIZE;
-            Drawable imgDrawable = viewContext.getImage(get("background-image"), style);
-            if (imgDrawable == null){
-                background = new LayerDrawable(new Drawable[]{gradientDrawable});
-            }else {
-                background = new LayerDrawable(new Drawable[]{imgDrawable});
+    private boolean drawBorder = false;
+    protected void drawBorder(){
+        if (drawBorder)return;
+        View view = view();
+        if (view != null){
+            view.setWillNotDraw(false);
+            Handler handler = view.getHandler();
+            if (handler != null){
+                drawBorder = true;
+                final WeakReference<View> v = new WeakReference<>(view);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        View vv = v.get();
+                        if (vv != null){
+                            vv.invalidate();
+                        }
+                        drawBorder = false;
+                    }
+                });
             }
         }
-
-        switch (key){
-            case "border-color":
-            case "border-width":
-                gradientDrawable.setStroke(
-                        (int) borderWidth.floatValue(0, 0),
-                        Color.valueOf(get("border-color"), 0));
-                break;
-            case "border-radius":
-                borderRadius.set(value);
-                gradientDrawable.setCornerRadius(borderRadius.floatValue(0, 0));
-                break;
-            case "background-color":
-                gradientDrawable.setColor(Color.valueOf(value, 0));
-                break;
-        }
-
-        view.setBackground(background);
     }
 
     protected void onLayout(View view) {

@@ -1,13 +1,20 @@
 package cn.kkmofang.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import java.lang.ref.WeakReference;
 import cn.kkmofang.unity.R;
+import cn.kkmofang.view.value.Color;
 import cn.kkmofang.view.value.Pixel;
+import cn.kkmofang.view.value.V;
 
 
 /**
@@ -15,7 +22,8 @@ import cn.kkmofang.view.value.Pixel;
  */
 
 public class ElementView extends FrameLayout implements IElementView{
-
+    private Path _path;
+    private Paint _paint;
 
     public ElementView(Context context) {
         super(context);
@@ -154,6 +162,47 @@ public class ElementView extends FrameLayout implements IElementView{
 
     @Override
     public void recycleView(View view, ViewElement element) {
+
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        int sc = canvas.save();
+
+        WeakReference<ViewElement> e = (WeakReference<ViewElement>) getTag(R.id.kk_view_element);
+        if (e != null){
+            ViewElement element = e.get();
+
+            if (element != null){
+                float _borderRadius = element.borderRadius.floatValue(0 ,0 );
+                float _borderWidth = element.borderWidth.floatValue(0 ,0 );
+
+                if (_borderWidth > 0){
+                    if (_paint == null){
+                        _paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                        _paint.setStyle(Paint.Style.STROKE);
+                    }
+                    _paint.setStrokeWidth(_borderWidth);
+                    _paint.setColor(Color.valueOf(element.get("border-color"), 0));
+                    canvas.drawRoundRect(new RectF(0, 0, getWidth(), getHeight()), _borderRadius, _borderRadius, _paint);
+                }
+
+                if (_borderRadius > 0){
+                    if (_path == null){
+                        _path = new Path();
+                        _path.setFillType(Path.FillType.EVEN_ODD);
+                    }
+                    _path.reset();
+                    _path.addRoundRect(new RectF(0, 0, getWidth(), getHeight()), _borderRadius, _borderRadius, Path.Direction.CW);
+                    canvas.clipPath(_path);
+                }
+
+            }
+        }
+
+        super.draw(canvas);
+
+        canvas.restoreToCount(sc);
 
     }
 }
