@@ -13,6 +13,7 @@ public class DocumentView extends ElementView {
     private boolean _changed;
     private ViewElement _element;
     private ViewElement _obtainElement;
+    private PageSizeChangeListener _pageSizeChangeListener;
 
     public DocumentView(Context context) {
         super(context);
@@ -72,6 +73,8 @@ public class DocumentView extends ElementView {
         requestLayout();
     }
 
+
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
@@ -86,9 +89,23 @@ public class DocumentView extends ElementView {
             _obtainElement.obtainView(this);
         }
 
+        if (_element != null && (changed || _changed)){
+            if (_pageSizeChangeListener != null){
+                _pageSizeChangeListener.onChange(l, t, r, b);
+            }
+        }
+
         _changed = false;
         _animated = false;
 
         super.onLayout(changed, l, t, r, b);
+    }
+
+    public void setOnPageSizeChangeListener(PageSizeChangeListener listener){
+        this._pageSizeChangeListener = listener;
+    }
+
+    public interface PageSizeChangeListener{
+        void onChange(int l, int t, int r, int b);
     }
 }
