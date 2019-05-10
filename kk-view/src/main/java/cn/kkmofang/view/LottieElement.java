@@ -2,14 +2,27 @@ package cn.kkmofang.view;
 
 import android.animation.Animator;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.LottieCompositionFactory;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieListener;
+import com.airbnb.lottie.LottieTask;
+import com.airbnb.lottie.OnCompositionLoadedListener;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 import cn.kkmofang.view.value.V;
@@ -27,7 +40,7 @@ public class LottieElement extends ViewElement {
     @Override
     protected void onSetProperty(View view, String key, String value) {
         super.onSetProperty(view, key, value);
-        if ("autoplay".equals(key) || "src".equals(key)){
+        if (("autoplay".equals(key) &&  V.booleanValue(value, false)) || "src".equals(key)){
             setNeedsPlaying();
         }
     }
@@ -72,11 +85,12 @@ public class LottieElement extends ViewElement {
         }
 
         LottieAnimationView view = (LottieAnimationView) view();
-        if (view != null){
+        if (view != null && !TextUtils.isEmpty(src)){
+            filePath = src;
 
-            if (!TextUtils.isEmpty(src)){
+            {
                 String v = get("gravity");
-                if ("resize".equals(v) || "resizeAspect".equals(v)){
+                if ("resize".equals(v) || "resizeAspect".equals(v)) {
                     view.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 } else {
                     view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -142,8 +156,38 @@ public class LottieElement extends ViewElement {
                     }
                 });
             }
-            view.setAnimation(viewContext.getAbsolutePath(filePath));
-            view.playAnimation();
+            InputStream stream = null;
+            if (filePath.startsWith("http://") || filePath.startsWith("https://")){
+                try {
+                    URL url = new URL(viewContext.getAbsolutePath(filePath));
+                    stream = url.openStream();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                String absolutePath  = viewContext.getAbsolutePath(filePath);
+                try {
+                    stream = new FileInputStream(absolutePath);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            final WeakReference<LottieAnimationView> v = new WeakReference<>(view);
+            if (stream != null){
+                LottieTask<LottieComposition> task = LottieCompositionFactory.fromJsonInputStream(stream, filePath);
+                task.addListener(new LottieListener<LottieComposition>() {
+                    @Override
+                    public void onResult(LottieComposition result) {
+                        LottieAnimationView lottieAnimationView = v.get();
+                        if (lottieAnimationView != null){
+                            lottieAnimationView.setComposition(result);
+                            lottieAnimationView.playAnimation();
+                        }
+                    }
+                });
+            }
         }
     }
 
